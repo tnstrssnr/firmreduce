@@ -50,5 +50,5 @@ $(firmreduce_TARGET): $(firmreduce_SOURCES) $(libfirm_STATIC)
 	LD_LIBRARY_PATH=$(libfirm_STATIC_PATH) $(CC) $(CFLAGS) -o $@ $< $(libfirm_INCLUDE_FLAGS) $(libfirm_STATIC_PATH) -lfirm
 
 clean:
-	rm -f $(build_dir)/$(variant)/*
+	rm -rf $(build_dir)/*
 	@echo Clean done
