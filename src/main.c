@@ -5,9 +5,11 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <libgen.h>
-#include <firm.h>
+#include <libfirm/firm.h>
+#include "ir_stats.h"
+#include "passes/passes.h"
 
-#define FIXPOINT 0
+int FIXPOINT = 0;
 
 /**
  * path to shell script, that checks if irg is still a reproducer
@@ -22,7 +24,7 @@ const char* OUT_PATH;
 /**
  * current variant
  */
-int variant_n = 1;
+int variant_n = 0;
 
 /**
  * http://www.strudel.org.uk/itoa/
@@ -64,15 +66,25 @@ void init_reproducer_test(const char* path) {
     IS_REPRODUCER = path_;
 }
 
-void export_variant() {
+char* get_io_filename() {
     char* variant = itoa(variant_n, 10);
 
     // TODO: don't use itoa
     char* path = malloc(sizeof(OUT_PATH) + sizeof(variant) + 8);
     strcpy(path, OUT_PATH);
     strcat(path, "temp_");
-    strcat(path, variant);
-    strcat(path, ".ir");
+    if(variant > 0) {
+        strcat(path, variant);
+        strcat(path, ".ir");
+    } else {
+        path = "temp_0.ir";
+    }
+    
+    return path;
+}
+
+void export_variant() {
+    char* path = get_io_filename();
     
     if(ir_export(path)) {
         fprintf(stderr, "Error while exporting irp.");
@@ -102,6 +114,7 @@ void init_temp_dirs(char* ir_path) {
 
 void init(char* rep_path, char* ir_path) {
     ir_init();
+    init_passes();
     init_reproducer_test(rep_path);
 
     if(ir_import(ir_path)) {
@@ -110,6 +123,12 @@ void init(char* rep_path, char* ir_path) {
     }
 
     init_temp_dirs(ir_path);
+
+    //get size and stuff for input graph
+    curr_stats = get_ir_stats(variant_n);
+    init_stats = malloc(sizeof(ir_stats_t));
+    memcpy(init_stats, curr_stats, sizeof(ir_stats_t));
+    variant_n++; //input is 0th variant, we now want to produce the 1st variant
 }
 
 
@@ -123,12 +142,20 @@ int is_reproducer() {
     /**
      * the script should return 0 iff the tested variant is still a reproducer
      */
-    return system(IS_REPRODUCER);
+    //return system(IS_REPRODUCER);
+    return 1;
 }
 
-void reduce() {
-
+int  is_valid() {
+    // see if variant is a valid irp
+    for(int i = 0; i < get_irp_n_irgs(); i++) {   
+        if(!irg_verify(get_irp_irg(i))) {
+                return 0;
+        }
+    }
+    return 1;
 }
+
 
 int main(int argc, char** argv) {
 /*
@@ -161,9 +188,51 @@ int main(int argc, char** argv) {
         init(argv[optind], argv[optind + 1]);
     }
 
+    /**
+     * Greedy search of new variants:
+     * loop through passes, check if we get a 'better' variant of the irp
+     *     if yes: save as current variant
+     *     if no: discard
+     * repeat until full iteraton w/o improvement
+     */
     while(!FIXPOINT) {
-        reduce();
+        int no_improvement = 0;
+        int pass_failed = 0;
+        apply_pass(get_irp());
+
+        if(is_valid()) { //test if variant is a valid irp
+            
+            if(is_reproducer() && (compare_stats(curr_stats, get_ir_stats(variant_n))->ident == variant_n)) { // test if variant is better than before and still a reproducer
+                export_variant();
+                variant_n++;
+                pass_failed = 0;
+                no_improvement = 0; // we need to do at elast 1 more round of passes to find fixpoint
+                printf("A new smaller variant was found!\n");
+                continue;
+            } else {
+                no_improvement++;
+            }
+
+        } else { // pass failed to produce valid irp
+
+            pass_failed++;
+
+        }
+
+        if(no_improvement >= PASSES_N || pass_failed >= PASSES_N) {
+            FIXPOINT = 1;
+        }
     }
 
-    return 0;
+    /**
+     * reduction is finished
+     * print some nice things
+     */
+    printf("_______________________________________________________________________________________________________________\n\n");
+    printf("No further reduction possible.\n");
+    printf("Total # of applied passes: %d\n", PASSES_APPLIED);
+    //TODO: print final statistics
+
+    return 0;         
+
 }

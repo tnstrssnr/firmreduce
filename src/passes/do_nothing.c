@@ -1,6 +1,5 @@
-#include <firm.h>
+#include <passes/passes.h>
 
 //pass for testing purposes
-void do_nothing(ir_graph const* irg) {
-    
+void do_nothing(ir_graph* irg) {
 }
