@@ -22,10 +22,11 @@ passes_OBJECTS = $(passes_SOURCES:%.c=%(build_dir)/%.o)
 passes_STATIC = $(builddir)/firmreduce_passes.a
 passes_DYNAMIC = $(builddir)/firmreduce_passes.$(DLL_EXT)
 
-firmreduce_SOURCES = main.c $(passes_SOURCES)
+firmreduce_SOURCES = $(top_src_dir)/src/main.c $(top_src_dir)/src/ir_stats.c $(passes_SOURCES)
 firmreduce_OBJECTS = $(firmreduce_SOURCES:%.c=%(build_dir)/%.o)
 firmreduce_DEPENDS = $(firmreduce_OBJECTS:%.o=%.d)
 firmreduce_TARGET = $(build_dir)/firmreduce
+firmreduce_INCLUDE_FLAGS = -I$(top_src_dir)/include
 
 libfirm_HOME = $(top_src_dir)/libfirm
 libfirm_INCLUDE_FLAGS = -I$(libfirm_HOME)/include -I$(libfirm_HOME)/include/libfirm -I$(libfirm_HOME)/build/gen/include/libfirm
@@ -48,7 +49,7 @@ all: $(firmreduce_TARGET)
 	@echo All done
 
 $(firmreduce_TARGET): $(firmreduce_SOURCES) $(libfirm_STATIC)
-	$(CC) $(CFLAGS) -o $@ $< $(libfirm_INCLUDE_FLAGS) $(libfirm_STATIC_PATH) -Wl,-rpath=$(libfirm_DYNAMIC_PATH) -lfirm
+	$(CC) $(CFLAGS) -o $@ $(firmreduce_SOURCES) $(libfirm_INCLUDE_FLAGS) $(firmreduce_INCLUDE_FLAGS) $(libfirm_STATIC_PATH) -Wl,-rpath=$(libfirm_DYNAMIC_PATH) -lfirm
 
 $(libfirm_STATIC):
 	cd libfirm && make
