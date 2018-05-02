@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <libgen.h>
 #include <libfirm/firm.h>
+
 #include "ir_stats.h"
 #include "passes/passes.h"
 
@@ -24,7 +25,7 @@ const char* OUT_PATH;
 /**
  * current variant
  */
-int variant_n = 0;
+int variant_n = 1;
 
 /**
  * http://www.strudel.org.uk/itoa/
@@ -73,12 +74,8 @@ char* get_io_filename() {
     char* path = malloc(sizeof(OUT_PATH) + sizeof(variant) + 8);
     strcpy(path, OUT_PATH);
     strcat(path, "temp_");
-    if(variant > 0) {
-        strcat(path, variant);
-        strcat(path, ".ir");
-    } else {
-        path = "temp_0.ir";
-    }
+    strcat(path, variant);
+    strcat(path, ".ir");
     
     return path;
 }
@@ -123,12 +120,6 @@ void init(char* rep_path, char* ir_path) {
     }
 
     init_temp_dirs(ir_path);
-
-    //get size and stuff for input graph
-    curr_stats = get_ir_stats(variant_n);
-    init_stats = malloc(sizeof(ir_stats_t));
-    memcpy(init_stats, curr_stats, sizeof(ir_stats_t));
-    variant_n++; //input is 0th variant, we now want to produce the 1st variant
 }
 
 
@@ -154,6 +145,72 @@ int  is_valid() {
         }
     }
     return 1;
+}
+
+void reduce() {
+    //get size and stuff for input graph
+    printf("Initial testcase size:\n");
+    ir_stats_t* curr_stats = get_ir_stats(variant_n);
+    ir_stats_t* init_stats = malloc(sizeof(ir_stats_t));
+    memcpy(init_stats, curr_stats, sizeof(ir_stats_t));
+    variant_n++; //input is 0th variant, we now want to produce the 1st variant
+
+    /**
+     * Greedy search of new variants:
+     * loop through passes, check if we get a 'better' variant of the irp
+     *     if yes: save as current variant
+     *     if no: discard
+     * repeat until full iteraton w/o improvement
+     */
+
+    int no_improvement = 0;
+    int pass_failed = 0;
+
+    while(!FIXPOINT) {
+        apply_pass(get_irp());
+
+        if(is_valid()) { //test if variant is a valid irp
+            
+            if(is_reproducer() && (compare_stats(curr_stats, get_ir_stats(variant_n))->ident == variant_n)) { // test if variant is better than before and still a reproducer
+                export_variant();
+                curr_stats = get_ir_stats(variant_n);
+                variant_n++;
+                pass_failed = 0;
+                no_improvement = 0; // we need to do at least 1 more round of passes to find fixpoint
+                printf("A new smaller variant was found!\n");
+                continue;
+            } else {
+                no_improvement++;
+            }
+
+        } else { // pass failed to produce valid irp
+
+            pass_failed++;
+
+        }
+
+        if(no_improvement >= PASSES_N || pass_failed >= PASSES_N) {
+            FIXPOINT = 1;
+        }
+    }
+
+    /**
+     * reduction is finished
+     * print some nice things
+     */
+    printf("__________________________________________________________________________\n\n");
+    printf("No further reduction possible.\n");
+    printf("Total # of applied passes: %d\n\n", PASSES_APPLIED);
+
+    printf("final testcase size:\n");
+    print_stats(curr_stats);
+    ir_set_dump_path(OUT_PATH);
+    /*
+    for(int i = 0; i < get_irp_n_irgs(); i++) {
+        dump_ir_graph(get_irp_irg(i), "final");
+    }
+    */
+    //TODO: print final statistics       
 }
 
 
@@ -188,51 +245,6 @@ int main(int argc, char** argv) {
         init(argv[optind], argv[optind + 1]);
     }
 
-    /**
-     * Greedy search of new variants:
-     * loop through passes, check if we get a 'better' variant of the irp
-     *     if yes: save as current variant
-     *     if no: discard
-     * repeat until full iteraton w/o improvement
-     */
-    while(!FIXPOINT) {
-        int no_improvement = 0;
-        int pass_failed = 0;
-        apply_pass(get_irp());
-
-        if(is_valid()) { //test if variant is a valid irp
-            
-            if(is_reproducer() && (compare_stats(curr_stats, get_ir_stats(variant_n))->ident == variant_n)) { // test if variant is better than before and still a reproducer
-                export_variant();
-                variant_n++;
-                pass_failed = 0;
-                no_improvement = 0; // we need to do at elast 1 more round of passes to find fixpoint
-                printf("A new smaller variant was found!\n");
-                continue;
-            } else {
-                no_improvement++;
-            }
-
-        } else { // pass failed to produce valid irp
-
-            pass_failed++;
-
-        }
-
-        if(no_improvement >= PASSES_N || pass_failed >= PASSES_N) {
-            FIXPOINT = 1;
-        }
-    }
-
-    /**
-     * reduction is finished
-     * print some nice things
-     */
-    printf("_______________________________________________________________________________________________________________\n\n");
-    printf("No further reduction possible.\n");
-    printf("Total # of applied passes: %d\n", PASSES_APPLIED);
-    //TODO: print final statistics
-
-    return 0;         
+    reduce();  
 
 }

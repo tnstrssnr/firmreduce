@@ -12,10 +12,9 @@ typedef struct ir_stats_t {
     int irg_n; //number of irgs in the irp
 } ir_stats_t;
 
-ir_stats_t* init_stats; // stats of the initial irp
-ir_stats_t* curr_stats; // stats of the current variant
-
 ir_stats_t* get_ir_stats(int ident);
+
+void print_stats(ir_stats_t* stats);
 
 ir_stats_t* compare_stats(ir_stats_t* old, ir_stats_t* new);
 
