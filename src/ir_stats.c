@@ -3,16 +3,28 @@
 #include <stdio.h>
 #include "irgwalk.h"
 
+/**
+ * is_cfop(ir_node* node) checks if cf is manipulated
+ * is_memop(ir_node* node) checks if node is a memory operation
+ */
+
 void ir_stats_walker(ir_node* node, void* data) {
 
     ir_stats_t* curr_stats = (ir_stats_t*) data;
     curr_stats->node_n++; 
+    if(is_cfop(node)) {
+        curr_stats->cf_manips++;
+    }
+    if(is_memop(node)) {
+        curr_stats->mem_node_n++;
+    }
 }
 
 void print_stats(ir_stats_t* stats) {
     printf("\t# of nodes: %d\n", stats->node_n);
-    printf("\t# of blocks: %d\n", stats->block_n);
     printf("\t# of irgs: %d\n", stats->irg_n);
+    printf("\t# of cf manipulations: %d\n", stats->cf_manips);
+    printf("\t# of memory operations: %d\n", stats->mem_node_n);
     printf("\t# of types: %d\n\n", stats->type_n);
 }
 
@@ -26,15 +38,14 @@ ir_stats_t* get_ir_stats(int ident) {
     }
 
     stats->ident = ident;
-    stats->block_n = 0;
     stats->mem_node_n = 0;
     stats->node_n = 0;
+    stats->cf_manips = 0;
 
     all_irg_walk(NULL, ir_stats_walker, stats);
     stats->irg_n = get_irp_n_irgs();
     stats->type_n = get_irp_n_types();
     
-    print_stats(stats);
     return stats;
 }
 

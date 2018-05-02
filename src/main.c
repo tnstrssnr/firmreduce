@@ -33,13 +33,10 @@ int variant_n = 1;
 char* itoa(int val, int base){
 	
 	static char buf[32] = {0};
-	
 	int i = 30;
 	
-	for(; val && i ; --i, val /= base)
-	
-		buf[i] = "0123456789abcdef"[val % base];
-	
+	for(; val && i ; --i, val /= base)	
+		buf[i] = "0123456789abcdef"[val % base];	
 	return &buf[i+1];
 }
 
@@ -123,8 +120,16 @@ void init(char* rep_path, char* ir_path) {
 }
 
 
-void cleanup() {
-
+void finish(ir_stats_t* final) {
+    printf("final testcase size:\n");
+    print_stats(final);
+    ir_set_dump_path(OUT_PATH);
+    /*
+    for(int i = 0; i < get_irp_n_irgs(); i++) {
+        dump_ir_graph(get_irp_irg(i), "final");
+    }
+    */
+    //TODO: print final statistics       
 }
 
 //execute shell script
@@ -147,13 +152,15 @@ int  is_valid() {
     return 1;
 }
 
-void reduce() {
+ir_stats_t* reduce() {
+
     //get size and stuff for input graph
     printf("Initial testcase size:\n");
     ir_stats_t* curr_stats = get_ir_stats(variant_n);
+    print_stats(curr_stats);
     ir_stats_t* init_stats = malloc(sizeof(ir_stats_t));
     memcpy(init_stats, curr_stats, sizeof(ir_stats_t));
-    variant_n++; //input is 0th variant, we now want to produce the 1st variant
+    variant_n++;
 
     /**
      * Greedy search of new variants:
@@ -168,12 +175,14 @@ void reduce() {
 
     while(!FIXPOINT) {
         apply_pass(get_irp());
-
+        ir_stats_t* new_variant = get_ir_stats(variant_n);
+        print_stats(new_variant);
         if(is_valid()) { //test if variant is a valid irp
             
-            if(is_reproducer() && (compare_stats(curr_stats, get_ir_stats(variant_n))->ident == variant_n)) { // test if variant is better than before and still a reproducer
+            if(is_reproducer() && (compare_stats(curr_stats, new_variant)->ident == variant_n)) { // test if variant is better than before and still a reproducer
                 export_variant();
-                curr_stats = get_ir_stats(variant_n);
+                free(curr_stats);
+                curr_stats = new_variant;
                 variant_n++;
                 pass_failed = 0;
                 no_improvement = 0; // we need to do at least 1 more round of passes to find fixpoint
@@ -201,16 +210,7 @@ void reduce() {
     printf("__________________________________________________________________________\n\n");
     printf("No further reduction possible.\n");
     printf("Total # of applied passes: %d\n\n", PASSES_APPLIED);
-
-    printf("final testcase size:\n");
-    print_stats(curr_stats);
-    ir_set_dump_path(OUT_PATH);
-    /*
-    for(int i = 0; i < get_irp_n_irgs(); i++) {
-        dump_ir_graph(get_irp_irg(i), "final");
-    }
-    */
-    //TODO: print final statistics       
+    return curr_stats;
 }
 
 
@@ -245,6 +245,7 @@ int main(int argc, char** argv) {
         init(argv[optind], argv[optind + 1]);
     }
 
-    reduce();  
+    ir_stats_t* final = reduce();  
+    finish(final);
 
 }
