@@ -15,12 +15,12 @@ pass_t* new_pass(char* ident, pass_func* func) {
 }
 
 void init_passes() {
-    PASSES_N = 1;
+    PASSES_N = 2;
     PASSES_APPLIED = 0;
     passes = malloc(sizeof(pass_t) * PASSES_N);
     
     passes[DO_NOTHING] = new_pass("DO NOTHING", &do_nothing);
-
+    passes[LIBFIRM_OPT] = new_pass("LIBFIRM OPT", &irg_apply_opt);
 }
 
 void apply_pass(ir_prog* irp) {
