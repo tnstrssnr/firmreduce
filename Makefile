@@ -46,17 +46,17 @@ LOCAL_INCLUDE ?= /usr/local/include
 .PHONY: all clean clean-all
 
 all: $(firmreduce_TARGET)
-	@echo All done
+	@echo Target make all complete
 
 $(firmreduce_TARGET): $(firmreduce_SOURCES) $(libfirm_STATIC)
-	$(CC) $(CFLAGS) -o $@ $(firmreduce_SOURCES) $(libfirm_INCLUDE_FLAGS) $(firmreduce_INCLUDE_FLAGS) $(libfirm_STATIC_PATH) -Wl,-rpath=$(libfirm_DYNAMIC_PATH) -lfirm
+	@$(CC) $(CFLAGS) -o $@ $(firmreduce_SOURCES) $(libfirm_INCLUDE_FLAGS) $(firmreduce_INCLUDE_FLAGS) $(libfirm_STATIC_PATH) -Wl,-rpath=$(libfirm_DYNAMIC_PATH) -lfirm
 
 $(libfirm_STATIC):
-	cd libfirm && make
+	@cd libfirm && make
 
 clean:
-	$(Q)rm -rf $(build_dir)/*
+	@$(Q)rm -rf $(build_dir)/*
 	@echo Clean done
 
 clean-all: clean
-	cd libfirm && make clean
+	@cd libfirm && make clean
