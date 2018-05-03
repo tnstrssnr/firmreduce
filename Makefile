@@ -43,10 +43,13 @@ LOCAL_INCLUDE ?= /usr/local/include
 # clear implicit suffix rules
 .SUFFIXES:
 
-.PHONY: all clean clean-all
+.PHONY: all clean clean-all makedir
 
-all: $(firmreduce_TARGET)
+all: makedir $(firmreduce_TARGET)
 	@echo Target make all complete
+
+makedir:
+	@mkdir -p $(build_dir)
 
 $(firmreduce_TARGET): $(firmreduce_SOURCES) $(libfirm_STATIC)
 	@$(CC) $(CFLAGS) -o $@ $(firmreduce_SOURCES) $(libfirm_INCLUDE_FLAGS) $(firmreduce_INCLUDE_FLAGS) $(libfirm_STATIC_PATH) -Wl,-rpath=$(libfirm_DYNAMIC_PATH) -lfirm
