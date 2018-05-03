@@ -10,8 +10,6 @@
 #include "ir_stats.h"
 #include "passes/passes.h"
 
-int FIXPOINT = 0;
-
 /**
  * path to shell script, that checks if irg is still a reproducer
  */
@@ -124,11 +122,11 @@ void finish(ir_stats_t* final) {
     printf("final testcase size:\n");
     print_stats(final);
     ir_set_dump_path(OUT_PATH);
-    /*
+    
     for(int i = 0; i < get_irp_n_irgs(); i++) {
         dump_ir_graph(get_irp_irg(i), "final");
     }
-    */
+
     //TODO: print final statistics       
 }
 
@@ -155,11 +153,12 @@ int  is_valid() {
 ir_stats_t* reduce() {
 
     //get size and stuff for input graph
-    printf("Initial testcase size:\n");
+    
     ir_stats_t* curr_stats = get_ir_stats(variant_n);
+    ir_stats_t* init_stats = get_ir_stats(variant_n);
+
+    printf("Initial testcase size:\n");
     print_stats(curr_stats);
-    ir_stats_t* init_stats = malloc(sizeof(ir_stats_t));
-    memcpy(init_stats, curr_stats, sizeof(ir_stats_t));
     variant_n++;
 
     /**
@@ -172,8 +171,9 @@ ir_stats_t* reduce() {
 
     int no_improvement = 0;
     int pass_failed = 0;
+    int fixpoint = 0;
 
-    while(!FIXPOINT) {
+    while(!fixpoint) {
         apply_pass(get_irp());
         ir_stats_t* new_variant = get_ir_stats(variant_n);
         print_stats(new_variant);
@@ -193,13 +193,11 @@ ir_stats_t* reduce() {
             }
 
         } else { // pass failed to produce valid irp
-
             pass_failed++;
-
         }
 
         if(no_improvement >= PASSES_N || pass_failed >= PASSES_N) {
-            FIXPOINT = 1;
+            fixpoint = 1;
         }
     }
 

@@ -3,11 +3,6 @@
 #include <stdio.h>
 #include "irgwalk.h"
 
-/**
- * is_cfop(ir_node* node) checks if cf is manipulated
- * is_memop(ir_node* node) checks if node is a memory operation
- */
-
 void ir_stats_walker(ir_node* node, void* data) {
 
     ir_stats_t* curr_stats = (ir_stats_t*) data;
@@ -57,6 +52,5 @@ ir_stats_t* compare_stats(ir_stats_t* old, ir_stats_t* new) {
     if(diff_node_n > 0) {
         return new;
     }
-
     return old;
 }
