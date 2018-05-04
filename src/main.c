@@ -79,7 +79,7 @@ void export_variant() {
     char* path = get_io_filename();
     
     if(ir_export(path)) {
-        fprintf(stderr, "Error while exporting irp.");
+        fprintf(stderr, "Error while exporting irp.\n");
         perror("");
         exit(1);
     }
@@ -106,11 +106,11 @@ void init_temp_dirs(char* ir_path) {
 
 void init(char* rep_path, char* ir_path) {
     ir_init();
-    init_passes();
+    init_passes_dynamic();
     init_reproducer_test(rep_path);
 
     if(ir_import(ir_path)) {
-        fprintf(stderr, "Error while reading test-case file");
+        fprintf(stderr, "Error while reading test-case file\n");
         exit(1);
     }
 
@@ -124,7 +124,7 @@ void finish(ir_stats_t* final) {
     ir_set_dump_path(OUT_PATH);
     
     for(int i = 0; i < get_irp_n_irgs(); i++) {
-        dump_ir_graph(get_irp_irg(i), "final");
+        dump_ir_graph(get_irp_irg(i), "");
     }
 
     //TODO: print final statistics       
@@ -155,7 +155,7 @@ ir_stats_t* reduce() {
     //get size and stuff for input graph
     
     ir_stats_t* curr_stats = get_ir_stats(variant_n);
-    ir_stats_t* init_stats = get_ir_stats(variant_n);
+    //ir_stats_t* init_stats = get_ir_stats(variant_n);
 
     printf("Initial testcase size:\n");
     print_stats(curr_stats);
@@ -178,6 +178,11 @@ ir_stats_t* reduce() {
         ir_stats_t* new_variant = get_ir_stats(variant_n);
         print_stats(new_variant);
         if(is_valid()) { //test if variant is a valid irp
+
+            ir_set_dump_path(OUT_PATH);
+            for(int i = 0; i < get_irp_n_irgs(); i++) {
+                dump_ir_graph(get_irp_irg(i), "");
+            }
             
             if(is_reproducer() && (compare_stats(curr_stats, new_variant)->ident == variant_n)) { // test if variant is better than before and still a reproducer
                 export_variant();
@@ -231,13 +236,13 @@ int main(int argc, char** argv) {
                 break;
             case '?':
             default:
-                fprintf(stderr, "Error while parsing arguments");
+                fprintf(stderr, "Error while parsing arguments\n");
                 exit(1);
         }
     }
 
     if(argv[optind] == NULL || argv[optind + 1] == NULL || argv[optind + 2] != NULL) {
-        fprintf(stderr, "Received unexpected number of arguments");
+        fprintf(stderr, "Received unexpected number of arguments\n");
         exit(1);
     } else {
         init(argv[optind], argv[optind + 1]);

@@ -16,17 +16,10 @@ typedef struct pass_t {
     pass_func* func; // pointer to the pass function
 } pass_t;
 
-typedef enum PASS_ID {
-    DO_NOTHING,
-    LIBFIRM_OPT,
-} PASS_ID;
-
 void apply_pass(ir_prog* irp);
 
 void init_passes();
 
-//passes
-void do_nothing(ir_graph* irg);
-void irg_apply_opt(ir_graph* irg);
+void init_passes_dynamic();
 
 #endif
