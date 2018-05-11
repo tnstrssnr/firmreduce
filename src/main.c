@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <libgen.h>
+#include <dlfcn.h>
 #include <libfirm/firm.h>
 
 #include "ir_stats.h"
@@ -127,7 +128,12 @@ void finish(ir_stats_t* final) {
         dump_ir_graph(get_irp_irg(i), "");
     }
 
-    //TODO: print final statistics       
+    //TODO: print final statistics 
+
+    //close all shared objects
+    for(int i = 0; i < PASSES_N; i++) {
+        dlclose(passes[i]->handle);
+    }      
 }
 
 //execute shell script
