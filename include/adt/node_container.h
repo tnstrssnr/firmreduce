@@ -14,6 +14,8 @@ typedef struct ir_node_container {
 
 } ir_node_container;
 
+ir_node_container* new_container(select_func* func);
+
 void collect_nodes(ir_graph* irg, ir_node_container* container);
 
 #endif

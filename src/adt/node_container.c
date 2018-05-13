@@ -29,3 +29,9 @@ void collect_nodes(ir_graph* irg, ir_node_container* container) {
     irg_walk_graph(irg, find_nodes_walk, NULL, container);
 
 }
+
+ir_node_container* new_container(select_func* func) {
+    ir_node_container* container = malloc(sizeof(ir_node_container));
+    container->func = func;
+    return container;
+}
