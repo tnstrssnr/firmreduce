@@ -36,7 +36,6 @@ void init_passes_dynamic() {
         closedir(dir);
     }
     passes = malloc(sizeof(pass_t) * PASSES_N);
-    printf("%d\n", PASSES_N);
     DIR* dir_;
     struct dirent* entry;
 
@@ -49,7 +48,6 @@ void init_passes_dynamic() {
                 char* dll_path = malloc(sizeof(dll_dir) + sizeof(entry->d_name) + 1);
                 strcpy(dll_path, dll_dir);
                 strcat(dll_path, entry->d_name);
-                printf("%s\n", dll_path);
                 void* handle;
                 handle = dlopen(dll_path, RTLD_NOW);
                 if(!handle) {
@@ -67,7 +65,6 @@ void init_passes_dynamic() {
                 char* function_name = malloc(sizeof(char)*(i + 2));
                 memcpy(function_name, entry->d_name, (i)*sizeof(char));
                 function_name[i] = '\0';
-                printf("%s\n", function_name);
                 pass_func* func = (pass_func*) dlsym(handle, function_name);
 
                 passes[curr_pass] = new_pass(function_name,handle, func);
