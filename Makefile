@@ -11,6 +11,7 @@ vpath %.h $(top_src_dir)/include
 variant = debug
 build_dir = $(top_build_dir)/$(variant)
 pass_dir = $(top_build_dir)/passes
+adt_dir = $(top_build_dir)/adt
 
 # set compile flags
 CFLAGS += -Wall -g
@@ -22,6 +23,10 @@ passes_SOURCES = $(wildcard $(top_src_dir)/src/passes/*.c)
 passes_OBJECTS = $(patsubst %.c,%.o,$(passes_SOURCES))
 passes_OBJS = $(wildcard $(pass_dir)/obj/*.o)
 passes_DLL =$(patsubst %.o,%.so,$(passes_OBJS))
+
+adt_SRC = $(top_src_dir)/src/adt/node_container.c
+adt_INCLUDE_FLAGS = -I$(top_src_dir)/include/adt/
+adt_OBJ = $(adt_dir)/node_container.o
 
 firmreduce_SOURCES = $(top_src_dir)/src/main.c $(top_src_dir)/src/ir_stats.c $(top_src_dir)/src/passes.c
 firmreduce_OBJECTS = $(firmreduce_SOURCES:%.c=%(build_dir)/%.o)
@@ -52,6 +57,7 @@ all: makedir $(firmreduce_TARGET) passes # FIXME: needs to be built in this orde
 makedir:
 	@mkdir -p $(pass_dir)/obj
 	@mkdir -p $(pass_dir)/dll
+	@mkdir -p $(adt_dir)
 	@mkdir -p $(build_dir)
 
 $(firmreduce_TARGET): $(firmreduce_SOURCES) $(libfirm_STATIC)
@@ -68,11 +74,11 @@ clean:
 clean-all: clean
 	@cd libfirm && make clean
 
-passes: makedir $(passes_OBJECTS)
+passes: makedir  $(adt_OBJS) $(passes_OBJECTS)
 	
 	
 %.o: %.c
-	@$(CC) -c $(CFALGS) -fPIC $< $(libfirm_INCLUDE_FLAGS) -o $(pass_dir)/obj/$(notdir $@)
-	@$(CC) -shared -o $(pass_dir)/dll/$(basename $(notdir $<))$(DLL_EXT) $(pass_dir)/obj/$(basename $(notdir $<)).o $(libfirm_STATIC_PATH) -Wl,-rpath=$(libfirm_DYNAMIC_PATH) -lfirm
+	@$(CC) -c $(CFLAGS) -fPIC $(adt_SRC) $(libfirm_INCLUDE_FLAGS) $(adt_INCLUDE_FLAGS)  -o $(adt_dir)/node_container.o
+	@$(CC) -c $(CFLAGS) -fPIC $< $(adt_INCLUDE_FLAGS) $(libfirm_INCLUDE_FLAGS) -o $(pass_dir)/obj/$(notdir $@)
+	@$(CC) -shared -o $(pass_dir)/dll/$(basename $(notdir $<))$(DLL_EXT) $(pass_dir)/obj/$(basename $(notdir $<)).o $(adt_OBJ) $(libfirm_STATIC_PATH) -Wl,-rpath=$(libfirm_DYNAMIC_PATH) -lfirm
 	@echo Build $(basename $(notdir $<))$(DLL_EXT)
-	
