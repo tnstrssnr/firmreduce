@@ -6,7 +6,7 @@
 #include <sys/types.h>
 #include <libgen.h>
 #include <dlfcn.h>
-#include <libfirm/firm.h>
+#include "firm.h"
 
 #include "ir_stats.h"
 #include "passes/passes.h"
@@ -113,6 +113,10 @@ void init(char* rep_path, char* ir_path) {
     if(ir_import(ir_path)) {
         fprintf(stderr, "Error while reading test-case file\n");
         exit(1);
+    }
+    ir_set_dump_path(OUT_PATH);
+    for(int i = 0; i < get_irp_n_irgs(); i++) {
+        dump_ir_graph(get_irp_irg(i), "");
     }
 
     init_temp_dirs(ir_path);
