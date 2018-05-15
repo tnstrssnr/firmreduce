@@ -1,15 +1,13 @@
-#include <firm.h>
+#include <libfirm/firm.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <node_container.h>
 #include <time.h>
 
-#define FOUND_SUCC_TRUE 1
-#define FOUND_SUCC_FALSE 0
-
 /**
- * remove void function calls and function calls, where return value is not used
+ * pass to remove void function calls and function calls, where return value is not used
  */
+
 int is_Call_void(const ir_node* node) {
 
     return is_Call(node) && (1 == get_irn_n_edges(node));
@@ -28,7 +26,6 @@ void pass_call_reduction(ir_graph* irg, void* data) {
         ir_node* node = container->nodes[rand() % container->nodes_n];
         ir_node* mem_input = get_Call_mem(node);
 
-        
         ir_node* mem_output;
 
         // look for memory state after the call happened
@@ -39,8 +36,7 @@ void pass_call_reduction(ir_graph* irg, void* data) {
         }
 
         // reroute all edges to old memory state
-        edges_reroute(mem_output, mem_input);
-        
+        exchange(mem_output, mem_input);
 
     }
     edges_deactivate(irg);

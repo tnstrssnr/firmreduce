@@ -25,7 +25,7 @@ void pass_remove_stores(ir_graph* irg, void* data) {
             }
         }
 
-        edges_reroute(mem_output, mem_input);
+        exchange(mem_output, mem_input);
         edges_deactivate(irg);
     }
     free(container);
