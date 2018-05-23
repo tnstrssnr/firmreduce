@@ -1,7 +1,7 @@
 #include <libfirm/firm.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <node_container.h>
+#include <pass_utils.h>
 #include <time.h>
 
 /**
@@ -41,4 +41,8 @@ void pass_call_reduction(ir_graph* irg, void* data) {
     }
     edges_deactivate(irg);
     free(container);
+}
+
+int main(int argc, char** argv) {
+    return apply_pass(&pass_call_reduction);
 }

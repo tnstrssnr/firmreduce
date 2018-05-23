@@ -1,5 +1,5 @@
 #include <firm.h>
-#include <node_container.h>
+#include <pass_utils.h>
 
 #include <stdlib.h>
 #include <time.h>
@@ -29,4 +29,8 @@ void pass_remove_stores(ir_graph* irg, void* data) {
         edges_deactivate(irg);
     }
     free(container);
+}
+
+int main(int argc, char** argv) {
+    return apply_pass(&pass_remove_stores);
 }

@@ -1,5 +1,5 @@
 #include <libfirm/firm.h>
-
+#include <pass_utils.h>
 /**
  * applies a bunch of Firm optimizations
  * TODO: clean-up
@@ -28,4 +28,8 @@ void pass_libfirm_opt(ir_graph* irg, void* data) {
 	combo(irg);
 	place_code(irg);
 optimize_cf(irg);
+}
+
+int main(int argc, char** argv) {
+    return apply_pass(&pass_libfirm_opt);
 }

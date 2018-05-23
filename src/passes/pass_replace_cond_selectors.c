@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <node_container.h>
+#include <pass_utils.h>
 
 void pass_replace_cond_selectors(ir_graph* irg, void* data) {
     
@@ -24,3 +24,8 @@ void pass_replace_cond_selectors(ir_graph* irg, void* data) {
     free(container);
 
 }
+
+int main(int argc, char** argv) {
+    return apply_pass(&pass_replace_cond_selectors);
+}
+

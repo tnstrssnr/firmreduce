@@ -1,5 +1,5 @@
 #include <libfirm/firm.h>
-#include <node_container.h>
+#include <pass_utils.h>
 #include <stdlib.h>
 #include <time.h>
 
@@ -23,4 +23,8 @@ void pass_simplify_consts(ir_graph* irg, void* data) {
     }
 
     free(container);
+}
+
+int main(int argc, char** argv) {
+    return apply_pass(&pass_simplify_consts);
 }
