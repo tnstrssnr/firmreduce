@@ -11,6 +11,7 @@ vpath %.h $(top_src_dir)/include
 variant = debug
 build_dir = $(top_build_dir)/$(variant)
 pass_dir = $(top_build_dir)/passes
+libstats_dir = $(top_build_dir)/stats
 
 # set compile flags
 CFLAGS += -Wall -g
@@ -27,11 +28,16 @@ pass_util_SRC = $(top_src_dir)/src/pass_utils.c
 pass_util_INCLUDE_FLAGS = -I$(top_src_dir)/include/
 pass_util_OBJ = $(pass_dir)/pass_utils.o
 
-firmreduce_SOURCES = $(top_src_dir)/src/main.c $(top_src_dir)/src/ir_stats.c $(top_src_dir)/src/passes.c
+firmreduce_SOURCES = $(top_src_dir)/src/main.c $(top_src_dir)/src/passes.c
 firmreduce_OBJECTS = $(firmreduce_SOURCES:%.c=%(build_dir)/%.o)
 firmreduce_DEPENDS = $(firmreduce_OBJECTS:%.o=%.d)
 firmreduce_TARGET = $(build_dir)/firmreduce
 firmreduce_INCLUDE_FLAGS = -I$(top_src_dir)/include
+
+libstats_SRC = $(top_src_dir)/src/ir_stats.c
+libstats_INCLUDE_FLAGS = -I$(top_src_dir)/include
+libstats_OBJ = $(libstats_dir)
+libstats_TARGET = $(build_dir)/libstats$(DLL_EXT)
 
 libfirm_HOME = $(top_src_dir)/libfirm
 libfirm_INCLUDE_FLAGS = -I$(libfirm_HOME)/include -I$(libfirm_HOME)/include/libfirm -I$(libfirm_HOME)/build/gen/include/libfirm
@@ -48,19 +54,23 @@ LOCAL_INCLUDE ?= /usr/local/include
 # clear implicit suffix rules
 .SUFFIXES:
 
-.PHONY: all clean clean-all makedir passes
+.PHONY: all clean clean-all makedir passes libstats
 
-all: makedir $(firmreduce_TARGET) passes # FIXME: needs to be built in this order --> unstable!
+all: makedir libstats $(firmreduce_TARGET) passes # FIXME: needs to be built in this order --> unstable!
 	@echo Target make all complete
 
 makedir:
 	@mkdir -p $(pass_dir)/obj
 	@mkdir -p $(pass_dir)/dll
 	@mkdir -p $(build_dir)
+	@mkdir -p $(libstats_dir)
 
-$(firmreduce_TARGET): $(firmreduce_SOURCES) $(libfirm_STATIC)
+libstats: makedir $(libfirm_STATIC)
+	@$(CC) -shared -o $(libstats_TARGET) -fPIC $(libstats_SRC) $(libstats_INCLUDE_FLAGS) $(libfirm_INCLUDE_FLAGS) $(libfirm_STATIC_PATH) -Wl,-rpath=$(libfirm_DYNAMIC_PATH) -lfirm -ldl
+
+$(firmreduce_TARGET): $(firmreduce_SOURCES) 
 	@echo Build firmreduce
-	@$(CC) $(CFLAGS) -o $@ $(firmreduce_SOURCES) $(libfirm_INCLUDE_FLAGS) $(firmreduce_INCLUDE_FLAGS) $(libfirm_STATIC_PATH) -Wl,-rpath=$(libfirm_DYNAMIC_PATH) -lfirm -ldl
+	@$(CC) $(CFLAGS) -o $@ $(firmreduce_SOURCES) $(firmreduce_INCLUDE_FLAGS) $(libfirm_INCLUDE_FLAGS) $(libfirm_STATIC_PATH) -Wl,-rpath=$(libfirm_DYNAMIC_PATH) -lfirm -ldl
 
 $(libfirm_STATIC):
 	@cd libfirm && make

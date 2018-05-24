@@ -4,7 +4,6 @@
 #include "libfirm/firm.h"
 
 typedef struct ir_stats_t {
-    int ident; // identifier of testcase variant
     int node_n; // number of nodes
     int mem_node_n; // number of mem-type nodes
     int cf_manips; //number of control flow manipulations
@@ -12,7 +11,7 @@ typedef struct ir_stats_t {
     int irg_n; //number of irgs in the irp
 } ir_stats_t;
 
-ir_stats_t* get_ir_stats(int ident);
+typedef ir_stats_t* stats_func(char* path_to_file);
 
 void print_stats(ir_stats_t* stats);
 
