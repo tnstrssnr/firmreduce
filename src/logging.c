@@ -51,5 +51,4 @@ void init_logging(char* out_path) {
     }
     fprintf(log_file, "Firmreduce -- Results\n\nInitial Test-case size:\n");
     fclose(log_file);
-    log_stats(get_ir_stats("temp/curr.ir"));
 }

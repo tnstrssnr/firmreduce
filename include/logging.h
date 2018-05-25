@@ -1,7 +1,7 @@
 #ifndef LOGGING_H
 #define LOGGING_H
 
-#include "ir_stats.h"
+#include <ir_stats_structs.h>
 
 void log_text(char* text);
 

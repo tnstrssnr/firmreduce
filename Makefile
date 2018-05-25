@@ -37,7 +37,7 @@ firmreduce_INCLUDE_FLAGS = -I$(top_src_dir)/include
 libstats_SRC = $(top_src_dir)/src/ir_stats.c
 libstats_INCLUDE_FLAGS = -I$(top_src_dir)/include
 libstats_OBJ = $(libstats_dir)
-libstats_TARGET = $(build_dir)/libstats$(DLL_EXT)
+libstats_TARGET = $(build_dir)/libstats
 
 libfirm_HOME = $(top_src_dir)/libfirm
 libfirm_INCLUDE_FLAGS = -I$(libfirm_HOME)/include -I$(libfirm_HOME)/include/libfirm -I$(libfirm_HOME)/build/gen/include/libfirm
@@ -66,7 +66,7 @@ makedir:
 	@mkdir -p $(libstats_dir)
 
 libstats: makedir $(libfirm_STATIC)
-	@$(CC) -shared -o $(libstats_TARGET) -fPIC $(libstats_SRC) $(libstats_INCLUDE_FLAGS) $(libfirm_INCLUDE_FLAGS) $(libfirm_STATIC_PATH) -Wl,-rpath=$(libfirm_DYNAMIC_PATH) -lfirm -ldl
+	@$(CC) -o $(libstats_TARGET) $(libstats_SRC) $(libstats_INCLUDE_FLAGS) $(libfirm_INCLUDE_FLAGS) $(libfirm_STATIC_PATH) -Wl,-rpath=$(libfirm_DYNAMIC_PATH) -lfirm -ldl
 
 $(firmreduce_TARGET): $(firmreduce_SOURCES) 
 	@echo Build firmreduce

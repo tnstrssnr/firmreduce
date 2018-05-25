@@ -6,13 +6,14 @@
 #include <sys/types.h>
 #include <libgen.h>
 #include <dlfcn.h>
+#include <assert.h>
 
-#include "ir_stats.h"
+#include "ir_stats_structs.h"
 #include "passes/passes.h"
 #include "logging.h"
 
 char* IS_REPRODUCER_SCRIPT;
-char* OUT_PATH;
+char* OUT_PATH = NULL;
 
 void init_reproducer_test(const char* path, const char* reprod_args) {
 
@@ -39,6 +40,7 @@ void init_temp_dirs(char* ir_path) {
 
     if(OUT_PATH == NULL) {
         //path is valid, we already checked
+        OUT_PATH = malloc(sizeof(dirname(ir_path)));
         OUT_PATH = dirname(ir_path);
     } else {
         //check if path is valid
@@ -48,14 +50,16 @@ void init_temp_dirs(char* ir_path) {
             perror("");
         }
     }
-
+ 
+    /*
     // add '/' to path if necessary
-    if(OUT_PATH[strlen(OUT_PATH) - 1] != '/') {
+    if(OUT_PATH[strlen(OUT_PATH)] != '/') {
         char out_path_new[strlen(OUT_PATH) + 1];
         sprintf(out_path_new,"%s%c%c", OUT_PATH, '/', '\0');
         OUT_PATH = out_path_new;
     }
-
+    */
+    
     // move and rename initial test-case to temp directory    
     system("mkdir -p temp");
     char cp_cmd[strlen(ir_path) + 20];
@@ -64,30 +68,49 @@ void init_temp_dirs(char* ir_path) {
 }
 
 ir_stats_t* get_ir_stats(char* path_to_file) {
-    void* handle = dlopen("build/debug/libstats.so", RTLD_LAZY);
-     if(!handle) {
-        fprintf(stderr, "Error while loading library: %s\n", dlerror());
-    }
+    char* path_to_libstats = "build/debug/libstats";
+    ir_stats_t* stats = malloc(sizeof(ir_stats_t));
 
-    //clear errors
-    dlerror();
+    char command[strlen(path_to_libstats) + strlen(path_to_file) + strlen(OUT_PATH) + strlen("temp/stats") + 5];
+    printf("%s\n", OUT_PATH);
+    sprintf(command, "%s %s %s %s%c", path_to_libstats, path_to_file, OUT_PATH, "temp/stats", '\0');
 
-    stats_func* get_stats;
-    get_stats = (stats_func*) dlsym(handle, "get_ir_stats");
-    const char* error = dlerror();
-    if(error) {
-        fprintf(stderr, "Cannot load symbol: %s", error);
-        dlclose(handle);
-    }
+    system(command);
 
-    return (*get_stats)(path_to_file);
+    FILE* f = fopen("temp/stats", "r");
+    assert(f != NULL);
+    char* line = NULL;
+    size_t size = 32;
+    getline(&line, &size, f);
+    printf("%s\n", line);
+
+    char* node_n = strtok(line, " ");
+    char* mem_node_n = strtok(NULL, " ");
+    char* cf_manips= strtok(NULL, " ");
+    char* type_n = strtok(NULL, " ");
+    char* irg_n = strtok(NULL, " ");
+
+    stats->node_n = atoi(node_n);
+    stats->mem_node_n = atoi(mem_node_n);
+    stats->cf_manips = atoi(cf_manips);
+    stats->type_n = atoi(type_n);
+    stats->irg_n = atoi(irg_n);
+    return stats;
+
 }
 
 void init(char* rep_path, char* reprod_args, char* ir_path) {
     init_reproducer_test(rep_path, reprod_args);
+    printf("Producer test\n");
     init_temp_dirs(ir_path);
+    printf("Temps\n");
+    printf("%s\n", OUT_PATH);
     init_logging(OUT_PATH);
+    printf("Logging\n");
     init_passes_dynamic();
+    printf("passes\n");
+    log_stats(get_ir_stats("temp/curr.ir"));
+    printf("Log stats\n");
 }
 
 
@@ -105,7 +128,29 @@ int is_reproducer() {
     }
     char result = fgetc(f);
     fclose(f);
+    printf("Reproducer script end\n");
     return result;
+}
+
+/**
+ * function handles all interaction w/ libstats object
+ */
+int has_improved() {
+
+    ir_stats_t* old = get_ir_stats("temp/curr.ir");
+    ir_stats_t* new = get_ir_stats("temp/temp.ir");
+
+    int changed = (old->node_n != new->node_n
+               || old->mem_node_n != new->mem_node_n 
+               || old->cf_manips != new->cf_manips
+               || old->type_n != new->type_n
+               || old->type_n != new->type_n) ? 1 : 0;
+    
+    if (changed) {
+        log_text("Improved variant found:\n");
+        log_stats(new);
+    }
+    return changed;
 }
 
 void reduce() {
@@ -124,11 +169,16 @@ void reduce() {
     int next_pass = 0;
 
     while(!fixpoint) {
-        int result = apply_pass(next_pass);
+        printf("Applying first pass\n");
+        int result = apply_pass((next_pass + 1) % PASSES_N);
+        printf(".");
+        if(result == -1)  pass_failed++;
+        if(!has_improved() || !is_reproducer()) no_improvement++;
 
         if(no_improvement >= PASSES_N || pass_failed >= PASSES_N) {
             fixpoint = 1;
         }
+    }
     /**
      * reduction is finished
      * print some nice things
@@ -136,27 +186,7 @@ void reduce() {
     printf("__________________________________________________________________________\n\n");
     printf("No further reduction possible.\n");
     printf("Total # of applied passes: %d\n\n", PASSES_APPLIED);
-    }
 }
-
-/**
- * function handles all interaction w/ libstats object
- */
-int has_improved() {
-
-    ir_stats_t* old = get_ir_stats("temp/curr.ir");
-    ir_stats_t* new = get_ir_stats("temp/temp.ir");
-
-    int changed = (old->node_n != new->node_n
-               || old->mem_node_n != new->mem_node_n 
-               || old->cf_manips != new->cf_manips
-               || old->type_n != new->type_n
-               || old->type_n != new->type_n) ? 1 : 0;
-    
-    if (changed) log_stats(new);
-    return changed;
-}
-
 
 int main(int argc, char** argv) {
 /*
@@ -196,9 +226,5 @@ int main(int argc, char** argv) {
     } else {
         init(argv[optind], reprod_args, argv[optind + 1]);
     }
-    is_reproducer();
-    /*
-    ir_stats_t* final = reduce();
-    finish(final);
-    */
+    //reduce();
 }
