@@ -43,8 +43,8 @@ void init_passes_dynamic() {
 
         while((dir_ent = readdir(dir)) != NULL) {
             if(dir_ent->d_name[0] != '.') {
-                char* path = malloc(sizeof(dir_ent->d_name) + sizeof(pass_dir) + 2);
-                sprintf(path, "%s/%s%c", pass_dir, dir_ent->d_name, '\0');
+                char* path = malloc(sizeof(dir_ent->d_name) + sizeof(pass_dir) + 4);
+                sprintf(path, "./%s/%s%c", pass_dir, dir_ent->d_name, '\0');
                 passes[i] = new_pass(dir_ent->d_name, path);
                 i++;
             }
@@ -53,24 +53,17 @@ void init_passes_dynamic() {
 }
 
 int apply_pass(int i) {
-    FILE* f = popen(passes[i]->path, "r");
-    if(!f) {
-        printf("Couldn't execute pass %s.\n", passes[i]->ident);
-        exit(1);
-    }
-    pclose(f);
-    char result = fgetc(f);
-    fclose(f);
+    int result = system(passes[i]->path);
     log_text("Applying pass: ");
         log_text(passes[i]->ident);
-        log_text("\t -- \t ");
+        log_text("\t\t -- \t ");
         switch(result) {
             case 1:
-                log_text("Successful\n");
+                log_text("No improvement\n");
                 PASSES_APPLIED++;
                 break;
             case 0:
-                log_text("No improvement\n");
+                log_text("Successful\n");
                 break;
             case -1:
                 log_text("Failed\n");

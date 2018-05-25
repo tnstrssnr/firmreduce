@@ -57,12 +57,11 @@ int  is_valid() {
  * (assumes that pass_func doesn't need additional data)
  */
 int apply_pass(pass_func* func) {
-
     // init library load current irp
     ir_init();
     if(ir_import(CURR_IR)) {
         fprintf(stderr, "Error while reading test-case file\n");
-        exit(1);
+        exit(-1);
     }
 
     // apply pass
@@ -73,9 +72,10 @@ int apply_pass(pass_func* func) {
     // check if we still have a valid irp
     if(is_valid()) {
         ir_export(TEMP_IR);
+        ir_finish();
         return 0;
     }
+    ir_finish();
     return 1;
-
 
 }

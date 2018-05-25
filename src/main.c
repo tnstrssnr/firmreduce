@@ -72,7 +72,6 @@ ir_stats_t* get_ir_stats(char* path_to_file) {
     ir_stats_t* stats = malloc(sizeof(ir_stats_t));
 
     char command[strlen(path_to_libstats) + strlen(path_to_file) + strlen(OUT_PATH) + strlen("temp/stats") + 5];
-    printf("%s\n", OUT_PATH);
     sprintf(command, "%s %s %s %s%c", path_to_libstats, path_to_file, OUT_PATH, "temp/stats", '\0');
 
     system(command);
@@ -82,7 +81,6 @@ ir_stats_t* get_ir_stats(char* path_to_file) {
     char* line = NULL;
     size_t size = 32;
     getline(&line, &size, f);
-    printf("%s\n", line);
 
     char* node_n = strtok(line, " ");
     char* mem_node_n = strtok(NULL, " ");
@@ -101,21 +99,14 @@ ir_stats_t* get_ir_stats(char* path_to_file) {
 
 void init(char* rep_path, char* reprod_args, char* ir_path) {
     init_reproducer_test(rep_path, reprod_args);
-    printf("Producer test\n");
     init_temp_dirs(ir_path);
-    printf("Temps\n");
-    printf("%s\n", OUT_PATH);
     init_logging(OUT_PATH);
-    printf("Logging\n");
     init_passes_dynamic();
-    printf("passes\n");
     log_stats(get_ir_stats("temp/curr.ir"));
-    printf("Log stats\n");
 }
 
 
 void finish(ir_stats_t* final) {
-    printf("final testcase size:\n");
     //TODO: print final statistics     
 }
 
@@ -128,7 +119,6 @@ int is_reproducer() {
     }
     char result = fgetc(f);
     fclose(f);
-    printf("Reproducer script end\n");
     return result;
 }
 
@@ -136,6 +126,8 @@ int is_reproducer() {
  * function handles all interaction w/ libstats object
  */
 int has_improved() {
+
+    char* replace = "mv temp/temp.ir temp/curr.ir";
 
     ir_stats_t* old = get_ir_stats("temp/curr.ir");
     ir_stats_t* new = get_ir_stats("temp/temp.ir");
@@ -149,6 +141,7 @@ int has_improved() {
     if (changed) {
         log_text("Improved variant found:\n");
         log_stats(new);
+        system(replace);
     }
     return changed;
 }
@@ -169,8 +162,8 @@ void reduce() {
     int next_pass = 0;
 
     while(!fixpoint) {
-        printf("Applying first pass\n");
-        int result = apply_pass((next_pass + 1) % PASSES_N);
+        int result = apply_pass(next_pass);
+        next_pass = (next_pass + 1) % PASSES_N;
         printf(".");
         if(result == -1)  pass_failed++;
         if(!has_improved() || !is_reproducer()) no_improvement++;
@@ -179,13 +172,7 @@ void reduce() {
             fixpoint = 1;
         }
     }
-    /**
-     * reduction is finished
-     * print some nice things
-     */
-    printf("__________________________________________________________________________\n\n");
-    printf("No further reduction possible.\n");
-    printf("Total # of applied passes: %d\n\n", PASSES_APPLIED);
+    printf("\n");
 }
 
 int main(int argc, char** argv) {
@@ -226,5 +213,5 @@ int main(int argc, char** argv) {
     } else {
         init(argv[optind], reprod_args, argv[optind + 1]);
     }
-    //reduce();
+    reduce();
 }
