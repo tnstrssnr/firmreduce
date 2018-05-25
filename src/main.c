@@ -9,10 +9,10 @@
 
 #include "ir_stats.h"
 #include "passes/passes.h"
+#include "logging.h"
 
-const char* IS_REPRODUCER;
+char* IS_REPRODUCER_SCRIPT;
 char* OUT_PATH;
-const char* LOG_FILE;
 
 void init_reproducer_test(const char* path, const char* reprod_args) {
 
@@ -24,16 +24,15 @@ void init_reproducer_test(const char* path, const char* reprod_args) {
         exit(1);
     }
 
-    // We need 2 more characters
-    char path_ [strlen(path) + strlen(reprod_args) + 4];
+    // We need 4 more characters
+    IS_REPRODUCER_SCRIPT = malloc(strlen(path) + strlen(reprod_args) + 4);
 
-    if (path_ == NULL) {
+    if (IS_REPRODUCER_SCRIPT == NULL) {
         //malloc failed, deal with it
         perror("Error");
         exit(1);
     }
-    sprintf(path_, "./%s %s%c", path, reprod_args, '\0');
-    IS_REPRODUCER = path_;
+    sprintf(IS_REPRODUCER_SCRIPT, "./%s %s%c", path, reprod_args, '\0');
 }
 
 void init_temp_dirs(char* ir_path) {
@@ -65,7 +64,7 @@ void init_temp_dirs(char* ir_path) {
 }
 
 ir_stats_t* get_ir_stats(char* path_to_file) {
-    void* handle = dlopen("build/debug/statslib.so", RTLD_LAZY);
+    void* handle = dlopen("build/debug/libstats.so", RTLD_LAZY);
      if(!handle) {
         fprintf(stderr, "Error while loading library: %s\n", dlerror());
     }
@@ -84,33 +83,11 @@ ir_stats_t* get_ir_stats(char* path_to_file) {
     return (*get_stats)(path_to_file);
 }
 
-void log_stats(FILE* stream, ir_stats_t* stats) {
-    fprintf(stream, "\t# of nodes: %d\n", stats->node_n);
-    fprintf(stream,"\t# of irgs: %d\n", stats->irg_n);
-    fprintf(stream,"\t# of cf manipulations: %d\n", stats->cf_manips);
-    fprintf(stream,"\t# of memory operations: %d\n", stats->mem_node_n);
-    fprintf(stream,"\t# of types: %d\n\n", stats->type_n);
-}
-
-void init_logging() {
-    FILE* log_file;
-    char file_path[strlen(OUT_PATH) + 14];
-    sprintf(file_path, "%sReduction.log%c", OUT_PATH, '\0');
-    log_file = fopen(file_path, "a+");
-    if(log_file == NULL) {
-        fprintf(stderr, "Couldn't create log-file");
-        exit(1);
-    }
-    fprintf(log_file, "Firmreduce -- Results\n\nInitial Test-case size:\n");
-    log_stats(log_file, get_ir_stats("temp/curr.ir"));
-    fclose(log_file);
-}
-
-
 void init(char* rep_path, char* reprod_args, char* ir_path) {
     init_reproducer_test(rep_path, reprod_args);
     init_temp_dirs(ir_path);
-    init_logging();
+    init_logging(OUT_PATH);
+    init_passes_dynamic();
 }
 
 
@@ -121,13 +98,15 @@ void finish(ir_stats_t* final) {
 
 //execute shell script
 int is_reproducer() {
-
-
-    system(IS_REPRODUCER);
-    return 1;
+    FILE* f = popen(IS_REPRODUCER_SCRIPT, "r");
+    if(!f) {
+        printf("Couldn't execute reproducer script.\n");
+        exit(1);
+    }
+    char result = fgetc(f);
+    fclose(f);
+    return result;
 }
-
-
 
 void reduce() {
 
@@ -142,16 +121,14 @@ void reduce() {
     int no_improvement = 0;
     int pass_failed = 0;
     int fixpoint = 0;
+    int next_pass = 0;
 
     while(!fixpoint) {
-        
-        }
+        int result = apply_pass(next_pass);
 
         if(no_improvement >= PASSES_N || pass_failed >= PASSES_N) {
             fixpoint = 1;
         }
-    
-
     /**
      * reduction is finished
      * print some nice things
@@ -159,10 +136,11 @@ void reduce() {
     printf("__________________________________________________________________________\n\n");
     printf("No further reduction possible.\n");
     printf("Total # of applied passes: %d\n\n", PASSES_APPLIED);
+    }
 }
 
 /**
- * function handles all itneraction w/ libstats object
+ * function handles all interaction w/ libstats object
  */
 int has_improved() {
 
@@ -175,11 +153,7 @@ int has_improved() {
                || old->type_n != new->type_n
                || old->type_n != new->type_n) ? 1 : 0;
     
-    if (changed) {
-        FILE* f = fopen(LOG_FILE, "a");
-        log_stats(f, new);
-        fclose(f);
-    }
+    if (changed) log_stats(new);
     return changed;
 }
 
@@ -222,6 +196,7 @@ int main(int argc, char** argv) {
     } else {
         init(argv[optind], reprod_args, argv[optind + 1]);
     }
+    is_reproducer();
     /*
     ir_stats_t* final = reduce();
     finish(final);

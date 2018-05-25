@@ -5,21 +5,19 @@
 #include <string.h>
 
 #include "passes/passes.h"
+#include "logging.h"
 
-pass_t* new_pass(char* ident, void* handle, pass_func* func) {
+pass_t* new_pass(char* ident, char* path) {
 
     pass_t* new_pass = malloc(sizeof(pass_t));
     new_pass->ident = ident;
-    new_pass->handle = handle;
-    new_pass->func = func;
+    new_pass->path = path;
     return new_pass;
 
 }
 
 void init_passes_dynamic() {
-
     const char* pass_dir = "build/passes/dll";
-    const char* dll_dir = "./build/passes/dll/";
 
     DIR* dir;
     struct dirent* dir_ent;
@@ -35,69 +33,50 @@ void init_passes_dynamic() {
         }
         closedir(dir);
     }
-    passes = malloc(sizeof(pass_t) * PASSES_N);
-    DIR* dir_;
-    struct dirent* entry;
 
-    if((dir_ = opendir(pass_dir)) != NULL) {
+    passes = malloc(PASSES_N*sizeof(pass_t));
+    dir = NULL;
+    dir_ent = NULL;
+    int i  = 0;
 
-        int curr_pass = 0;
-        while ((entry = readdir(dir_)) != NULL) {
-            
-            if(entry->d_name[0] != '.') {
-                char* dll_path = malloc(sizeof(dll_dir) + sizeof(entry->d_name) + 1);
-                strcpy(dll_path, dll_dir);
-                strcat(dll_path, entry->d_name);
-                void* handle;
-                handle = dlopen(dll_path, RTLD_NOW);
-                if(!handle) {
-                    fprintf(stderr, "Error while loading pass: %s\n", dlerror());
-                }
+    if((dir = opendir(pass_dir)) != NULL) {
 
-                //clear errors
-                dlerror();
-
-                int i = 0;
-                while(entry->d_name[i] != '.') {
-                    i++;
-                }
-
-                char* function_name = malloc(sizeof(char)*(i + 2));
-                memcpy(function_name, entry->d_name, (i)*sizeof(char));
-                function_name[i] = '\0';
-                pass_func* func = (pass_func*) dlsym(handle, function_name);
-
-                passes[curr_pass] = new_pass(function_name,handle, func);
-
-                const char* error = dlerror();
-                if(error) {
-                    fprintf(stderr, "Cannot load symbol: %s", error);
-                    dlclose(handle);
-                    continue;
-                }
-
-                curr_pass++; 
+        while((dir_ent = readdir(dir)) != NULL) {
+            if(dir_ent->d_name[0] != '.') {
+                char* path = malloc(sizeof(dir_ent->d_name) + sizeof(pass_dir) + 2);
+                sprintf(path, "%s/%s%c", pass_dir, dir_ent->d_name, '\0');
+                passes[i] = new_pass(dir_ent->d_name, path);
+                i++;
             }
-                  
         }
-        closedir(dir_);
-
-    } else {
-        fprintf(stderr, "Error: pass directory not found\n");
-        exit(1);
     }
 }
 
-void apply_pass(ir_prog* irp) {
-
-    for(int j = 0; j < PASSES_N; j++) {
-
-        pass_t* pass = passes[j];
-
-        printf("Applying pass : %s\n", pass->ident);
-        for(int i = 0; i < get_irp_n_irgs(); i++) {
-
-            (pass->func)(get_irp_irg(i), NULL);
-        }
+int apply_pass(int i) {
+    FILE* f = popen(passes[i]->path, "r");
+    if(!f) {
+        printf("Couldn't execute pass %s.\n", passes[i]->ident);
+        exit(1);
     }
+    pclose(f);
+    char result = fgetc(f);
+    fclose(f);
+    log_text("Applying pass: ");
+        log_text(passes[i]->ident);
+        log_text("\t -- \t ");
+        switch(result) {
+            case 1:
+                log_text("Successful\n");
+                PASSES_APPLIED++;
+                break;
+            case 0:
+                log_text("No improvement\n");
+                break;
+            case -1:
+                log_text("Failed\n");
+                break;
+            default:
+                break;
+        }
+    return result;
 }

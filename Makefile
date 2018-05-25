@@ -28,7 +28,7 @@ pass_util_SRC = $(top_src_dir)/src/pass_utils.c
 pass_util_INCLUDE_FLAGS = -I$(top_src_dir)/include/
 pass_util_OBJ = $(pass_dir)/pass_utils.o
 
-firmreduce_SOURCES = $(top_src_dir)/src/main.c $(top_src_dir)/src/passes.c
+firmreduce_SOURCES = $(top_src_dir)/src/main.c $(top_src_dir)/src/passes.c $(top_src_dir)/src/logging.c
 firmreduce_OBJECTS = $(firmreduce_SOURCES:%.c=%(build_dir)/%.o)
 firmreduce_DEPENDS = $(firmreduce_OBJECTS:%.o=%.d)
 firmreduce_TARGET = $(build_dir)/firmreduce
