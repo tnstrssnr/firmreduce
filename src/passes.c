@@ -56,7 +56,7 @@ int apply_pass(int i) {
     int result = system(passes[i]->path);
     log_text("Applying pass: ");
         log_text(passes[i]->ident);
-        log_text("\t\t -- \t ");
+        log_text(" -- ");
         switch(result) {
             case 1:
                 log_text("No improvement\n");
@@ -65,7 +65,7 @@ int apply_pass(int i) {
             case 0:
                 log_text("Successful\n");
                 break;
-            case -1:
+            case 256: // no twos-complement, so -1 == 256
                 log_text("Failed\n");
                 break;
             default:

@@ -67,12 +67,18 @@ void init_temp_dirs(char* ir_path) {
     system(cp_cmd);
 }
 
-ir_stats_t* get_ir_stats(char* path_to_file) {
+ir_stats_t* get_ir_stats(char* path_to_file, int dump) {
+
+    /**
+     * Since libfirm is invoked w/ every call to this function, it can't keep track of how often we've dumped the graphs before.
+     * We use the counter to do that
+     */
+    static int counter = 0;
     char* path_to_libstats = "build/debug/libstats";
     ir_stats_t* stats = malloc(sizeof(ir_stats_t));
 
-    char command[strlen(path_to_libstats) + strlen(path_to_file) + strlen(OUT_PATH) + strlen("temp/stats") + 5];
-    sprintf(command, "%s %s %s %s%c", path_to_libstats, path_to_file, OUT_PATH, "temp/stats", '\0');
+    char command[strlen(path_to_libstats) + strlen(path_to_file) + strlen(OUT_PATH) + strlen("temp/stats") + 5 + (counter/10)];
+    sprintf(command, "%s %s %s %d %s %d%c", path_to_libstats, path_to_file, "temp/stats", dump, OUT_PATH, counter, '\0');
 
     system(command);
 
@@ -82,19 +88,22 @@ ir_stats_t* get_ir_stats(char* path_to_file) {
     size_t size = 32;
     getline(&line, &size, f);
 
-    char* node_n = strtok(line, " ");
-    char* mem_node_n = strtok(NULL, " ");
-    char* cf_manips= strtok(NULL, " ");
-    char* type_n = strtok(NULL, " ");
-    char* irg_n = strtok(NULL, " ");
+    stats->node_n = atoi(strtok(line, " "));
+    stats->mem_node_n = atoi(strtok(NULL, " "));
+    stats->cf_manips = atoi(strtok(NULL, " "));
+    stats->type_n = atoi(strtok(NULL, " "));
+    stats->irg_n = atoi(strtok(NULL, " "));
 
-    stats->node_n = atoi(node_n);
-    stats->mem_node_n = atoi(mem_node_n);
-    stats->cf_manips = atoi(cf_manips);
-    stats->type_n = atoi(type_n);
-    stats->irg_n = atoi(irg_n);
+    counter++;
     return stats;
 
+}
+
+void finish() {
+    log_text("\n\n______________________________\n\n");
+    log_text("No further reduction possible.\n\n");
+    log_text("Result:\n");
+    log_stats(get_ir_stats("temp/curr.ir", 1));   
 }
 
 void init(char* rep_path, char* reprod_args, char* ir_path) {
@@ -102,12 +111,7 @@ void init(char* rep_path, char* reprod_args, char* ir_path) {
     init_temp_dirs(ir_path);
     init_logging(OUT_PATH);
     init_passes_dynamic();
-    log_stats(get_ir_stats("temp/curr.ir"));
-}
-
-
-void finish(ir_stats_t* final) {
-    //TODO: print final statistics     
+    log_stats(get_ir_stats("temp/curr.ir", 1));
 }
 
 //execute shell script
@@ -129,8 +133,8 @@ int has_improved() {
 
     char* replace = "mv temp/temp.ir temp/curr.ir";
 
-    ir_stats_t* old = get_ir_stats("temp/curr.ir");
-    ir_stats_t* new = get_ir_stats("temp/temp.ir");
+    ir_stats_t* old = get_ir_stats("temp/curr.ir", 0);
+    ir_stats_t* new = get_ir_stats("temp/temp.ir", 0);
 
     int changed = (old->node_n != new->node_n
                || old->mem_node_n != new->mem_node_n 
@@ -165,7 +169,10 @@ void reduce() {
         int result = apply_pass(next_pass);
         next_pass = (next_pass + 1) % PASSES_N;
         printf(".");
-        if(result == -1)  pass_failed++;
+        if(result == 256) {
+          pass_failed++;
+          continue;
+        }
         if(!has_improved() || !is_reproducer()) no_improvement++;
 
         if(no_improvement >= PASSES_N || pass_failed >= PASSES_N) {
@@ -214,4 +221,5 @@ int main(int argc, char** argv) {
         init(argv[optind], reprod_args, argv[optind + 1]);
     }
     reduce();
+    finish();
 }

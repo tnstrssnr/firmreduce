@@ -17,9 +17,17 @@ void ir_stats_walker(ir_node* node, void* data) {
     }
 }
 
+/**
+ * Receives the following arguments:
+ *  - path to .ir file, for which stats should be returned
+ *  - path to directory, to dump the stats file in
+ *  - 0/1, indicating whether .vcg files should be dumped
+ *  - path to directory, to dump the graphs in
+ *  - suffix for dumping graphs
+ */
 int main(int argc, char** argv) {
 
-    if(argc != 4) {
+    if(argc != 6) {
         fprintf(stderr, "Unexpected number of arguments\n");
         exit(1);
     }
@@ -45,12 +53,16 @@ int main(int argc, char** argv) {
     stats->irg_n = get_irp_n_irgs();
     stats->type_n = get_irp_n_types();
 
-    ir_set_dump_path(argv[2]);
-    dump_all_ir_graphs("");
+    if(*argv[3] == '1') {
+        ir_set_dump_path(argv[4]);
+        for(int i = 0; i < get_irp_n_irgs(); i++) {
+            dump_ir_graph(get_irp_irg(i), argv[5]);
+        }
+    }
 
     ir_finish();
     
-    FILE* f = fopen(argv[3], "w+");
+    FILE* f = fopen(argv[2], "w+");
     fprintf(f, "%d %d %d %d %d\n", stats->node_n, stats->mem_node_n, stats->cf_manips, stats->type_n, stats->irg_n);
     fclose(f);
 
