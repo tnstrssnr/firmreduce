@@ -61,20 +61,55 @@ int apply_pass(pass_func* func) {
     ir_init();
     if(ir_import(CURR_IR)) {
         fprintf(stderr, "Error while reading test-case file\n");
-        exit(-1);
+        return -1;
     }
+
+    ir_set_dump_path("out/");
+        for(int i = 0; i < get_irp_n_irgs(); i++) {
+            dump_ir_graph(get_irp_irg(i), "");
+        }
 
     // apply pass
     for(int i = 0; i < get_irp_n_irgs(); i++) {
-        (func)(get_irp_irg(i), NULL);
+        ir_graph* irg = get_irp_irg(i);
+        (func)(irg, NULL);
+
+        // apply optimizations
+        opt_bool(irg);
+        optimize_cf(irg);
+        opt_if_conv(irg);
+        do_loop_inversion(irg);
+        optimize_reassociation(irg);
+        optimize_load_store(irg);
+        optimize_graph_df(irg);
+        combo(irg);
+        scalar_replacement_opt(irg);
+        place_code(irg);
+        optimize_reassociation(irg);
+        optimize_graph_df(irg);
+        opt_jumpthreading(irg);
+        optimize_graph_df(irg);
+        construct_confirms(irg);
+        optimize_graph_df(irg);
+        remove_confirms(irg);
+        optimize_cf(irg);
+        optimize_load_store(irg);
+        optimize_graph_df(irg);
+        combo(irg);
+        place_code(irg);
     }
 
     // check if we still have a valid irp
     if(is_valid()) {
+        ir_set_dump_path("out/");
+        for(int i = 0; i < get_irp_n_irgs(); i++) {
+            dump_ir_graph(get_irp_irg(i), "new");
+        }
         ir_export(TEMP_IR);
         ir_finish();
         return 0;
     }
+
     ir_finish();
     return 1;
 
