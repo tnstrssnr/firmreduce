@@ -14,35 +14,36 @@ int is_Call_void(const ir_node* node) {
 
 }
 
-void pass_call_reduction(ir_graph* irg, void* data) {
+int pass_call_reduction(ir_graph* irg, void* data) {
 
     edges_activate(irg);
 
     ir_node_container* container = new_container(is_Call_void);
     collect_nodes(irg, container);
-    if(container->nodes_n > 0) {
+    if(container->nodes_n == 0) return 0;
 
-        srand(time(NULL));
-        ir_node* node = container->nodes[rand() % container->nodes_n];
-        ir_node* mem_input = get_Call_mem(node);
+    srand(time(NULL));
+    ir_node* node = container->nodes[rand() % container->nodes_n];
+    ir_node* mem_input = get_Call_mem(node);
 
-        ir_node* mem_output;
+    ir_node* mem_output;
 
-        // look for memory state after the call happened
-        foreach_out_edge(node, edge) {
-            if(is_Proj(get_edge_src_irn(edge))) {
-                mem_output = get_edge_src_irn(edge);
-            }
+    // look for memory state after the call happened
+    foreach_out_edge(node, edge) {
+        if(is_Proj(get_edge_src_irn(edge))) {
+            mem_output = get_edge_src_irn(edge);
         }
-
-        // reroute all edges to old memory state
-        exchange(mem_output, mem_input);
-
     }
+
+    // reroute all edges to old memory state
+    exchange(mem_output, mem_input);
     edges_deactivate(irg);
+
     free(container);
+    return 1;
 }
 
 int main(int argc, char** argv) {
-    return apply_pass(&pass_call_reduction);
+    int result = apply_pass(&pass_call_reduction);
+    return result;
 }

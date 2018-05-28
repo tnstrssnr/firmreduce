@@ -1,7 +1,6 @@
 #ifndef PASSES_H
 #define PASSES_H
 
-#include <libfirm/firm.h>
 #include <ir_stats_structs.h>
 
 int PASSES_N; // total number of passes

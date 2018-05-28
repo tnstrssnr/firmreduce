@@ -2,9 +2,8 @@
 #include <pass_utils.h>
 /**
  * applies a bunch of Firm optimizations
- * TODO: clean-up
  */
-void pass_libfirm_opt(ir_graph* irg, void* data) {
+int pass_libfirm_opt(ir_graph* irg, void* data) {
     opt_bool(irg);
     optimize_cf(irg);
     opt_if_conv(irg);
@@ -27,7 +26,8 @@ void pass_libfirm_opt(ir_graph* irg, void* data) {
 	optimize_graph_df(irg);
 	combo(irg);
 	place_code(irg);
-optimize_cf(irg);
+	optimize_cf(irg);
+	return 0;
 }
 
 int main(int argc, char** argv) {

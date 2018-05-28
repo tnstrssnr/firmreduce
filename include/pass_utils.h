@@ -16,7 +16,7 @@ typedef int select_func(const ir_node* node);
 /**
  * function type, that applies a pass operation to the irg
  */
-typedef void pass_func(ir_graph* irg, void* data);
+typedef int pass_func(ir_graph* irg, void* data);
 
 typedef struct ir_node_container {
 

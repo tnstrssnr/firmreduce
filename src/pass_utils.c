@@ -64,15 +64,12 @@ int apply_pass(pass_func* func) {
         return -1;
     }
 
-    ir_set_dump_path("out/");
-        for(int i = 0; i < get_irp_n_irgs(); i++) {
-            dump_ir_graph(get_irp_irg(i), "");
-        }
-
     // apply pass
+    int improvement = 0;
     for(int i = 0; i < get_irp_n_irgs(); i++) {
         ir_graph* irg = get_irp_irg(i);
-        (func)(irg, NULL);
+        int result = (func)(irg, NULL);
+        improvement = (improvement) ? 1 : result;
 
         // apply optimizations
         opt_bool(irg);
@@ -101,16 +98,9 @@ int apply_pass(pass_func* func) {
 
     // check if we still have a valid irp
     if(is_valid()) {
-        ir_set_dump_path("out/");
-        for(int i = 0; i < get_irp_n_irgs(); i++) {
-            dump_ir_graph(get_irp_irg(i), "new");
-        }
         ir_export(TEMP_IR);
-        ir_finish();
-        return 0;
     }
-
     ir_finish();
-    return 1;
+    return (improvement) ? 1 : 0;
 
 }

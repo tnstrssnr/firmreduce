@@ -3,6 +3,7 @@
 #include <dirent.h>
 #include <dlfcn.h>
 #include <string.h>
+#include <limits.h>
 
 #include "passes/passes.h"
 #include "logging.h"
@@ -17,7 +18,7 @@ pass_t* new_pass(char* ident, char* path) {
 }
 
 void init_passes_dynamic() {
-    const char* pass_dir = "build/passes/dll";
+    const char* pass_dir = "build/passes/dll"; //TODO: what happens if we start program from other directory?
 
     DIR* dir;
     struct dirent* dir_ent;
@@ -32,6 +33,9 @@ void init_passes_dynamic() {
             }
         }
         closedir(dir);
+    } else {
+        fprintf(stderr, "Couldn't find pass directory\n");
+        exit(1);
     }
 
     passes = malloc(PASSES_N*sizeof(pass_t));
@@ -50,25 +54,31 @@ void init_passes_dynamic() {
             }
         }
     }
+    printf(":: %d passes found\n", PASSES_N);
 }
 
 int apply_pass(int i) {
-    int result = system(passes[i]->path);
+
+    int status = system(passes[i]->path);
+    int result = -1;
+    if(WIFEXITED(status)) {
+        result = WEXITSTATUS(status);
+    } 
+
     log_text("Applying pass: ");
+    PASSES_APPLIED++;
         log_text(passes[i]->ident);
         log_text(" -- ");
         switch(result) {
-            case 1:
+            case 0:
                 log_text("No improvement\n");
                 PASSES_APPLIED++;
                 break;
-            case 0:
+            case 1:
                 log_text("Successful\n");
                 break;
-            case 256: // no twos-complement, so -1 == 256
-                log_text("Failed\n");
-                break;
             default:
+                log_text("Failed\n");            
                 break;
         }
     return result;
