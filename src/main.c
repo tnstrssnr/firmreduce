@@ -15,6 +15,11 @@
 char* IS_REPRODUCER_SCRIPT;
 char* OUT_PATH = NULL;
 
+char* CURRENT_VARIANT = "temp/curr.ir";
+char* TEMP_VARIANT = "temp/temp.ir";
+char* STATS = "temp/stats";
+char* LIBSTATS_PATH = "build/debug/libstats";
+
 void init_reproducer_test(const char* path, const char* reprod_args) {
 
     //first check if file path is valid
@@ -38,8 +43,9 @@ void init_reproducer_test(const char* path, const char* reprod_args) {
 
 void init_temp_dirs(char* ir_path) {
 
+    // path to dump results in
     if(OUT_PATH == NULL) {
-        //path is valid, we already checked
+        //use ir path as output directory -- is valid, we already checked
         OUT_PATH = malloc(sizeof(dirname(ir_path)));
         OUT_PATH = dirname(ir_path);
     } else {
@@ -50,20 +56,11 @@ void init_temp_dirs(char* ir_path) {
             perror("");
         }
     }
- 
-    /*
-    // add '/' to path if necessary
-    if(OUT_PATH[strlen(OUT_PATH)] != '/') {
-        char out_path_new[strlen(OUT_PATH) + 1];
-        sprintf(out_path_new,"%s%c%c", OUT_PATH, '/', '\0');
-        OUT_PATH = out_path_new;
-    }
-    */
     
     // move and rename initial test-case to temp directory    
     system("mkdir -p temp");
-    char cp_cmd[strlen(ir_path) + 20];
-    sprintf(cp_cmd, "cp %s temp/curr.ir%c", ir_path, '\0');
+    char cp_cmd[strlen(ir_path) + 17];
+    sprintf(cp_cmd, "cp %s %s%c", ir_path, CURRENT_VARIANT, '\0');
     system(cp_cmd);
 }
 
@@ -74,16 +71,14 @@ ir_stats_t* get_ir_stats(char* path_to_file, int dump) {
      * We use the counter to do that
      */
     static int counter = 0;
-    char* path_to_libstats = "build/debug/libstats";
     ir_stats_t* stats = malloc(sizeof(ir_stats_t));
 
-    char command[strlen(path_to_libstats) + strlen(path_to_file) + strlen(OUT_PATH) + strlen("temp/stats") + 5 + (counter/10)];
-    sprintf(command, "%s %s %s %d %s %d%c", path_to_libstats, path_to_file, "temp/stats", dump, OUT_PATH, counter, '\0');
+    char command[strlen(LIBSTATS_PATH) + strlen(path_to_file) + strlen(OUT_PATH) + strlen(STATS) + 5 + (counter/10)];
 
+    sprintf(command, "%s %s %s %d %s %d%c", LIBSTATS_PATH, path_to_file, STATS, dump, OUT_PATH, counter, '\0');
     system(command);
 
-    FILE* f = fopen("temp/stats", "r");
-    assert(f != NULL);
+    FILE* f = fopen(STATS, "r");
     char* line = NULL;
     size_t size = 32;
     getline(&line, &size, f);
@@ -96,14 +91,21 @@ ir_stats_t* get_ir_stats(char* path_to_file, int dump) {
 
     counter++;
     return stats;
-
 }
 
 void finish() {
     log_text("\n\n______________________________\n\n");
     log_text("No further reduction possible.\n\n");
     log_text("Result:\n");
-    log_stats(get_ir_stats("temp/curr.ir", 1));   
+    log_stats(get_ir_stats(CURRENT_VARIANT, 1));   
+
+    char move_result[strlen(OUT_PATH) + strlen(CURRENT_VARIANT) + 15];
+    sprintf(move_result, "cp %s %s/result.ir%c", CURRENT_VARIANT, OUT_PATH, '\0');
+    system(move_result);
+
+    //TODO: delete temp dir
+
+    printf(":: Reduction finished -- Results dumped in %s\n", OUT_PATH);
 }
 
 void init(char* rep_path, char* reprod_args, char* ir_path) {
@@ -111,7 +113,7 @@ void init(char* rep_path, char* reprod_args, char* ir_path) {
     init_temp_dirs(ir_path);
     init_logging(OUT_PATH);
     init_passes_dynamic();
-    log_stats(get_ir_stats("temp/curr.ir", 1));
+    log_stats(get_ir_stats(CURRENT_VARIANT, 1));
 }
 
 //execute shell script
@@ -126,28 +128,14 @@ int is_reproducer() {
     return result;
 }
 
-/**
- * function handles all interaction w/ libstats object
- */
 int has_improved() {
 
-    char* replace = "mv temp/temp.ir temp/curr.ir";
+    ir_stats_t* old = get_ir_stats(CURRENT_VARIANT, 0);
+    ir_stats_t* new = get_ir_stats(TEMP_VARIANT, 0);
 
-    ir_stats_t* old = get_ir_stats("temp/curr.ir", 0);
-    ir_stats_t* new = get_ir_stats("temp/temp.ir", 0);
-
-    int changed = (old->node_n != new->node_n
+    return (old->node_n != new->node_n
                || old->mem_node_n != new->mem_node_n 
-               || old->cf_manips != new->cf_manips
-               || old->type_n != new->type_n
-               || old->type_n != new->type_n) ? 1 : 0;
-    
-    if (changed) {
-        log_text("Improved variant found:\n");
-        log_stats(new);
-        system(replace);
-    }
-    return changed;
+               || old->cf_manips != new->cf_manips);
 }
 
 void reduce() {
@@ -165,19 +153,34 @@ void reduce() {
     int fixpoint = 0;
     int next_pass = 0;
 
+    printf(":: Start reduction\n");
+
     while(!fixpoint) {
-        int result = apply_pass(next_pass);
-        next_pass = (next_pass + 1) % PASSES_N;
-        printf(".");
-        if(result == 256) {
-          pass_failed++;
-          continue;
-        }
-        if(!has_improved() || !is_reproducer()) no_improvement++;
 
         if(no_improvement >= PASSES_N || pass_failed >= PASSES_N) {
             fixpoint = 1;
+            continue;
         }
+
+        int result = apply_pass(next_pass);
+        next_pass = (next_pass + 1) % PASSES_N;
+        printf(". ");
+        if(!(result == 0 || result == 1)) {
+          pass_failed++;
+          continue;
+        }
+        if(!has_improved() || !is_reproducer()) {
+            no_improvement++;
+            continue;
+        } 
+
+        // we found a new smaller variant -- set as current
+        char replace[strlen(CURRENT_VARIANT) + strlen(TEMP_VARIANT) + 5];
+        sprintf(replace, "cp %s %s%c", TEMP_VARIANT, CURRENT_VARIANT, '\0');
+        system(replace);
+        // reset counters
+        no_improvement = 0;
+        pass_failed = 0;
     }
     printf("\n");
 }
@@ -212,7 +215,6 @@ int main(int argc, char** argv) {
                 exit(1);
         }
     }
-    if (reprod_args == NULL) reprod_args = "";
 
     if(argv[optind] == NULL || argv[optind + 1] == NULL || argv[optind + 2] != NULL) {
         fprintf(stderr, "Received unexpected number of arguments\n");
