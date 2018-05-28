@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <libgen.h>
 #include <dlfcn.h>
+#include <time.h>
 
 #include "logging.h"
 
@@ -29,11 +30,13 @@ void init_logging(char* out_path) {
     
     int i = 0;
     char* file_path = NULL;
+
+    // increase counter on Reductionx.log, until we find filename, that is not taken yet
     do {
         if(file_path != NULL) free(file_path);
         file_path = malloc(sizeof(out_path) + 15 + (i / 10));
         if (i > 0) {
-            sprintf(file_path, "%sReduction%d.log%c", out_path,i , '\0');
+            sprintf(file_path, "%sReduction%d.log%c", out_path, i , '\0');
         } else {
             sprintf(file_path, "%sReduction.log%c", out_path, '\0');
         }
@@ -49,6 +52,14 @@ void init_logging(char* out_path) {
         fprintf(stderr, "Couldn't create log-file");
         exit(1);
     }
+
+    char buff[20];
+    struct tm* time_;
+    time_t now = time(0);
+    time_ = gmtime(&now);
+
+    strftime (buff, sizeof(buff), "%Y-%m-%d %H:%M:%S", time_);
+    fprintf (log_file, "%s -- ", buff);
     fprintf(log_file, "Firmreduce -- Results\n\nInitial Test-case size:\n");
     fclose(log_file);
 }
