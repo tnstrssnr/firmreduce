@@ -58,7 +58,7 @@ void init_passes_dynamic() {
 }
 
 int apply_pass(int i) {
-
+    printf("Applying pass %s\n", passes[i]->path);
     int status = system(passes[i]->path);
     int result = -1;
     if(WIFEXITED(status)) {
@@ -81,5 +81,6 @@ int apply_pass(int i) {
                 log_text("Failed\n");            
                 break;
         }
+    printf("Done\n");
     return result;
 }

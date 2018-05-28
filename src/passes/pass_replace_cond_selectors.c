@@ -10,8 +10,10 @@ int pass_replace_cond_selectors(ir_graph* irg, void* data) {
     container->func = is_Cond;
     collect_nodes(irg, container);
 
-    if (container->nodes_n == 0) return 0;
-
+    if (container->nodes_n == 0) {
+        free(container);
+        return 0;
+    }
     srand(time(NULL));
     ir_node* node = container->nodes[rand() % container->nodes_n];
     ir_tarval* val = rand() % 2 ? get_tarval_b_true() : get_tarval_b_false();

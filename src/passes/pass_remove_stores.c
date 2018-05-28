@@ -10,7 +10,10 @@ int pass_remove_stores(ir_graph* irg, void* data) {
     ir_node_container* container = new_container(is_Store);
     collect_nodes(irg, container);
 
-    if(container->nodes_n == 0) return 0;
+    if(container->nodes_n == 0) {
+        free(container);
+        return 0;
+    }
 
     edges_activate(irg);
 
