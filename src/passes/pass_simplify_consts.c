@@ -7,7 +7,7 @@ int is_Const_non_null(const ir_node* node) {
     return (is_Const(node) && !(tarval_is_null(get_Const_tarval(node))));
 }
 
-int pass_simplify_consts(ir_graph* irg, void* data) {
+int pass_simplify_consts_individual(ir_graph* irg, void* data) {
     ir_node_container* container = new_container(is_Const_non_null);
     collect_nodes(irg, container);
 
@@ -24,10 +24,27 @@ int pass_simplify_consts(ir_graph* irg, void* data) {
     return 1;
 }
 
+int pass_simplify_consts(ir_graph* irg, void* data) {
+    ir_node_container* container = new_container(is_Const_non_null);
+    collect_nodes(irg, container);
+
+    if(container->nodes_n == 0) return 0;
+
+    for(int i = 0; i < container->nodes_n; i++) {
+        ir_node* node = container->nodes[i];
+        ir_tarval* old = get_Const_tarval(node);
+        const ir_mode* mode = get_tarval_mode(old);
+
+        set_Const_tarval(node, get_mode_null(mode));
+    }
+    free(container);
+    return 1;
+}
+
 int main(int argc, char** argv) {
     if (argc > 1) {
         return apply_pass(&pass_simplify_consts);
     } else {
-        return apply_pass_individual(&pass_simplify_consts);
+        return apply_pass(&pass_simplify_consts_individual);
     }
 }

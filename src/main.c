@@ -162,7 +162,7 @@ void reduce() {
     int next_pass = 0;
 
     printf(":: Start reduction\n");
-
+    log_text("\nFirst reduction cycle: \n");
     /*
     * first try being aggressive w/ reductions
     */
@@ -177,7 +177,7 @@ void reduce() {
         next_pass = (next_pass + 1) % PASSES_N;
 
         //printf("Pass result: %d\n", result);
-        if(!(result == 1) || result == 0 || !is_reproducer() || !has_improved()) {
+        if(!(result == 1) || !is_reproducer() || !has_improved()) {
           failed++;
           continue;
         } 
@@ -195,6 +195,7 @@ void reduce() {
     fixpoint = 0;
     next_pass = 0;
 
+    log_text("\n\nSecond reduction cycle: \n");
     /*
     * now apply passes to individual irgs
     */
@@ -209,7 +210,7 @@ void reduce() {
         next_pass = (next_pass + 1) % PASSES_N;
 
         //printf("Pass result: %d\n", result);
-        if(!(result == 1) || result == 0 || !is_reproducer() || !has_improved()) {
+        if(!(result == 1) || !is_reproducer() || !has_improved()) {
           failed++;
           continue;
         } 
