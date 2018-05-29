@@ -31,7 +31,7 @@ void init_reproducer_test(const char* path, const char* reprod_args) {
     }
 
     // We need 4 more characters
-    IS_REPRODUCER_SCRIPT = malloc(strlen(path) + strlen(reprod_args) + 4);
+    IS_REPRODUCER_SCRIPT = malloc(strlen(path) + strlen(reprod_args) + 17);
 
     if (IS_REPRODUCER_SCRIPT == NULL) {
         //malloc failed, deal with it
@@ -105,7 +105,7 @@ void finish() {
 
     //TODO: delete temp dir
 
-    printf(":: Reduction finished -- Results dumped in %s\n", OUT_PATH);
+    printf("\n:: Reduction finished -- Results dumped in %s\n", OUT_PATH);
 }
 
 void init(char* rep_path, char* reprod_args, char* ir_path) {
@@ -124,8 +124,17 @@ int is_reproducer() {
         exit(1);
     }
     char result = fgetc(f);
+    int int_result = atoi(&result);
     fclose(f);
-    return result;
+    
+    log_text(" -- Reproducer Test: ");
+    if(int_result) {
+        log_text("Successful");
+    } else {
+        log_text("Failed");
+    }
+
+    return int_result;
 }
 
 int has_improved() {
@@ -148,41 +157,71 @@ void reduce() {
      * repeat until full iteraton w/o improvement
      */
 
-    int no_improvement = 0;
-    int pass_failed = 0;
+    int failed = 0;
     int fixpoint = 0;
     int next_pass = 0;
 
     printf(":: Start reduction\n");
 
+    /*
+    * first try being aggressive w/ reductions
+    */
     while(!fixpoint) {
-
-        if(no_improvement >= PASSES_N || pass_failed >= PASSES_N) {
+        printf(". ");
+        if(failed >= 5*PASSES_N) {
             fixpoint = 1;
             continue;
         }
 
-        int result = apply_pass(next_pass);
+        int result = apply_pass(next_pass, 0);
         next_pass = (next_pass + 1) % PASSES_N;
-        printf(". ");
-        if(!(result == 0 || result == 1)) {
-          pass_failed++;
+
+        //printf("Pass result: %d\n", result);
+        if(!(result == 1) || result == 0 || !is_reproducer() || !has_improved()) {
+          failed++;
           continue;
-        }
-        if(!has_improved() || !is_reproducer()) {
-            no_improvement++;
-            continue;
         } 
 
         // we found a new smaller variant -- set as current
         char replace[strlen(CURRENT_VARIANT) + strlen(TEMP_VARIANT) + 5];
         sprintf(replace, "cp %s %s%c", TEMP_VARIANT, CURRENT_VARIANT, '\0');
         system(replace);
+
         // reset counters
-        no_improvement = 0;
-        pass_failed = 0;
+        failed = 0;
     }
-    printf("\n");
+
+    failed = 0;
+    fixpoint = 0;
+    next_pass = 0;
+
+    /*
+    * now apply passes to individual irgs
+    */
+    while(!fixpoint) {
+        printf(". ");
+        if(failed >= 5*PASSES_N) {
+            fixpoint = 1;
+            continue;
+        }
+
+        int result = apply_pass(next_pass, 1);
+        next_pass = (next_pass + 1) % PASSES_N;
+
+        //printf("Pass result: %d\n", result);
+        if(!(result == 1) || result == 0 || !is_reproducer() || !has_improved()) {
+          failed++;
+          continue;
+        } 
+
+        // we found a new smaller variant -- set as current
+        char replace[strlen(CURRENT_VARIANT) + strlen(TEMP_VARIANT) + 5];
+        sprintf(replace, "cp %s %s%c", TEMP_VARIANT, CURRENT_VARIANT, '\0');
+        system(replace);
+
+        // reset counters
+        failed = 0;
+    }
 }
 
 int main(int argc, char** argv) {

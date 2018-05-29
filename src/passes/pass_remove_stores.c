@@ -36,5 +36,10 @@ int pass_remove_stores(ir_graph* irg, void* data) {
 }
 
 int main(int argc, char** argv) {
-    return apply_pass(&pass_remove_stores);
+    if (argc > 1) {
+        return apply_pass(&pass_remove_stores);
+    } else {
+        return apply_pass_individual(&pass_remove_stores);
+    }
+    
 }

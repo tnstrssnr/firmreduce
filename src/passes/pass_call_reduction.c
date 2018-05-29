@@ -44,6 +44,9 @@ int pass_call_reduction(ir_graph* irg, void* data) {
 }
 
 int main(int argc, char** argv) {
-    int result = apply_pass(&pass_call_reduction);
-    return result;
+    if (argc > 1) {
+        return apply_pass(&pass_call_reduction);
+    } else {
+        return apply_pass_individual(&pass_call_reduction);
+    }
 }

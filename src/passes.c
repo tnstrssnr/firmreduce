@@ -57,30 +57,53 @@ void init_passes_dynamic() {
     printf(":: %d passes found\n", PASSES_N);
 }
 
-int apply_pass(int i) {
-    printf("Applying pass %s\n", passes[i]->path);
-    int status = system(passes[i]->path);
-    int result = -1;
-    if(WIFEXITED(status)) {
-        result = WEXITSTATUS(status);
-    } 
+int apply_pass(int i, int individual) {
 
-    log_text("Applying pass: ");
+    char* path;
+    int status;
+    int result;
+
+    if(!individual) {
+        path = malloc(200);
+        sprintf(path, "%s x%c", passes[i]->path, '\0');
+
+        status = system(path);      
+        result = -1;
+        
+        if(WIFEXITED(status)) {
+            result = WEXITSTATUS(status);
+        }
+    } else {
+        path = malloc(200);
+        sprintf(path, "%s%c", passes[i]->path, '\0');
+
+        status = system(path);
+        result = -1;
+        
+        if(WIFEXITED(status)) {
+            result = WEXITSTATUS(status);
+        }
+    }
+    //printf("Applying pass %s\n", passes[i]->path);
+    
+    //printf("Received result from pass: %d\n", result); 
+    log_text("\nApplying pass: ");
     PASSES_APPLIED++;
         log_text(passes[i]->ident);
         log_text(" -- ");
         switch(result) {
             case 0:
-                log_text("No improvement\n");
+                log_text("No improvement");
                 PASSES_APPLIED++;
                 break;
             case 1:
-                log_text("Successful\n");
+                log_text("Successful");
                 break;
             default:
-                log_text("Failed\n");            
+                log_text("Failed");            
                 break;
         }
-    printf("Done\n");
+    free(path);
+    //printf("Done\n");
     return result;
 }

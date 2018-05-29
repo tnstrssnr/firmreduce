@@ -28,6 +28,10 @@ int pass_replace_cond_selectors(ir_graph* irg, void* data) {
 }
 
 int main(int argc, char** argv) {
-    return apply_pass(&pass_replace_cond_selectors);
+    if (argc > 1) {
+        return apply_pass(&pass_replace_cond_selectors);
+    } else {
+        return apply_pass_individual(&pass_replace_cond_selectors);
+    }
 }
 

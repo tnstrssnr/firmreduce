@@ -13,6 +13,6 @@ typedef struct pass_t {
 
 pass_t** passes; // array containing all available passes
 void init_passes_dynamic();
-int apply_pass(int i);
+int apply_pass(int i, int individual);
 
 #endif

@@ -25,5 +25,9 @@ int pass_simplify_consts(ir_graph* irg, void* data) {
 }
 
 int main(int argc, char** argv) {
-    return apply_pass(&pass_simplify_consts);
+    if (argc > 1) {
+        return apply_pass(&pass_simplify_consts);
+    } else {
+        return apply_pass_individual(&pass_simplify_consts);
+    }
 }

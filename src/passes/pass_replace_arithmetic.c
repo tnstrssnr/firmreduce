@@ -33,5 +33,9 @@ int pass_replace_arithmetic(ir_graph* irg, void* data) {
 }
 
 int main(int argc, char** argv) {
-    return apply_pass(&pass_replace_arithmetic);
+    if (argc > 1) {
+        return apply_pass(&pass_replace_arithmetic);
+    } else {
+        return apply_pass_individual(&pass_replace_arithmetic);
+    }
 }

@@ -68,9 +68,9 @@ makedir:
 libstats: makedir $(libfirm_STATIC)
 	@$(CC) -o $(libstats_TARGET) $(libstats_SRC) $(libstats_INCLUDE_FLAGS) $(libfirm_INCLUDE_FLAGS) $(libfirm_STATIC_PATH) -Wl,-rpath=$(libfirm_DYNAMIC_PATH) -lfirm -ldl
 
-$(firmreduce_TARGET): $(firmreduce_SOURCES) 
+$(firmreduce_TARGET): $(firmreduce_SOURCES)
 	@echo Build firmreduce
-	@$(CC) $(CFLAGS) -o $@ $(firmreduce_SOURCES) $(firmreduce_INCLUDE_FLAGS) $(libfirm_INCLUDE_FLAGS) $(libfirm_STATIC_PATH) -Wl,-rpath=$(libfirm_DYNAMIC_PATH) -lfirm -ldl
+	@$(CC) $(CFLAGS) -o $@ $(firmreduce_SOURCES) $(firmreduce_INCLUDE_FLAGS) -ldl
 
 $(libfirm_STATIC):
 	@cd libfirm && make

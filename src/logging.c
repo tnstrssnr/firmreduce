@@ -19,11 +19,10 @@ void log_text(char* text) {
 }
 
 void log_stats(ir_stats_t* stats) {
-    char text[128];
+    char text[128]; // TODO: make sure buff size is big enough
     sprintf(text, "\t# of nodes: \t\t\t%d\n\t# of irgs: \t\t\t\t%d\n\t# of cf manipulations: \t%d\n\t# of memory operations: %d\n\t# of types: \t\t\t%d\n\n%c",
          stats->node_n, stats->irg_n, stats->cf_manips, stats->mem_node_n, stats->type_n, '\0');
     log_text(text);
-    
 }
 
 void init_logging(char* out_path) {
