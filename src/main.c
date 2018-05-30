@@ -78,6 +78,7 @@ ir_stats_t* get_ir_stats(char* path_to_file, int dump) {
     sprintf(command, "%s %s %s %d %s %d%c", LIBSTATS_PATH, path_to_file, STATS, dump, OUT_PATH, counter, '\0');
     system(command);
 
+    // read the stats from the output file
     FILE* f = fopen(STATS, "r");
     char* line = NULL;
     size_t size = 32;
@@ -147,7 +148,60 @@ int has_improved() {
                || old->cf_manips != new->cf_manips);
 }
 
-void reduce() {
+void reduce_irg_level() {
+
+    /**
+     * Greedy search of new variants:
+     * loop through passes, check if we get a 'better' variant of the irp
+     *     if yes: save as current variant
+     *     if no: discard
+     * repeat until full iteraton w/o improvement
+     */
+
+    int failed = 0;
+    int fixpoint = 0;
+
+    int irg_n = (get_ir_stats(CURRENT_VARIANT, 0))->irg_n;
+
+    printf(":: Start reduction on irg level\n");
+    log_text("\nFirst reduction cycle: \n");
+    /*
+    * first try being aggressive w/ reductions
+    */
+    while(!fixpoint) {
+        printf(". ");
+        if(failed >= PASSES_N) {
+            fixpoint = 1;
+            continue;
+        }
+
+        int total_result; // indicates whether pass application was successful for at least 1 irg in the irp
+        for(int j = 0; j < PASSES_N; j++) {
+            total_result = 0;
+            int result;
+            for(int i = 0; i < irg_n; i++) {
+                result = apply_pass(j, i); // apply pass j to irg i
+                total_result = (total_result == 1) ? 1  : result;
+
+                if(!(result == 1) || !is_reproducer() || !has_improved()) {
+                    continue;
+                }
+
+                // we found a new smaller variant -- set as current
+                char replace[strlen(CURRENT_VARIANT) + strlen(TEMP_VARIANT) + 5];
+                sprintf(replace, "cp %s %s%c", TEMP_VARIANT, CURRENT_VARIANT, '\0');
+                system(replace);
+            }
+            if (total_result != 1) {
+                failed++;
+                continue;
+            }
+            failed = 0;
+        }
+    }
+}
+
+void reduce_node_level() {
 
     /**
      * Greedy search of new variants:
@@ -161,52 +215,19 @@ void reduce() {
     int fixpoint = 0;
     int next_pass = 0;
 
-    printf(":: Start reduction\n");
-    log_text("\nFirst reduction cycle: \n");
-    /*
-    * first try being aggressive w/ reductions
-    */
-    while(!fixpoint) {
-        printf(". ");
-        if(failed >= 5*PASSES_N) {
-            fixpoint = 1;
-            continue;
-        }
-
-        int result = apply_pass(next_pass, 0);
-        next_pass = (next_pass + 1) % PASSES_N;
-
-        //printf("Pass result: %d\n", result);
-        if(!(result == 1) || !is_reproducer() || !has_improved()) {
-          failed++;
-          continue;
-        } 
-
-        // we found a new smaller variant -- set as current
-        char replace[strlen(CURRENT_VARIANT) + strlen(TEMP_VARIANT) + 5];
-        sprintf(replace, "cp %s %s%c", TEMP_VARIANT, CURRENT_VARIANT, '\0');
-        system(replace);
-
-        // reset counters
-        failed = 0;
-    }
-
-    failed = 0;
-    fixpoint = 0;
-    next_pass = 0;
-
+    printf(":: Start reduction on node level\n");
     log_text("\n\nSecond reduction cycle: \n");
     /*
     * now apply passes to individual irgs
     */
     while(!fixpoint) {
         printf(". ");
-        if(failed >= 5*PASSES_N) {
+        if(failed >= 5*PASSES_N) { // TODO: when is it best to terminate loop ?
             fixpoint = 1;
             continue;
         }
 
-        int result = apply_pass(next_pass, 1);
+        int result = apply_pass(next_pass, -1); // -1 --> pass will choose a random irg
         next_pass = (next_pass + 1) % PASSES_N;
 
         //printf("Pass result: %d\n", result);
@@ -262,6 +283,7 @@ int main(int argc, char** argv) {
     } else {
         init(argv[optind], reprod_args, argv[optind + 1]);
     }
-    reduce();
+    reduce_irg_level();
+    reduce_node_level();
     finish();
 }

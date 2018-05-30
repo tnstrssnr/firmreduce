@@ -51,18 +51,18 @@ int  is_valid() {
  * 
  * (assumes that pass_func doesn't need additional data)
  */
-int apply_pass(pass_func* func) {
-    // init library load current irp
+int apply_pass(pass_func* func, int idx) {
+    // init library, load current irp
     ir_init();
     if(ir_import(CURR_IR)) {
         fprintf(stderr, "Error while reading test-case file\n");
         return -1;
     }
 
-    // apply pass
+    // if no idx is given (-1), choose one at random
     srand(time(NULL));
-    int graph = rand() % get_irp_n_irgs();
-    ir_graph* irg = get_irp_irg(graph);
+    int irg_idx = (idx == -1) ? (rand() % get_irp_n_irgs()) : idx;
+    ir_graph* irg = get_irp_irg(irg_idx);
     int improvement = (func)(irg, NULL);
 
     // apply optimizations
@@ -98,7 +98,5 @@ int apply_pass(pass_func* func) {
     }
 
     ir_finish();
-    //printf("Pass return value: %d\n", improvement);
     return improvement;
-
 }

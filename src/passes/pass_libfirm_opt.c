@@ -1,5 +1,6 @@
 #include <libfirm/firm.h>
 #include <pass_utils.h>
+#include <stdlib.h>
 /**
  * applies a bunch of Firm optimizations
  */
@@ -31,5 +32,9 @@ int pass_libfirm_opt(ir_graph* irg, void* data) {
 }
 
 int main(int argc, char** argv) {
-    return apply_pass(&pass_libfirm_opt);
+    if(atoi(argv[1]) != -1) {
+        return apply_pass(&pass_libfirm_opt, atoi(argv[1]));
+    } else {
+        return apply_pass(&pass_libfirm_opt, -1);
+    }
 }

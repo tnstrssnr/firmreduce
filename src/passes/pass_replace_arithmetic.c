@@ -59,9 +59,9 @@ int pass_replace_arithmetic(ir_graph* irg, void* data) {
 }
 
 int main(int argc, char** argv) {
-    if (argc > 1) {
-        return apply_pass(&pass_replace_arithmetic);
+    if(atoi(argv[1]) != -1) {
+        return apply_pass(&pass_replace_arithmetic, atoi(argv[1]));
     } else {
-        return apply_pass(&pass_replace_arithmetic_individual);
+        return apply_pass(&pass_replace_arithmetic_individual, -1);
     }
 }

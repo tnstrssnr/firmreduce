@@ -57,33 +57,23 @@ void init_passes_dynamic() {
     printf(":: %d passes found\n", PASSES_N);
 }
 
-int apply_pass(int i, int individual) {
+int apply_pass(int i, int arg) {
 
     char* path;
     int status;
     int result;
 
-    if(!individual) {
-        path = malloc(200);
-        sprintf(path, "%s x%c", passes[i]->path, '\0');
+    
+    path = malloc(200);
+    sprintf(path, "%s %d%c", passes[i]->path, arg, '\0');
 
-        status = system(path);      
-        result = -1;
-        
-        if(WIFEXITED(status)) {
-            result = WEXITSTATUS(status);
-        }
-    } else {
-        path = malloc(200);
-        sprintf(path, "%s%c", passes[i]->path, '\0');
-
-        status = system(path);
-        result = -1;
-        
-        if(WIFEXITED(status)) {
-            result = WEXITSTATUS(status);
-        }
+    status = system(path);      
+    result = -1;
+    
+    if(WIFEXITED(status)) {
+        result = WEXITSTATUS(status);
     }
+    
     //printf("Applying pass %s\n", passes[i]->path);
     
     //printf("Received result from pass: %d\n", result); 

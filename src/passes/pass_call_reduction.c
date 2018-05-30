@@ -14,6 +14,9 @@ int is_Call_void(const ir_node* node) {
 
 }
 
+/**
+ * Chooses random node in random irg and applies pass to this node
+ */
 int pass_call_reduction_individual(ir_graph* irg, void* data) {
 
     edges_activate(irg);
@@ -43,6 +46,9 @@ int pass_call_reduction_individual(ir_graph* irg, void* data) {
     return 1;
 }
 
+/**
+ * Applies pass to all relevant nodes in the irg
+ */
 int pass_call_reduction(ir_graph* irg, void* data) {
 
     edges_activate(irg);
@@ -72,9 +78,9 @@ int pass_call_reduction(ir_graph* irg, void* data) {
 }
 
 int main(int argc, char** argv) {
-    if (argc > 1) {
-        return apply_pass(&pass_call_reduction);
+    if(atoi(argv[1]) != -1) {
+        return apply_pass(&pass_call_reduction, atoi(argv[1]));
     } else {
-        return apply_pass(&pass_call_reduction_individual);
+        return apply_pass(&pass_call_reduction_individual, -1);
     }
 }
