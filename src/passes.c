@@ -57,13 +57,12 @@ void init_passes_dynamic() {
     printf(":: %d passes found\n", PASSES_N);
 }
 
-int apply_pass(int i, int arg) {
+int apply_pass(int i, int arg, char* ident) {
 
     char* path;
     int status;
     int result;
 
-    
     path = malloc(200);
     sprintf(path, "%s %d%c", passes[i]->path, arg, '\0');
 
@@ -74,10 +73,10 @@ int apply_pass(int i, int arg) {
         result = WEXITSTATUS(status);
     }
     
-    //printf("Applying pass %s\n", passes[i]->path);
-    
-    //printf("Received result from pass: %d\n", result); 
-    log_text("\nApplying pass: ");
+    char log_irg[strlen("\nModifying irg \'\'  ") + strlen(ident) + 2];
+    sprintf(log_irg, "\nModifying irg \'%s\'%c", ident, '\0');
+    log_text(log_irg);
+    log_text(" -- Applying pass: ");
     PASSES_APPLIED++;
         log_text(passes[i]->ident);
         log_text(" -- ");
@@ -94,6 +93,5 @@ int apply_pass(int i, int arg) {
                 break;
         }
     free(path);
-    //printf("Done\n");
     return result;
 }

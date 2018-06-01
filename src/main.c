@@ -81,7 +81,7 @@ ir_stats_t* get_ir_stats(char* path_to_file, int dump) {
     // read the stats from the output file
     FILE* f = fopen(STATS, "r");
     char* line = NULL;
-    size_t size = 32;
+    size_t size = 0;
     getline(&line, &size, f);
 
     stats->node_n = atoi(strtok(line, " "));
@@ -89,6 +89,13 @@ ir_stats_t* get_ir_stats(char* path_to_file, int dump) {
     stats->cf_manips = atoi(strtok(NULL, " "));
     stats->type_n = atoi(strtok(NULL, " "));
     stats->irg_n = atoi(strtok(NULL, " "));
+
+    stats->irg_ids = malloc(sizeof(char*)*stats->irg_n);
+    getline(&line, &size, f);
+    stats->irg_ids[0] = strtok(line, " ");
+    for(int i = 0; i < stats->irg_n; i++) {
+        stats->irg_ids[i] = strtok(NULL ," ");
+    }
 
     counter++;
     return stats;
@@ -160,7 +167,9 @@ void reduce_irg_level() {
 
     int failed = 0;
     int fixpoint = 0;
-    int irg_n = (get_ir_stats(CURRENT_VARIANT, 0))->irg_n;
+    ir_stats_t* stats = get_ir_stats(CURRENT_VARIANT, 0);
+    int irg_n = stats->irg_n;
+    char** ids = stats->irg_ids;
 
     printf(":: Start reduction on irg level\n");
     log_text("\nFirst reduction cycle: \n");
@@ -180,7 +189,7 @@ void reduce_irg_level() {
             total_result = 0;
             int result;
             for(int i = 0; i < irg_n; i++) {
-                result = apply_pass(j, i); // apply pass j to irg i
+                result = apply_pass(j, i, ids[i]); // apply pass j to irg i
                 if(!(result == 1) || !is_reproducer() || !has_improved()) {
                     result = 0;
                 } else {
@@ -222,7 +231,7 @@ void reduce_node_level() {
             continue;
         }
 
-        int result = apply_pass(next_pass, -1); // -1 --> pass will choose a random irg
+        int result = apply_pass(next_pass, -1, ""); // -1 --> pass will choose a random irg
         next_pass = (next_pass + 1) % PASSES_N;
 
         //printf("Pass result: %d\n", result);

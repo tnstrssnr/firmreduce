@@ -59,12 +59,14 @@ int main(int argc, char** argv) {
             dump_ir_graph(get_irp_irg(i), argv[5]);
         }
     }
-
-    ir_finish();
     
     FILE* f = fopen(argv[2], "w+");
     fprintf(f, "%d %d %d %d %d\n", stats->node_n, stats->mem_node_n, stats->cf_manips, stats->type_n, stats->irg_n);
+    for(int i = 0; i < get_irp_n_irgs(); i++) {
+        fprintf(f, "%s ", get_id_str(get_entity_ident(get_irg_entity(get_irp_irg(i)))));
+    }
+    fprintf(f, "\n");
     fclose(f);
-
+    ir_finish();
     return 0;
 }
