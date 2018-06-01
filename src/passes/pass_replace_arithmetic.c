@@ -7,7 +7,7 @@
 
 int is_arithmetic(const ir_node* node) {
     return (is_Add(node) || is_Mul(node) || is_Mulh(node) || is_Div(node) || is_Sub(node)
-    || is_Shl(node) || is_Shr(node) || is_Shrs(node));
+    || is_Shl(node) || is_Shr(node) || is_Shrs(node) || is_Mod(node));
 }
 
 int pass_replace_arithmetic_individual(ir_graph* irg, void* data) {
