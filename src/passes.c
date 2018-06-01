@@ -73,10 +73,14 @@ int apply_pass(int i, int arg, char* ident) {
         result = WEXITSTATUS(status);
     }
     
-    char log_irg[strlen("\nModifying irg \'\'  ") + strlen(ident) + 2];
-    sprintf(log_irg, "\nModifying irg \'%s\'%c", ident, '\0');
-    log_text(log_irg);
-    log_text(" -- Applying pass: ");
+    log_text("\n");
+    if(arg != -1) {
+        char log_irg[strlen("Modifying irg \'\'  ") + strlen(ident) + 2];
+        sprintf(log_irg, "Modifying irg \'%s\'%c", ident, '\0');
+        log_text(log_irg);
+        log_text(" -- ");
+    }
+    log_text("Applying pass: ");
     PASSES_APPLIED++;
         log_text(passes[i]->ident);
         log_text(" -- ");

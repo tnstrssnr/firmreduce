@@ -93,7 +93,7 @@ ir_stats_t* get_ir_stats(char* path_to_file, int dump) {
     stats->irg_ids = malloc(sizeof(char*)*stats->irg_n);
     getline(&line, &size, f);
     stats->irg_ids[0] = strtok(line, " ");
-    for(int i = 0; i < stats->irg_n; i++) {
+    for(int i = 1; i < stats->irg_n; i++) {
         stats->irg_ids[i] = strtok(NULL ," ");
     }
 
