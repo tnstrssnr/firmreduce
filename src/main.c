@@ -160,7 +160,6 @@ void reduce_irg_level() {
 
     int failed = 0;
     int fixpoint = 0;
-
     int irg_n = (get_ir_stats(CURRENT_VARIANT, 0))->irg_n;
 
     printf(":: Start reduction on irg level\n");
@@ -170,33 +169,29 @@ void reduce_irg_level() {
     */
     while(!fixpoint) {
         printf(". ");
-        if(failed >= PASSES_N) {
-            fixpoint = 1;
-            continue;
-        }
 
         int total_result; // indicates whether pass application was successful for at least 1 irg in the irp
         for(int j = 0; j < PASSES_N; j++) {
+            if(failed >= PASSES_N) {
+            fixpoint = 1;
+            break;
+            }
+
             total_result = 0;
             int result;
             for(int i = 0; i < irg_n; i++) {
                 result = apply_pass(j, i); // apply pass j to irg i
-                total_result = (total_result == 1) ? 1  : result;
-
                 if(!(result == 1) || !is_reproducer() || !has_improved()) {
-                    continue;
+                    result = 0;
+                } else {
+                    // we found a new smaller variant -- set as current
+                    char replace[strlen(CURRENT_VARIANT) + strlen(TEMP_VARIANT) + 5];
+                    sprintf(replace, "cp %s %s%c", TEMP_VARIANT, CURRENT_VARIANT, '\0');
+                    system(replace);
                 }
-
-                // we found a new smaller variant -- set as current
-                char replace[strlen(CURRENT_VARIANT) + strlen(TEMP_VARIANT) + 5];
-                sprintf(replace, "cp %s %s%c", TEMP_VARIANT, CURRENT_VARIANT, '\0');
-                system(replace);
+                total_result = (total_result) ? 1  : result;      
             }
-            if (total_result != 1) {
-                failed++;
-                continue;
-            }
-            failed = 0;
+            failed = (total_result == 1) ? 0 : failed + 1;
         }
     }
 }

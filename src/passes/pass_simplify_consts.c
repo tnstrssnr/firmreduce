@@ -10,6 +10,7 @@ int is_Const_non_null(const ir_node* node) {
 int pass_simplify_consts_individual(ir_graph* irg, void* data) {
     ir_node_container* container = new_container(is_Const_non_null);
     collect_nodes(irg, container);
+    printf("Relevant nodes: %d\n", container->nodes_n);
 
     if(container->nodes_n == 0) return 0;
 
