@@ -51,10 +51,10 @@ int  is_valid() {
  * 
  * (assumes that pass_func doesn't need additional data)
  */
-int apply_pass(pass_func* func, int idx) {
+int apply_pass(char* path, pass_func* func, int idx) {
     // init library, load current irp
     ir_init();
-    if(ir_import(CURR_IR)) {
+    if(ir_import(path)) {
         fprintf(stderr, "Error while reading test-case file\n");
         return -1;
     }

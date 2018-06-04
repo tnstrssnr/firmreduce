@@ -78,9 +78,13 @@ int pass_call_reduction(ir_graph* irg, void* data) {
 }
 
 int main(int argc, char** argv) {
+    if(argc != 3) {
+        return -1;
+    }
+
     if(atoi(argv[1]) != -1) {
-        return apply_pass(&pass_call_reduction, atoi(argv[1]));
+        return apply_pass(argv[1], &pass_call_reduction, atoi(argv[2]));
     } else {
-        return apply_pass(&pass_call_reduction_individual, -1);
+        return apply_pass(argv[1], &pass_call_reduction_individual, -1);
     }
 }

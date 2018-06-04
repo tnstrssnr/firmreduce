@@ -114,6 +114,9 @@ void finish() {
     //TODO: delete temp dir
 
     printf("\n:: Reduction finished -- Results dumped in %s\n", OUT_PATH);
+
+    free(IS_REPRODUCER_SCRIPT);
+    free(OUT_PATH);
 }
 
 void init(char* rep_path, char* reprod_args, char* ir_path) {
@@ -145,14 +148,58 @@ int is_reproducer() {
     return int_result;
 }
 
-int has_improved() {
+void reduce_irp_level() {
 
-    ir_stats_t* old = get_ir_stats(CURRENT_VARIANT, 0);
-    ir_stats_t* new = get_ir_stats(TEMP_VARIANT, 0);
+    /**
+     * Greedy search of new variants:
+     * loop through passes, check if we get a 'better' variant of the irp
+     *     if yes: save as current variant
+     *     if no: discard
+     * repeat until full iteraton w/o improvement
+     */
 
-    return (old->node_n != new->node_n
-               || old->mem_node_n != new->mem_node_n 
-               || old->cf_manips != new->cf_manips);
+    int failed = 0;
+    int fixpoint = 0;
+    ir_stats_t* stats = get_ir_stats(CURRENT_VARIANT, 0);
+    int irg_n = stats->irg_n;
+    char** ids = stats->irg_ids;
+
+    printf(":: Start reduction on irp level\n");
+    log_text("\nFirst reduction cycle: \n");
+    /*
+    * first try being aggressive w/ reductions
+    */
+    while(!fixpoint) {
+        printf(". ");
+
+        int total_result;
+        int result;
+        for(int i = 0; i < irg_n; i++) {
+
+            if(failed >= irg_n) {
+                fixpoint = 1;
+                break;
+            }
+
+            total_result = 0;
+            system("cp temp/curr.ir temp/temp.ir"); 
+            for(int j = 0; j < PASSES_N; j++) {
+                result = apply_pass(TEMP_VARIANT, j, i, ids[i]);
+                total_result = (total_result == 1) ? 1 : result;
+            }
+
+            if(total_result != 1 || !is_reproducer()) {
+                failed++;
+                continue;
+            }
+            failed = 0;
+            char replace[strlen(CURRENT_VARIANT) + strlen(TEMP_VARIANT) + 5];
+            sprintf(replace, "cp %s %s%c", TEMP_VARIANT, CURRENT_VARIANT, '\0');
+            system(replace);
+        }
+    }
+    free(stats->irg_ids);
+    free(stats);
 }
 
 void reduce_irg_level() {
@@ -172,7 +219,7 @@ void reduce_irg_level() {
     char** ids = stats->irg_ids;
 
     printf(":: Start reduction on irg level\n");
-    log_text("\nFirst reduction cycle: \n");
+    log_text("\nSecond reduction cycle: \n");
     /*
     * first try being aggressive w/ reductions
     */
@@ -189,8 +236,8 @@ void reduce_irg_level() {
             total_result = 0;
             int result;
             for(int i = 0; i < irg_n; i++) {
-                result = apply_pass(j, i, ids[i]); // apply pass j to irg i
-                if(!(result == 1) || !is_reproducer() || !has_improved()) {
+                result = apply_pass(CURRENT_VARIANT, j, i, ids[i]); // apply pass j to irg i
+                if(!(result == 1) || !is_reproducer()) {
                     result = 0;
                 } else {
                     // we found a new smaller variant -- set as current
@@ -203,6 +250,8 @@ void reduce_irg_level() {
             failed = (total_result == 1) ? 0 : failed + 1;
         }
     }
+    free(stats->irg_ids);
+    free(stats);
 }
 
 void reduce_node_level() {
@@ -220,7 +269,7 @@ void reduce_node_level() {
     int next_pass = 0;
 
     printf(":: Start reduction on node level\n");
-    log_text("\n\nSecond reduction cycle: \n");
+    log_text("\n\nThird reduction cycle: \n");
     /*
     * now apply passes to individual irgs
     */
@@ -231,11 +280,11 @@ void reduce_node_level() {
             continue;
         }
 
-        int result = apply_pass(next_pass, -1, ""); // -1 --> pass will choose a random irg
+        int result = apply_pass(CURRENT_VARIANT, next_pass, -1, ""); // -1 --> pass will choose a random irg
         next_pass = (next_pass + 1) % PASSES_N;
 
         //printf("Pass result: %d\n", result);
-        if(!(result == 1) || !is_reproducer() || !has_improved()) {
+        if(!(result == 1) || !is_reproducer()) {
           failed++;
           continue;
         } 
@@ -287,6 +336,7 @@ int main(int argc, char** argv) {
     } else {
         init(argv[optind], reprod_args, argv[optind + 1]);
     }
+    reduce_irp_level();
     reduce_irg_level();
     reduce_node_level();
     finish();

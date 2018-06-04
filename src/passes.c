@@ -57,16 +57,23 @@ void init_passes_dynamic() {
     printf(":: %d passes found\n", PASSES_N);
 }
 
-int apply_pass(int i, int arg, char* ident) {
+/**
+ * arguments:
+ * path: path to ir-file that the pass should be applied to
+ * i: index of pass
+ * arg: index of irg to apply the pass to, -1 for random irg
+ * ident: ident of irg
+ */
+int apply_pass(char* path, int i, int arg, char* ident) {
 
-    char* path;
+    char* path_;
     int status;
     int result;
 
-    path = malloc(200);
-    sprintf(path, "%s %d%c", passes[i]->path, arg, '\0');
+    path_ = malloc(300);
+    sprintf(path_, "%s %s %d%c", passes[i]->path, path, arg, '\0');
 
-    status = system(path);      
+    status = system(path_);      
     result = -1;
     
     if(WIFEXITED(status)) {
@@ -96,6 +103,6 @@ int apply_pass(int i, int arg, char* ident) {
                 log_text("Failed");            
                 break;
         }
-    free(path);
+    free(path_);
     return result;
 }

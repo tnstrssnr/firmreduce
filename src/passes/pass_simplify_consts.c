@@ -42,9 +42,13 @@ int pass_simplify_consts(ir_graph* irg, void* data) {
 }
 
 int main(int argc, char** argv) {
+    if(argc != 3) {
+        return -1;
+    }
+
     if(atoi(argv[1]) != -1) {
-        return apply_pass(&pass_simplify_consts, atoi(argv[1]));
+        return apply_pass(argv[1], &pass_simplify_consts, atoi(argv[2]));
     } else {
-        return apply_pass(&pass_simplify_consts_individual, -1);
+        return apply_pass(argv[1], &pass_simplify_consts_individual, -1);
     }
 }

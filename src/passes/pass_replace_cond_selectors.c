@@ -52,10 +52,14 @@ int pass_replace_cond_selectors(ir_graph* irg, void* data) {
 }
 
 int main(int argc, char** argv) {
+    if(argc != 3) {
+        return -1;
+    }
+
     if(atoi(argv[1]) != -1) {
-        return apply_pass(&pass_replace_cond_selectors, atoi(argv[1]));
+        return apply_pass(argv[1], &pass_replace_cond_selectors, atoi(argv[2]));
     } else {
-        return apply_pass(&pass_replace_cond_selectors_individual, -1);
+        return apply_pass(argv[1], &pass_replace_cond_selectors_individual, -1);
     }
 }
 

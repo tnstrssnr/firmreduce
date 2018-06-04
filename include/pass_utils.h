@@ -30,6 +30,6 @@ ir_node_container* new_container(select_func* func);
 
 void collect_nodes(ir_graph* irg, ir_node_container* container);
 
-int apply_pass(pass_func* func, int idx);
+int apply_pass(char* path, pass_func* func, int idx);
 
 #endif
