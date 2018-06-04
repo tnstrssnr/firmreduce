@@ -11,13 +11,14 @@ Clone the repository recursively (to include libfirm. Alternatively place libfir
 
 ## Adding passes
 
-To add a pass put the corresponding .so file in the build/passes/dll directory.
+To add a pass put the corresponding executable file in the build/passes/dll directory.
 
-FirmReduce expects the pass to have a 
-
-    `void $(pass_name)(ir_graph* irg)`
-
-function, where $(pass_name) is the name of the .so file. This function will be called to apply the pass to the irg.
+Firmreduce calls the passes w/ the following arguments:
+ - Path to .ir-file that should be reduced
+ - Index of irg that the pass should be applied to
+ - Indicator variable for reduction granularity:
+    - 0 to reduce more aggressively
+    - 1 to reduce more conservative
 
 Passes can be compiled using make by placing the source files in the src/passes directory and using the target 'make passes' (the target is also included in 'make' command).
 

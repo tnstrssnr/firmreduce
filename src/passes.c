@@ -61,8 +61,8 @@ void init_passes_dynamic() {
  * arguments:
  * path: path to ir-file that the pass should be applied to
  * i: index of pass
- * arg: index of irg to apply the pass to, -1 for random irg
- * ident: ident of irg
+ * arg: index of irg to apply the pass to
+ * reduce_individual: indicator, if pass should be applioed to whole irg or single node
  */
 int apply_pass(char* path, int i, int arg, int reduce_individual) {
 

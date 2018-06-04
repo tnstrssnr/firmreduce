@@ -4,6 +4,10 @@
 #include <time.h>
 #include <pass_utils.h>
 
+/*
+ * Replace all switch selectors w/ Const true or false
+ */
+
 void replace_selector(ir_node* node, ir_graph* irg) {
     srand(time(NULL));
     ir_tarval* val = rand() % 2 ? get_tarval_b_true() : get_tarval_b_false();

@@ -5,6 +5,10 @@
 #include <time.h>
 #include <stdio.h>
 
+/*
+ * Remove all Store nodes
+ */
+
 int pass_remove_stores_individual(ir_graph* irg, void* data) {
 
     ir_node_container* container = new_container(is_Store);

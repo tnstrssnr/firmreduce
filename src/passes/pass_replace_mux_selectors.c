@@ -4,6 +4,9 @@
 #include <time.h>
 #include <pass_utils.h>
 
+/*
+ * Replace all Mux selectors w/ Const true or false
+ */
 int pass_replace_mux_selectors_individual(ir_graph* irg, void* data) {
     
     ir_node_container* container = malloc(sizeof(ir_node_container));

@@ -144,15 +144,13 @@ int is_reproducer() {
     return int_result;
 }
 
+/*
+ * Apply all passes to an irg, then check if we still have a reproducer
+ */
+
 void reduce_irp_level() {
 
-    /**
-     * Greedy search of new variants:
-     * loop through passes, check if we get a 'better' variant of the irp
-     *     if yes: save as current variant
-     *     if no: discard
-     * repeat until full iteraton w/o improvement
-     */
+
 
     int failed = 0;
     int fixpoint = 0;
@@ -160,8 +158,6 @@ void reduce_irp_level() {
     int irg_n = stats->irg_n;
     char** ids = stats->irg_ids;
 
-    printf(":: Start reduction on irp level\n");
-    log_text("\nFirst reduction cycle: IRP Level\n");
     /*
     * first try being aggressive w/ reductions
     */
@@ -202,15 +198,11 @@ void reduce_irp_level() {
     free(stats);
 }
 
+/*
+ * Apply one pass to an irg, then check if we still have a reproducer.
+ * If 'reduce_individual' is set, the pass is only applied to one random node in the irg
+ */
 void reduce_irg_level(int reduce_individual) {
-
-    /**
-     * Greedy search of new variants:
-     * loop through passes, check if we get a 'better' variant of the irp
-     *     if yes: save as current variant
-     *     if no: discard
-     * repeat until full iteraton w/o improvement
-     */
 
     int failed = 0;
     int fixpoint = 0;
@@ -218,8 +210,6 @@ void reduce_irg_level(int reduce_individual) {
     int irg_n = stats->irg_n;
     char** ids = stats->irg_ids;
 
-    printf(":: Start reduction on irg level\n");
-    log_text("\nSecond reduction cycle: IRG Level\n");
     /*
     * first try being aggressive w/ reductions
     */
@@ -271,7 +261,7 @@ int main(int argc, char** argv) {
  *     -o path/to/dir: Expects path to directory, where temp files and reduced test-cases are dumped
  *      If no path is specified, path of input test-case will be used
  * 
- *      -a "args": Arguments that should be passed to reproducer script
+ *      -a "args": Arguments that should be passed to reproducer script. Don't forget to add the ""
  */
 
     char* reprod_args = "";
@@ -298,6 +288,8 @@ int main(int argc, char** argv) {
     } else {
         init(argv[optind], reprod_args, argv[optind + 1]);
     }
+    printf(":: Start reduction on irp level\n");
+    log_text("\nFirst reduction cycle: IRP Level\n");
     reduce_irp_level();
     printf(":: Start reduction on irg level\n");
     log_text("\nSecond reduction cycle: IRG Level\n");

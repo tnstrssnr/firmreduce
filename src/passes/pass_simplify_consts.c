@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include <time.h>
 
+/*
+ * Repalce tarval of all Const nodes w/ 0
+ */
+
 int is_Const_non_null(const ir_node* node) {
     return (is_Const(node) && !(tarval_is_null(get_Const_tarval(node))));
 }

@@ -4,6 +4,10 @@
 #include <stdlib.h>
 #include <time.h>
 
+/*
+ * Remove all Alloc nodes, that only have a memory out-edge
+ */
+
 int is_Alloc_no_out_edge(const ir_node* node) {
     return is_Alloc(node) && (1 == get_irn_n_edges(node));
 }

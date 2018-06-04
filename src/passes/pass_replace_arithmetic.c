@@ -5,6 +5,10 @@
 #include <time.h>
 #include <stdio.h>
 
+/*
+ * Remove arithmetic nodes, such as Add, Sub, Mul,... w/ Const value 0
+ */
+
 int is_arithmetic(const ir_node* node) {
     return (is_Add(node) || is_Mul(node) || is_Mulh(node) || is_Div(node) || is_Sub(node)
     || is_Shl(node) || is_Shr(node) || is_Shrs(node) || is_Mod(node));

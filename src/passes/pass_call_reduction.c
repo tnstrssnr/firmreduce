@@ -5,7 +5,7 @@
 #include <time.h>
 
 /**
- * pass to remove void function calls and function calls, where return value is not used
+ * Remove void function calls and function calls, where return value is not used
  */
 
 int is_Call_void(const ir_node* node) {
@@ -14,9 +14,6 @@ int is_Call_void(const ir_node* node) {
 
 }
 
-/**
- * Chooses random node in random irg and applies pass to this node
- */
 int pass_call_reduction_individual(ir_graph* irg, void* data) {
 
     edges_activate(irg);
@@ -46,9 +43,6 @@ int pass_call_reduction_individual(ir_graph* irg, void* data) {
     return 1;
 }
 
-/**
- * Applies pass to all relevant nodes in the irg
- */
 int pass_call_reduction(ir_graph* irg, void* data) {
 
     edges_activate(irg);
