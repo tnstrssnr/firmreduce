@@ -25,6 +25,20 @@ void log_stats(ir_stats_t* stats) {
     log_text(text);
 }
 
+void log_result(int result) {
+    switch(result) {
+        case 0:
+            log_text("No improvement");
+            break;
+        case 1:
+            log_text("Successful");
+            break;
+        default:
+            log_text("Failed");            
+            break;
+    }
+}
+
 void init_logging(char* out_path) {
     
     int i = 0;

@@ -78,31 +78,8 @@ int apply_pass(char* path, int i, int arg, char* ident) {
     
     if(WIFEXITED(status)) {
         result = WEXITSTATUS(status);
-    }
-    
-    log_text("\n");
-    if(arg != -1) {
-        char log_irg[strlen("Modifying irg \'\'  ") + strlen(ident) + 2];
-        sprintf(log_irg, "Modifying irg \'%s\'%c", ident, '\0');
-        log_text(log_irg);
-        log_text(" -- ");
-    }
-    log_text("Applying pass: ");
+    } 
     PASSES_APPLIED++;
-        log_text(passes[i]->ident);
-        log_text(" -- ");
-        switch(result) {
-            case 0:
-                log_text("No improvement");
-                PASSES_APPLIED++;
-                break;
-            case 1:
-                log_text("Successful");
-                break;
-            default:
-                log_text("Failed");            
-                break;
-        }
     free(path_);
     return result;
 }

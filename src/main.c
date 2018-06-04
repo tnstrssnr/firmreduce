@@ -139,11 +139,7 @@ int is_reproducer() {
     fclose(f);
     
     log_text(" -- Reproducer Test: ");
-    if(int_result) {
-        log_text("Successful");
-    } else {
-        log_text("Failed");
-    }
+    log_result(int_result);
 
     return int_result;
 }
@@ -165,7 +161,7 @@ void reduce_irp_level() {
     char** ids = stats->irg_ids;
 
     printf(":: Start reduction on irp level\n");
-    log_text("\nFirst reduction cycle: \n");
+    log_text("\nFirst reduction cycle: IRP Level\n");
     /*
     * first try being aggressive w/ reductions
     */
@@ -182,12 +178,16 @@ void reduce_irp_level() {
             }
 
             total_result = 0;
-            system("cp temp/curr.ir temp/temp.ir"); 
+            system("cp temp/curr.ir temp/temp.ir");
+            log_text("\n");
+            log_text("Modifying irg \'\'");
+            log_text(ids[i]);
+            log_text("\'\' -- "); 
             for(int j = 0; j < PASSES_N; j++) {
                 result = apply_pass(TEMP_VARIANT, j, i, ids[i]);
                 total_result = (total_result == 1) ? 1 : result;
             }
-
+            log_result(total_result);
             if(total_result != 1 || !is_reproducer()) {
                 failed++;
                 continue;
@@ -219,7 +219,7 @@ void reduce_irg_level() {
     char** ids = stats->irg_ids;
 
     printf(":: Start reduction on irg level\n");
-    log_text("\nSecond reduction cycle: \n");
+    log_text("\nSecond reduction cycle: IRG Level\n");
     /*
     * first try being aggressive w/ reductions
     */
@@ -236,7 +236,14 @@ void reduce_irg_level() {
             total_result = 0;
             int result;
             for(int i = 0; i < irg_n; i++) {
+                log_text("\n");
+                log_text("Modifying irg \'\'");
+                log_text(ids[i]);
+                log_text("\'\' -- Applying pass: ");
+                log_text(passes[j]->ident);
+                log_text(" -- ");
                 result = apply_pass(CURRENT_VARIANT, j, i, ids[i]); // apply pass j to irg i
+                log_result(result);
                 if(!(result == 1) || !is_reproducer()) {
                     result = 0;
                 } else {
@@ -269,7 +276,7 @@ void reduce_node_level() {
     int next_pass = 0;
 
     printf(":: Start reduction on node level\n");
-    log_text("\n\nThird reduction cycle: \n");
+    log_text("\n\nThird reduction cycle: IRN Level\n");
     /*
     * now apply passes to individual irgs
     */
