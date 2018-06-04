@@ -64,14 +64,14 @@ void init_passes_dynamic() {
  * arg: index of irg to apply the pass to, -1 for random irg
  * ident: ident of irg
  */
-int apply_pass(char* path, int i, int arg, char* ident) {
+int apply_pass(char* path, int i, int arg, int reduce_individual) {
 
     char* path_;
     int status;
     int result;
 
     path_ = malloc(300);
-    sprintf(path_, "%s %s %d%c", passes[i]->path, path, arg, '\0');
+    sprintf(path_, "%s %s %d %d%c", passes[i]->path, path, arg, reduce_individual, '\0');
 
     status = system(path_);      
     result = -1;

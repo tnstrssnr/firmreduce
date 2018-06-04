@@ -58,11 +58,7 @@ int apply_pass(char* path, pass_func* func, int idx) {
         fprintf(stderr, "Error while reading test-case file\n");
         return -1;
     }
-
-    // if no idx is given (-1), choose one at random
-    srand(time(NULL));
-    int irg_idx = (idx == -1) ? (rand() % get_irp_n_irgs()) : idx;
-    ir_graph* irg = get_irp_irg(irg_idx);
+    ir_graph* irg = get_irp_irg(idx);
     int improvement = (func)(irg, NULL);
 
     // apply optimizations

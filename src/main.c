@@ -184,7 +184,7 @@ void reduce_irp_level() {
             log_text(ids[i]);
             log_text("\'\' -- "); 
             for(int j = 0; j < PASSES_N; j++) {
-                result = apply_pass(TEMP_VARIANT, j, i, ids[i]);
+                result = apply_pass(TEMP_VARIANT, j, i, 0);
                 total_result = (total_result == 1) ? 1 : result;
             }
             log_result(total_result);
@@ -202,7 +202,7 @@ void reduce_irp_level() {
     free(stats);
 }
 
-void reduce_irg_level() {
+void reduce_irg_level(int reduce_individual) {
 
     /**
      * Greedy search of new variants:
@@ -242,7 +242,7 @@ void reduce_irg_level() {
                 log_text("\'\' -- Applying pass: ");
                 log_text(passes[j]->ident);
                 log_text(" -- ");
-                result = apply_pass(CURRENT_VARIANT, j, i, ids[i]); // apply pass j to irg i
+                result = apply_pass(CURRENT_VARIANT, j, i, reduce_individual); // apply pass j to irg i
                 log_result(result);
                 if(!(result == 1) || !is_reproducer()) {
                     result = 0;
@@ -259,51 +259,6 @@ void reduce_irg_level() {
     }
     free(stats->irg_ids);
     free(stats);
-}
-
-void reduce_node_level() {
-
-    /**
-     * Greedy search of new variants:
-     * loop through passes, check if we get a 'better' variant of the irp
-     *     if yes: save as current variant
-     *     if no: discard
-     * repeat until full iteraton w/o improvement
-     */
-
-    int failed = 0;
-    int fixpoint = 0;
-    int next_pass = 0;
-
-    printf(":: Start reduction on node level\n");
-    log_text("\n\nThird reduction cycle: IRN Level\n");
-    /*
-    * now apply passes to individual irgs
-    */
-    while(!fixpoint) {
-        printf(". ");
-        if(failed >= 5*PASSES_N) { // TODO: when is it best to terminate loop ?
-            fixpoint = 1;
-            continue;
-        }
-
-        int result = apply_pass(CURRENT_VARIANT, next_pass, -1, ""); // -1 --> pass will choose a random irg
-        next_pass = (next_pass + 1) % PASSES_N;
-
-        //printf("Pass result: %d\n", result);
-        if(!(result == 1) || !is_reproducer()) {
-          failed++;
-          continue;
-        } 
-
-        // we found a new smaller variant -- set as current
-        char replace[strlen(CURRENT_VARIANT) + strlen(TEMP_VARIANT) + 5];
-        sprintf(replace, "cp %s %s%c", TEMP_VARIANT, CURRENT_VARIANT, '\0');
-        system(replace);
-
-        // reset counters
-        failed = 0;
-    }
 }
 
 int main(int argc, char** argv) {
@@ -344,7 +299,11 @@ int main(int argc, char** argv) {
         init(argv[optind], reprod_args, argv[optind + 1]);
     }
     reduce_irp_level();
-    reduce_irg_level();
-    reduce_node_level();
+    printf(":: Start reduction on irg level\n");
+    log_text("\nSecond reduction cycle: IRG Level\n");
+    reduce_irg_level(0);
+    printf(":: Start reduction on irn level\n");
+    log_text("\nThird reduction cycle: IRN Level\n");
+    reduce_irg_level(1);
     finish();
 }

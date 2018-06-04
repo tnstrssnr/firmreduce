@@ -60,13 +60,8 @@ int pass_replace_arithmetic(ir_graph* irg, void* data) {
 }
 
 int main(int argc, char** argv) {
-    if(argc != 3) {
+    if(argc != 4) {
         return -1;
     }
-
-    if(atoi(argv[1]) != -1) {
-        return apply_pass(argv[1], &pass_replace_arithmetic, atoi(argv[2]));
-    } else {
-        return apply_pass(argv[1], &pass_replace_arithmetic_individual, -1);
-    }
+    return (atoi(argv[3]) == 1) ? apply_pass(argv[1], &pass_replace_arithmetic_individual, atoi(argv[2])) : apply_pass(argv[1], &pass_replace_arithmetic, atoi(argv[2]));
 }
