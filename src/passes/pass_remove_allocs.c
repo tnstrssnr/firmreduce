@@ -39,8 +39,10 @@ int pass_remove_allocs_individual(ir_graph* irg, void* data) {
     ir_node* node = container->nodes[rand() % container->nodes_n];
     remove_alloc(irg, node);
     free(container);
-    edges_deactivate(irg);
-    return 1;
+    collect_nodes(irg, container);
+    int left_to_do = container->nodes_n;
+    free(container);
+    return left_to_do;
 }
 
 int pass_remove_allocs(ir_graph* irg, void* data) {
@@ -55,8 +57,10 @@ int pass_remove_allocs(ir_graph* irg, void* data) {
         remove_alloc(irg, node);
     }
     free(container);
-    edges_deactivate(irg);
-    return 1;
+    collect_nodes(irg, container);
+    int left_to_do = container->nodes_n;
+    free(container);
+    return left_to_do;
 }
 
 int main(int argc, char** argv) {

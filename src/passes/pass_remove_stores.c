@@ -35,8 +35,10 @@ int pass_remove_stores_individual(ir_graph* irg, void* data) {
 
     exchange(mem_output, mem_input);
     edges_deactivate(irg);
+    collect_nodes(irg, container);
+    int left_to_do = container->nodes_n;
     free(container);
-    return 1;
+    return left_to_do;
 }
 
 int pass_remove_stores(ir_graph* irg, void* data) {
@@ -65,8 +67,10 @@ int pass_remove_stores(ir_graph* irg, void* data) {
         exchange(mem_output, mem_input);
     }
     edges_deactivate(irg);
+    collect_nodes(irg, container);
+    int left_to_do = container->nodes_n;
     free(container);
-    return 1;
+    return left_to_do;
 }
 
 int main(int argc, char** argv) {

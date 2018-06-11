@@ -32,8 +32,10 @@ int pass_replace_arithmetic_individual(ir_graph* irg, void* data) {
     edges_activate(irg);
     exchange(node, const_node);
     edges_deactivate(irg);
+    collect_nodes(irg, container);
+    int left_to_do = container->nodes_n;
     free(container);
-    return 1;
+    return left_to_do;
 
 }
 
@@ -58,8 +60,10 @@ int pass_replace_arithmetic(ir_graph* irg, void* data) {
 
     }
     edges_deactivate(irg);
+    collect_nodes(irg, container);
+    int left_to_do = container->nodes_n;
     free(container);
-    return 1;
+    return left_to_do;
 
 }
 

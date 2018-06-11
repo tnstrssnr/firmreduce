@@ -39,8 +39,10 @@ int pass_call_reduction_individual(ir_graph* irg, void* data) {
     exchange(mem_output, mem_input);
     edges_deactivate(irg);
 
+    collect_nodes(irg, container);
+    int left_to_do = container->nodes_n;
     free(container);
-    return 1;
+    return left_to_do;
 }
 
 int pass_call_reduction(ir_graph* irg, void* data) {
@@ -51,8 +53,10 @@ int pass_call_reduction(ir_graph* irg, void* data) {
     collect_nodes(irg, container);
     if(container->nodes_n == 0) return 0;
 
+    int* random_order = get_shuffle(container->nodes_n);
+
     for(int i = 0; i < container->nodes_n; i++) {  
-        ir_node* node = container->nodes[i];
+        ir_node* node = container->nodes[random_order[i]];
         ir_node* mem_input = get_Call_mem(node);
         ir_node* mem_output;
 
@@ -67,8 +71,10 @@ int pass_call_reduction(ir_graph* irg, void* data) {
         exchange(mem_output, mem_input);
     }
     edges_deactivate(irg);
+    collect_nodes(irg, container);
+    int left_to_do = container->nodes_n;
     free(container);
-    return 1;
+    return left_to_do;
 }
 
 int main(int argc, char** argv) {

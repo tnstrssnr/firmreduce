@@ -25,8 +25,10 @@ int pass_replace_mux_selectors_individual(ir_graph* irg, void* data) {
 
     set_Mux_sel(node, const_node);
     
+    collect_nodes(irg, container);
+    int left_to_do = container->nodes_n;
     free(container);
-    return 1;
+    return left_to_do;
 
 }
 
@@ -49,14 +51,13 @@ int pass_replace_mux_selectors(ir_graph* irg, void* data) {
 
         set_Mux_sel(node, const_node);
     }
+    collect_nodes(irg, container);
+    int left_to_do = container->nodes_n;
     free(container);
-    return 1;
+    return left_to_do;
 
 }
 
 int main(int argc, char** argv) {
-    if(argc != 4) {
-        return -1;
-    }
-    return (atoi(argv[3]) == 1) ? apply_pass(argv[1], &pass_replace_mux_selectors_individual, atoi(argv[2])) : apply_pass(argv[1], &pass_replace_mux_selectors, atoi(argv[2]));
+    return apply_pass(argv[1], &pass_replace_mux_selectors_individual, 0);
 }

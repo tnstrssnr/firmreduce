@@ -4,7 +4,7 @@
 #include <time.h>
 
 /*
- * Repalce tarval of all Const nodes w/ 0
+ * Replace tarval of all Const nodes w/ 0
  */
 
 int is_Const_non_null(const ir_node* node) {
@@ -24,8 +24,10 @@ int pass_simplify_consts_individual(ir_graph* irg, void* data) {
 
     set_Const_tarval(node, get_mode_null(mode));
 
+    collect_nodes(irg, container);
+    int left_to_do = container->nodes_n;
     free(container);
-    return 1;
+    return left_to_do;
 }
 
 int pass_simplify_consts(ir_graph* irg, void* data) {
@@ -41,8 +43,10 @@ int pass_simplify_consts(ir_graph* irg, void* data) {
 
         set_Const_tarval(node, get_mode_null(mode));
     }
+    collect_nodes(irg, container);
+    int left_to_do = container->nodes_n;
     free(container);
-    return 1;
+    return left_to_do;
 }
 
 int main(int argc, char** argv) {
