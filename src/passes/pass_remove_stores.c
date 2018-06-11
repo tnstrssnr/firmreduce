@@ -52,10 +52,11 @@ int pass_remove_stores(ir_graph* irg, void* data) {
     }
 
     edges_activate(irg);
+    int* random_order = get_shuffle(container->nodes_n);
 
     for(int i = 0; i < container->nodes_n; i++) {
 
-        ir_node* node = container->nodes[i];
+        ir_node* node = container->nodes[random_order[i]];
         ir_node* mem_input = get_Store_mem(node);
         ir_node* mem_output;
 
@@ -70,6 +71,7 @@ int pass_remove_stores(ir_graph* irg, void* data) {
     collect_nodes(irg, container);
     int left_to_do = container->nodes_n;
     free(container);
+    free(random_order);
     return left_to_do;
 }
 

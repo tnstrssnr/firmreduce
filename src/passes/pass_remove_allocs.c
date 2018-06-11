@@ -52,14 +52,17 @@ int pass_remove_allocs(ir_graph* irg, void* data) {
 
     if(container->nodes_n == 0) return 0;
 
+    int* random_order = get_shuffle(container->nodes_n);
+
     for(int i = 0; i < container->nodes_n; i++) {
-        ir_node* node = container->nodes[i];
+        ir_node* node = container->nodes[random_order[i]];
         remove_alloc(irg, node);
     }
     free(container);
     collect_nodes(irg, container);
     int left_to_do = container->nodes_n;
     free(container);
+    free(random_order);
     return left_to_do;
 }
 

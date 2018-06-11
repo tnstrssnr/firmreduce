@@ -43,8 +43,10 @@ int pass_replace_cond_selectors(ir_graph* irg, void* data) {
         free(container);
         return 0;
     }
+    int* random_order = get_shuffle(container->nodes_n);
+
     for(int i = 0; i < container->nodes_n; i++) {
-        ir_node* node = container->nodes[i];
+        ir_node* node = container->nodes[random_order[i]];
         srand(time(NULL));
         ir_tarval* val = rand() % 2 ? get_tarval_b_true() : get_tarval_b_false();
         dbg_info * dbgi = get_irn_dbg_info(node);
@@ -55,6 +57,7 @@ int pass_replace_cond_selectors(ir_graph* irg, void* data) {
     collect_nodes(irg, container);
     int left_to_do = container->nodes_n;
     free(container);
+    free(random_order);
     return left_to_do;
 
 }

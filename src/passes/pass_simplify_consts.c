@@ -35,9 +35,10 @@ int pass_simplify_consts(ir_graph* irg, void* data) {
     collect_nodes(irg, container);
 
     if(container->nodes_n == 0) return 0;
+    int* random_order = get_shuffle(container->nodes_n);
 
     for(int i = 0; i < container->nodes_n; i++) {
-        ir_node* node = container->nodes[i];
+        ir_node* node = container->nodes[random_order[i]];
         ir_tarval* old = get_Const_tarval(node);
         const ir_mode* mode = get_tarval_mode(old);
 
@@ -46,6 +47,7 @@ int pass_simplify_consts(ir_graph* irg, void* data) {
     collect_nodes(irg, container);
     int left_to_do = container->nodes_n;
     free(container);
+    free(random_order);
     return left_to_do;
 }
 

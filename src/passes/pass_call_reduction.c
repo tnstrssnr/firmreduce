@@ -74,6 +74,7 @@ int pass_call_reduction(ir_graph* irg, void* data) {
     collect_nodes(irg, container);
     int left_to_do = container->nodes_n;
     free(container);
+    free(random_order);
     return left_to_do;
 }
 

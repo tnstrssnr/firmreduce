@@ -47,12 +47,15 @@ int pass_replace_switch_selectors(ir_graph* irg, void* data) {
         free(container);
         return 0;
     }
+
+    int* random_order = get_shuffle(container->nodes_n);
     for(int i = 0; i < container->nodes_n; i++) {
-        replace_selector(container->nodes[i], irg);   
+        replace_selector(container->nodes[random_order[i]], irg);   
     }
     collect_nodes(irg, container);
     int left_to_do = container->nodes_n;
     free(container);
+    free(random_order);
     return left_to_do;
 
 }

@@ -46,15 +46,15 @@ int pass_replace_arithmetic(ir_graph* irg, void* data) {
 
     if(container->nodes_n == 0) return 0;
 
+    int* random_order = get_shuffle(container->nodes_n);
     edges_activate(irg);
     for(int i = 0; i < container->nodes_n; i++) {
-        ir_node* node = container->nodes[i];
+        ir_node* node = container->nodes[random_order[i]];
 
         ir_mode* mode = get_irn_mode(node);
         ir_tarval* val = get_mode_null(mode);
         dbg_info * dbgi = get_irn_dbg_info(node);
         ir_node* const_node = new_rd_Const(dbgi, irg, val);
-
         
         exchange(node, const_node);
 
@@ -63,6 +63,7 @@ int pass_replace_arithmetic(ir_graph* irg, void* data) {
     collect_nodes(irg, container);
     int left_to_do = container->nodes_n;
     free(container);
+    free(random_order);
     return left_to_do;
 
 }
