@@ -45,6 +45,27 @@ int  is_valid() {
 }
 
 /**
+ * Uses the Fisher-Yates shuffle to create a random permutation of the array {0,...,size-1}
+ * This is used to randomize the order in which passes are applied to the testcase
+ */
+int* get_shuffle(int size) {
+    int* arr = malloc(size* sizeof(int));
+
+    for(int i = 0; i < size; i++) {
+        arr[i] = i;
+    }
+
+    srand(time(NULL));
+    for(int i = size - 1; i > 0; i--) {
+        int j = rand() % (i + 1);
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+    return arr;
+}
+
+/**
  * Convenience function for creating new passes
  * Pass needs a pass_func, that does something to the irg, the rest
  * is handled in this function
@@ -52,12 +73,14 @@ int  is_valid() {
  * (assumes that pass_func doesn't need additional data)
  */
 int apply_pass(char* path, pass_func* func, int idx) {
+
     // init library, load current irp
     ir_init();
     if(ir_import(path)) {
         fprintf(stderr, "Error while reading test-case file\n");
         return -1;
     }
+
     ir_graph* irg = get_irp_irg(idx);
     int improvement = (func)(irg, NULL);
 
@@ -85,14 +108,49 @@ int apply_pass(char* path, pass_func* func, int idx) {
     combo(irg);
     place_code(irg);
     
-
     // check if we still have a valid irp
     if(is_valid()) {
-        ir_export(TEMP_IR);
+        ir_export("temp/temp.ir");
     } else {
         improvement = -1;
     }
 
     ir_finish();
+
     return improvement;
+}
+
+// always returns 1, bc we want all nodes to be selected
+int select_all(const ir_node* node) {
+    return 1;
+}
+
+int apply_optimization(char* file, int irg, opt_func* func) {
+
+    ir_init();
+    if(ir_import(file)) {
+        fprintf(stderr, "Error while reading test-case file\n");
+        return -1;
+    }
+
+    // get node count before the optimization
+    ir_node_container* container = new_container(select_all);
+    collect_nodes(get_irp_irg(irg), container);
+    int nodes_n_old = container->nodes_n;
+
+    (func)(get_irp_irg(irg));
+
+    // check if number of nodes changed
+    // If not we assume that the optimization was ineffective and return 0
+    collect_nodes(get_irp_irg(irg), container);
+    int improvement = (container->nodes_n < nodes_n_old) ? 1 : 0;
+
+    if(is_valid()) {
+        ir_export("temp/temp.ir");
+    } else {
+        improvement = -1;
+    }
+    ir_finish();
+    return improvement;
+
 }

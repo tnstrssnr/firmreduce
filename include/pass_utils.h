@@ -1,7 +1,6 @@
 #ifndef PASS_UTILS_H
 #define PASS_UTILS_H
 
-
 #include <firm.h>
 
 extern const char* TEMP_DIR;
@@ -18,6 +17,8 @@ typedef int select_func(const ir_node* node);
  */
 typedef int pass_func(ir_graph* irg, void* data);
 
+typedef void opt_func(ir_graph* irg);
+
 typedef struct ir_node_container {
 
     select_func* func;
@@ -31,5 +32,13 @@ ir_node_container* new_container(select_func* func);
 void collect_nodes(ir_graph* irg, ir_node_container* container);
 
 int apply_pass(char* path, pass_func* func, int idx);
+
+int* get_shuffle(int size);
+
+int is_valid();
+
+int select_all(const ir_node* node);
+
+int apply_optimization(char* file, int irg, opt_func* func);
 
 #endif
