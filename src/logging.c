@@ -10,7 +10,7 @@
 
 #include "logging.h"
 
-const char* LOG_FILE;
+char* LOG_FILE;
 
 void log_text(char* text) {
     FILE* f = fopen(LOG_FILE, "a");
@@ -40,29 +40,13 @@ void log_result(int result) {
 }
 
 void init_logging(char* out_path) {
-    
-    int i = 0;
-    char* file_path = NULL;
-
-    // increase counter on Reductionx.log, until we find filename, that is not taken yet
-    do {
-        if(file_path != NULL) free(file_path);
-        file_path = malloc(sizeof(out_path) + 15 + (i / 10));
-        if (i > 0) {
-            sprintf(file_path, "%sReduction%d.log%c", out_path, i , '\0');
-        } else {
-            sprintf(file_path, "%sReduction.log%c", out_path, '\0');
-        }
-        i++;
-    } while (access(file_path, F_OK) == 0);
-    
-    
-    LOG_FILE = file_path;
-
-    FILE* log_file;
-    log_file = fopen(file_path, "a+");
-    if(log_file == NULL) {
-        fprintf(stderr, "Couldn't create log-file");
+    printf("OUT_PATH: %s\n", out_path);
+    LOG_FILE = malloc(sizeof(out_path) + 15);
+    sprintf(LOG_FILE, "%sReduction.log%c", out_path, '\0');
+    printf("LOG_FILE: %s\n", LOG_FILE);
+    FILE* f = fopen(LOG_FILE, "w");
+    if (!f) {
+        perror("fopen");
         exit(1);
     }
 
@@ -72,7 +56,8 @@ void init_logging(char* out_path) {
     time_ = gmtime(&now);
 
     strftime (buff, sizeof(buff), "%Y-%m-%d %H:%M:%S", time_);
-    fprintf (log_file, "%s -- ", buff);
-    fprintf(log_file, "Firmreduce -- Results\n\nInitial Test-case size:\n");
-    fclose(log_file);
+    fprintf (f, "%s -- ", buff);
+    fprintf(f, "Firmreduce -- Results\n\nInitial Test-case size:\n");
+    fclose(f);
+    printf("Duck\n");
 }

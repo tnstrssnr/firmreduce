@@ -68,5 +68,6 @@ int main(int argc, char** argv) {
     fprintf(f, "\n");
     fclose(f);
     ir_finish();
+
     return 0;
 }

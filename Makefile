@@ -28,11 +28,11 @@ pass_util_SRC = $(top_src_dir)/src/pass_utils.c
 pass_util_INCLUDE_FLAGS = -I$(top_src_dir)/include/
 pass_util_OBJ = $(pass_dir)/pass_utils.o
 
-firmreduce_SOURCES = $(top_src_dir)/src/main.c $(top_src_dir)/src/passes.c $(top_src_dir)/src/logging.c
+firmreduce_SOURCES = $(top_src_dir)/src/main.c $(top_src_dir)/src/passes.c $(top_src_dir)/src/logging.c $(top_src_dir)/src/adt/dyn_array.c
 firmreduce_OBJECTS = $(firmreduce_SOURCES:%.c=%(build_dir)/%.o)
 firmreduce_DEPENDS = $(firmreduce_OBJECTS:%.o=%.d)
 firmreduce_TARGET = $(build_dir)/firmreduce
-firmreduce_INCLUDE_FLAGS = -I$(top_src_dir)/include
+firmreduce_INCLUDE_FLAGS = -I$(top_src_dir)/include -I$(top_src_dir)/include/adt
 
 libstats_SRC = $(top_src_dir)/src/ir_stats.c
 libstats_INCLUDE_FLAGS = -I$(top_src_dir)/include
@@ -84,7 +84,6 @@ clean-all: clean
 
 passes: makedir $(passes_OBJECTS)
 	@echo Target make passes complete
-	
 	
 %.o: %.c
 	@$(CC) -c $(CFLAGS) $(pass_util_SRC) $(libfirm_INCLUDE_FLAGS) $(pass_util_INCLUDE_FLAGS)  -o $(pass_util_OBJ)

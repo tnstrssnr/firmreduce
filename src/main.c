@@ -7,10 +7,15 @@
 #include <libgen.h>
 #include <dlfcn.h>
 #include <assert.h>
+#include <time.h>
 
 #include "ir_stats_structs.h"
 #include "passes/passes.h"
 #include "logging.h"
+#include "dyn_array.h"
+
+#define CONSERVATIVE 1
+#define AGGRESSIVE 0
 
 char* IS_REPRODUCER_SCRIPT;
 char* OUT_PATH = NULL;
@@ -114,20 +119,19 @@ void finish() {
     //TODO: delete temp dir
 
     printf("\n:: Reduction finished -- Results dumped in %s\n", OUT_PATH);
-
-    free(IS_REPRODUCER_SCRIPT);
-    free(OUT_PATH);
 }
 
 void init(char* rep_path, char* reprod_args, char* ir_path) {
     init_reproducer_test(rep_path, reprod_args);
     init_temp_dirs(ir_path);
     init_logging(OUT_PATH);
+    printf("Finished logging init\n");
     init_passes_dynamic();
     log_stats(get_ir_stats(CURRENT_VARIANT, 1));
 }
 
 //execute shell script
+//TODO: return -1 instead of 0 if test fails --> makes logging easier
 int is_reproducer() {
     FILE* f = popen(IS_REPRODUCER_SCRIPT, "r");
     if(!f) {
@@ -137,121 +141,74 @@ int is_reproducer() {
     char result = fgetc(f);
     int int_result = atoi(&result);
     fclose(f);
-    
-    log_text(" -- Reproducer Test: ");
-    log_result(int_result);
 
     return int_result;
 }
 
-/*
- * Apply all passes to an irg, then check if we still have a reproducer
+/**
+ * function tries to reduce the irp as much as possible w/ the given pass.
  */
+int reduce(int pass) {
 
-void reduce_irp_level() {
-
-
-
+    int achieved_reduction = 0;
     int failed = 0;
-    int fixpoint = 0;
     ir_stats_t* stats = get_ir_stats(CURRENT_VARIANT, 0);
     int irg_n = stats->irg_n;
-    char** ids = stats->irg_ids;
+    int irg_idx = 0;
+    while(failed < irg_n) {
+        irg_idx = (irg_idx + 1) % irg_n;
 
-    /*
-    * first try being aggressive w/ reductions
-    */
-    while(!fixpoint) {
-        printf(". ");
+        int res = apply_pass(CURRENT_VARIANT, pass, irg_idx, AGGRESSIVE);
 
-        int total_result;
-        int result;
-        for(int i = 0; i < irg_n; i++) {
-
-            if(failed >= irg_n) {
-                fixpoint = 1;
-                break;
+        // check if we already made progress. If yes, we can go to the next irg.
+        // If not, we try reducing the current irg more conservatively
+        if(res == 1) {
+            if(is_reproducer()) {
+                achieved_reduction = 1;
+                failed = 0; // reset counter
+                // we found a new smaller variant -- set as current
+                char replace[strlen(CURRENT_VARIANT) + strlen(TEMP_VARIANT) + 5];
+                sprintf(replace, "cp %s %s%c", TEMP_VARIANT, CURRENT_VARIANT, '\0');
+                system(replace);
+                continue; // skip conservative reduction
+            } else {
+                // write pass and irg to file, so we can try to reduce more conservatively later on
+                FILE* f = fopen("temp/fails", "a");
+                fprintf(f, "%s %s\n", passes[pass]->path, stats->irg_ids[irg_idx]);
+                fclose(f);
             }
-
-            total_result = 0;
-            system("cp temp/curr.ir temp/temp.ir");
-            log_text("\n");
-            log_text("Modifying irg \'\'");
-            log_text(ids[i]);
-            log_text("\'\' -- "); 
-            for(int j = 0; j < PASSES_N; j++) {
-                result = apply_pass(TEMP_VARIANT, j, i, 0);
-                total_result = (total_result == 1) ? 1 : result;
-            }
-            log_result(total_result);
-            if(total_result != 1 || !is_reproducer()) {
-                failed++;
-                continue;
-            }
-            failed = 0;
-            char replace[strlen(CURRENT_VARIANT) + strlen(TEMP_VARIANT) + 5];
-            sprintf(replace, "cp %s %s%c", TEMP_VARIANT, CURRENT_VARIANT, '\0');
-            system(replace);
+                log_text("\n\t :: Reproducer test failed on irg \'");
+                log_text(stats->irg_ids[irg_idx]);
+                log_text("\'");
         }
+        failed++;
     }
-    free(stats->irg_ids);
-    free(stats);
+    return achieved_reduction;
 }
 
-/*
- * Apply one pass to an irg, then check if we still have a reproducer.
- * If 'reduce_individual' is set, the pass is only applied to one random node in the irg
+/**
+ * Uses the Fisher-Yates shuffle to create a random permutation of the array {0,...,size-1}
+ * This is used to randomize the order in which passes are applied to the testcase
  */
-void reduce_irg_level(int reduce_individual) {
+int* get_shuffle(int size) {
+    int* arr = malloc(size* sizeof(int));
 
-    int failed = 0;
-    int fixpoint = 0;
-    ir_stats_t* stats = get_ir_stats(CURRENT_VARIANT, 0);
-    int irg_n = stats->irg_n;
-    char** ids = stats->irg_ids;
-
-    /*
-    * first try being aggressive w/ reductions
-    */
-    while(!fixpoint) {
-        printf(". ");
-
-        int total_result; // indicates whether pass application was successful for at least 1 irg in the irp
-        for(int j = 0; j < PASSES_N; j++) {
-            if(failed >= PASSES_N) {
-            fixpoint = 1;
-            break;
-            }
-
-            total_result = 0;
-            int result;
-            for(int i = 0; i < irg_n; i++) {
-                log_text("\n");
-                log_text("Modifying irg \'\'");
-                log_text(ids[i]);
-                log_text("\'\' -- Applying pass: ");
-                log_text(passes[j]->ident);
-                log_text(" -- ");
-                result = apply_pass(CURRENT_VARIANT, j, i, reduce_individual); // apply pass j to irg i
-                log_result(result);
-                if(!(result == 1) || !is_reproducer()) {
-                    result = 0;
-                } else {
-                    // we found a new smaller variant -- set as current
-                    char replace[strlen(CURRENT_VARIANT) + strlen(TEMP_VARIANT) + 5];
-                    sprintf(replace, "cp %s %s%c", TEMP_VARIANT, CURRENT_VARIANT, '\0');
-                    system(replace);
-                }
-                total_result = (total_result) ? 1  : result;      
-            }
-            failed = (total_result == 1) ? 0 : failed + 1;
-        }
+    for(int i = 0; i < size; i++) {
+        arr[i] = i;
     }
-    free(stats->irg_ids);
-    free(stats);
+
+    srand(time(NULL));
+    for(int i = size - 1; i > 0; i--) {
+        int j = rand() % (i + 1);
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+    return arr;
 }
 
 int main(int argc, char** argv) {
+
 /*
  * Program expects 2 arguments:
  *     1. path to .sh file -> reproducer test for bug
@@ -288,14 +245,19 @@ int main(int argc, char** argv) {
     } else {
         init(argv[optind], reprod_args, argv[optind + 1]);
     }
-    printf(":: Start reduction on irp level\n");
-    log_text("\nFirst reduction cycle: IRP Level\n");
-    reduce_irp_level();
-    printf(":: Start reduction on irg level\n");
-    log_text("\nSecond reduction cycle: IRG Level\n");
-    reduce_irg_level(0);
-    printf(":: Start reduction on irn level\n");
-    log_text("\nThird reduction cycle: IRN Level\n");
-    reduce_irg_level(1);
-    finish();
+    int result = 1;
+    while(result) {
+        int* rand_permutation = get_shuffle(PASSES_N);
+        result = 0;
+        for(int i = 0; i < PASSES_N; i++) {
+            int pass = rand_permutation[i];
+            log_text("\nUsing pass: ");
+            log_text(passes[pass]->ident);
+            int pass_result = reduce(pass);
+            log_text(" -- ");
+            log_result(pass_result);
+            result = (pass_result) ? 1 : result;
+        }    
+    }
+    finish();   
 }
