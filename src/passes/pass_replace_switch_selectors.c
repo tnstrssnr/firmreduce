@@ -31,9 +31,7 @@ int pass_replace_switch_selectors_individual(ir_graph* irg, void* data) {
     replace_selector(node, irg);
     
     collect_nodes(irg, container);
-    int left_to_do = container->nodes_n;
-    free(container);
-    return left_to_do;
+    return 1;
 
 }
 
@@ -52,11 +50,9 @@ int pass_replace_switch_selectors(ir_graph* irg, void* data) {
     for(int i = 0; i < container->nodes_n; i++) {
         replace_selector(container->nodes[random_order[i]], irg);   
     }
-    collect_nodes(irg, container);
-    int left_to_do = container->nodes_n;
     free(container);
     free(random_order);
-    return left_to_do;
+    return 1;
 
 }
 

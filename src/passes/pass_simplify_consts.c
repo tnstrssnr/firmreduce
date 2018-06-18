@@ -24,10 +24,8 @@ int pass_simplify_consts_individual(ir_graph* irg, void* data) {
 
     set_Const_tarval(node, get_mode_null(mode));
 
-    collect_nodes(irg, container);
-    int left_to_do = container->nodes_n;
     free(container);
-    return left_to_do;
+    return 1;
 }
 
 int pass_simplify_consts(ir_graph* irg, void* data) {
@@ -44,11 +42,9 @@ int pass_simplify_consts(ir_graph* irg, void* data) {
 
         set_Const_tarval(node, get_mode_null(mode));
     }
-    collect_nodes(irg, container);
-    int left_to_do = container->nodes_n;
     free(container);
     free(random_order);
-    return left_to_do;
+    return 1;
 }
 
 int main(int argc, char** argv) {

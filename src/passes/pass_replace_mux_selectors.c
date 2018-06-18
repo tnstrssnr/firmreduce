@@ -26,9 +26,7 @@ int pass_replace_mux_selectors_individual(ir_graph* irg, void* data) {
     set_Mux_sel(node, const_node);
     
     collect_nodes(irg, container);
-    int left_to_do = container->nodes_n;
-    free(container);
-    return left_to_do;
+    return 1;
 
 }
 
@@ -53,11 +51,9 @@ int pass_replace_mux_selectors(ir_graph* irg, void* data) {
 
         set_Mux_sel(node, const_node);
     }
-    collect_nodes(irg, container);
-    int left_to_do = container->nodes_n;
     free(container);
     free(random_order);
-    return left_to_do;
+    return 1;
 
 }
 
