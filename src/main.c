@@ -12,7 +12,6 @@
 #include "ir_stats_structs.h"
 #include "passes/passes.h"
 #include "logging.h"
-#include "dyn_array.h"
 
 #define CONSERVATIVE 1
 #define AGGRESSIVE 0

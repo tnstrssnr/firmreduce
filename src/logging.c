@@ -40,10 +40,8 @@ void log_result(int result) {
 }
 
 void init_logging(char* out_path) {
-    printf("OUT_PATH: %s\n", out_path);
     LOG_FILE = malloc(sizeof(out_path) + 15);
     sprintf(LOG_FILE, "%sReduction.log%c", out_path, '\0');
-    printf("LOG_FILE: %s\n", LOG_FILE);
     FILE* f = fopen(LOG_FILE, "w");
     if (!f) {
         perror("fopen");
@@ -59,5 +57,4 @@ void init_logging(char* out_path) {
     fprintf (f, "%s -- ", buff);
     fprintf(f, "Firmreduce -- Results\n\nInitial Test-case size:\n");
     fclose(f);
-    printf("Duck\n");
 }
