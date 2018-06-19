@@ -7,6 +7,7 @@ const char* MAIN = "main";
 
 int main(int argc, char** argv) {
     int result = 0;
+    if (atoi(argv[3]) == 1) return 0;
 
     ir_init();
 
@@ -20,12 +21,12 @@ int main(int argc, char** argv) {
     if(atoi(argv[2]) >= irg_n_old) return 0;
     ir_entity* keep_arr[2];
 
-    keep_arr[0] = get_irg_entity(get_irp_irg(atoi(argv[2])));
+    keep_arr[1] = get_irg_entity(get_irp_irg(atoi(argv[2])));
 
     for(int i = 0; i < irg_n_old; i++) {
         const char* pass_name = get_id_str(get_entity_ident(get_irg_entity(get_irp_irg(i))));
         if(strcmp(pass_name, MAIN) == 0) {
-            keep_arr[1] = get_irg_entity(get_irp_irg(i));
+            keep_arr[0] = get_irg_entity(get_irp_irg(i));
             break;
         }
     }

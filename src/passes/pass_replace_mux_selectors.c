@@ -58,5 +58,5 @@ int pass_replace_mux_selectors(ir_graph* irg, void* data) {
 }
 
 int main(int argc, char** argv) {
-    return apply_pass(argv[1], &pass_replace_mux_selectors_individual, 0);
+    return (atoi(argv[3]) == 1) ? apply_pass(argv[1], &pass_replace_mux_selectors_individual, -1, argv[4]) : apply_pass(argv[1], &pass_replace_mux_selectors, atoi(argv[2]), NULL);
 }

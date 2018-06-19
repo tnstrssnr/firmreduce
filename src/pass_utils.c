@@ -72,7 +72,7 @@ int* get_shuffle(int size) {
  * 
  * (assumes that pass_func doesn't need additional data)
  */
-int apply_pass(char* path, pass_func* func, int idx) {
+int apply_pass(char* path, pass_func* func, int idx, char* ident) {
 
     // init library, load current irp
     ir_init();
@@ -81,7 +81,12 @@ int apply_pass(char* path, pass_func* func, int idx) {
         return -1;
     }
 
-    ir_graph* irg = get_irp_irg(idx);
+    ir_graph* irg;
+    if(idx == -1) {
+        irg = get_irg_by_ident(ident);
+    } else {
+        irg = get_irp_irg(idx);
+    }
     int improvement = (func)(irg, NULL);
 
     // apply optimizations
@@ -126,7 +131,7 @@ int select_all(const ir_node* node) {
 }
 
 int apply_optimization(char* file, int irg, opt_func* func) {
-
+    if (irg == -1) return 0;
     ir_init();
     if(ir_import(file)) {
         fprintf(stderr, "Error while reading test-case file\n");
@@ -152,5 +157,18 @@ int apply_optimization(char* file, int irg, opt_func* func) {
     }
     ir_finish();
     return improvement;
+}
 
+/**
+ * returns irg w/ entity identifier *ident*, NULL otherwise
+ * allows pass to identify irg on which the aggressive reduction failed (ident is passed as argument)
+ */
+ir_graph* get_irg_by_ident(const char* ident) {
+    ir_graph* irg;
+    for(int i = 0; i < get_irp_n_irgs(); i++) {
+        if(strcmp(ident, get_id_str(get_entity_ident(get_irg_entity(get_irp_irg(i))))) == 0) {
+            irg =  get_irp_irg(i);
+        } 
+    }
+    return irg;
 }

@@ -45,8 +45,5 @@ int pass_replace_return_values(ir_graph* irg, void* data) {
 }
 
 int main(int argc, char** argv) {
-    if(argc != 4) {
-        return -1;
-    }
-    return (atoi(argv[3]) == 1) ? apply_pass(argv[1], &pass_replace_return_values, atoi(argv[2])) : apply_pass(argv[1], &pass_replace_return_values, atoi(argv[2]));
+    return (atoi(argv[3]) == 1) ? apply_pass(argv[1], &pass_replace_return_values, -1, argv[4]) : apply_pass(argv[1], &pass_replace_return_values, atoi(argv[2]), NULL);
 }

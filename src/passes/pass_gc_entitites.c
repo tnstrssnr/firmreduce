@@ -5,6 +5,8 @@
 
 int main(int argc, char** argv) {
 
+    if (atoi(argv[3]) == -1) return 0; // we can't so conservative reduction here
+
     ir_init();
     if(ir_import(argv[1])) {
         fprintf(stderr, "Error while reading test-case file\n");
