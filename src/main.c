@@ -158,13 +158,12 @@ int reduce(int pass) {
     ir_stats_t* stats = get_ir_stats(CURRENT_VARIANT, 0);
     int irg_n = stats->irg_n;
     int irg_idx = 0;
+    srand(time(NULL));
     while(failed < irg_n) {
-        irg_idx = (irg_idx + 1) % irg_n;
+        irg_idx = rand() % irg_n;
 
         int res = apply_pass(CURRENT_VARIANT, pass, irg_idx, AGGRESSIVE, "");
 
-        // check if we already made progress. If yes, we can go to the next irg.
-        // If not, we try reducing the current irg more conservatively
         if(res == 1) {
             if(is_reproducer()) {
                 achieved_reduction = 1;
@@ -176,13 +175,14 @@ int reduce(int pass) {
                 continue;
             }
                 // write pass and irg to file, so we can try to reduce more conservatively later on
+                failed++;
                 FILE* f = fopen("temp/fails", "a");
                 fprintf(f, "%d %s\n", pass, stats->irg_ids[irg_idx]);
                 fclose(f);
                 log_text("\n\t :: Reproducer test failed on irg \'");
                 log_text(stats->irg_ids[irg_idx]);
                 log_text("\'");
-        } else if(res == -1) {
+        } else if (res != 0) {
             log_text("\n\t :: Pass failed on irg \'");
             log_text(stats->irg_ids[irg_idx]);
             log_text("\'");

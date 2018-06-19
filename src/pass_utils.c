@@ -90,12 +90,11 @@ int apply_pass(char* path, pass_func* func, int idx, char* ident) {
     int improvement = (func)(irg, NULL);
 
     // apply optimizations
+    /*
     opt_bool(irg);
     optimize_cf(irg);
-    opt_if_conv(irg);
     do_loop_inversion(irg);
     optimize_reassociation(irg);
-    optimize_load_store(irg);
     optimize_graph_df(irg);
     combo(irg);
     scalar_replacement_opt(irg);
@@ -108,11 +107,10 @@ int apply_pass(char* path, pass_func* func, int idx, char* ident) {
     optimize_graph_df(irg);
     remove_confirms(irg);
     optimize_cf(irg);
-    optimize_load_store(irg);
     optimize_graph_df(irg);
     combo(irg);
     place_code(irg);
-    
+    */
     // check if we still have a valid irp
     if(is_valid()) {
         ir_export("temp/temp.ir");

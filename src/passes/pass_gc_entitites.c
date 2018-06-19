@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
     if(stat("temp/curr.ir", &st) == 0) {
         input_size = st.st_size;
     }
-    if(!input_size|| !output_size) {
+    if(!input_size || !output_size) {
         return -1;
     }
 
