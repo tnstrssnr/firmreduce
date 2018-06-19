@@ -51,7 +51,7 @@ void init_logging(char* out_path) {
     char buff[20];
     struct tm* time_;
     time_t now = time(0);
-    time_ = gmtime(&now);
+    time_ = localtime(&now);
 
     strftime (buff, sizeof(buff), "%Y-%m-%d %H:%M:%S", time_);
     fprintf (f, "%s -- ", buff);

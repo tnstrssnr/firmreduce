@@ -66,6 +66,10 @@ void init_temp_dirs(char* ir_path) {
     char cp_cmd[strlen(ir_path) + 17];
     sprintf(cp_cmd, "cp %s %s%c", ir_path, CURRENT_VARIANT, '\0');
     system(cp_cmd);
+
+    // create fails file
+    FILE* f = fopen("temp/fails", "w");
+    fclose(f);
 }
 
 ir_stats_t* get_ir_stats(char* path_to_file, int dump) {
@@ -157,7 +161,7 @@ int reduce(int pass) {
     while(failed < irg_n) {
         irg_idx = (irg_idx + 1) % irg_n;
 
-        int res = apply_pass(CURRENT_VARIANT, pass, irg_idx, AGGRESSIVE);
+        int res = apply_pass(CURRENT_VARIANT, pass, irg_idx, AGGRESSIVE, "");
 
         // check if we already made progress. If yes, we can go to the next irg.
         // If not, we try reducing the current irg more conservatively
@@ -169,16 +173,19 @@ int reduce(int pass) {
                 char replace[strlen(CURRENT_VARIANT) + strlen(TEMP_VARIANT) + 5];
                 sprintf(replace, "cp %s %s%c", TEMP_VARIANT, CURRENT_VARIANT, '\0');
                 system(replace);
-                continue; // skip conservative reduction
-            } else {
+                continue;
+            }
                 // write pass and irg to file, so we can try to reduce more conservatively later on
                 FILE* f = fopen("temp/fails", "a");
-                fprintf(f, "%s %s\n", passes[pass]->path, stats->irg_ids[irg_idx]);
+                fprintf(f, "%d %s\n", pass, stats->irg_ids[irg_idx]);
                 fclose(f);
-            }
                 log_text("\n\t :: Reproducer test failed on irg \'");
                 log_text(stats->irg_ids[irg_idx]);
                 log_text("\'");
+        } else if(res == -1) {
+            log_text("\n\t :: Pass failed on irg \'");
+            log_text(stats->irg_ids[irg_idx]);
+            log_text("\'");
         }
         failed++;
     }
@@ -244,6 +251,8 @@ int main(int argc, char** argv) {
     } else {
         init(argv[optind], reprod_args, argv[optind + 1]);
     }
+
+    // start reduction -- loop through passes in random order and try to reduce the irp as much as possible w/ each pass
     int result = 1;
     while(result) {
         int* rand_permutation = get_shuffle(PASSES_N);
@@ -258,5 +267,39 @@ int main(int argc, char** argv) {
             result = (pass_result) ? 1 : result;
         }    
     }
+
+    log_text("\n\n :: 2nd reduction cycle\n");
+    // look at fail file: if it exists we try to reduce the logged irgs again, but this time more conservatively
+    FILE* fails = fopen("temp/fails", "r");
+    char* line = NULL;
+    size_t size = 0;
+
+    int achieved_improvement = 1;
+    while(achieved_improvement) { 
+        achieved_improvement = 0;
+        while(getline(&line, &size, fails) != -1) {
+            int pass = atoi(strtok(line, " "));
+            char* irg_ident = strtok(NULL, " ");
+
+            log_text("\nUsing pass: ");
+            log_text(passes[pass]->ident);
+            log_text(" -- Trying irg \'");
+            log_text(irg_ident);
+            log_text("\' -- ");
+            int res = apply_pass(CURRENT_VARIANT, pass, -1, CONSERVATIVE, irg_ident);
+            log_result(res);
+            if(res == 1) {
+                if(is_reproducer()) {
+                    achieved_improvement = 1;
+                    // we found a new smaller variant -- set as current
+                    char replace[strlen(CURRENT_VARIANT) + strlen(TEMP_VARIANT) + 5];
+                    sprintf(replace, "cp %s %s%c", TEMP_VARIANT, CURRENT_VARIANT, '\0');
+                    system(replace);
+                    continue;
+                }
+            }
+        }
+    }
+    fclose(fails);
     finish();   
 }
