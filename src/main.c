@@ -18,6 +18,7 @@
 
 char* IS_REPRODUCER_SCRIPT;
 char* OUT_PATH = NULL;
+char* MAY_BE_INTERESTING;
 
 char* CURRENT_VARIANT = "temp/curr.ir";
 char* TEMP_VARIANT = "temp/temp.ir";
@@ -60,6 +61,13 @@ void init_temp_dirs(char* ir_path) {
             perror("");
         }
     }
+
+    // add directory to store variants that may of interest, but don't help the current reduction
+    MAY_BE_INTERESTING = malloc(sizeof(OUT_PATH) + sizeof("/may_be_interesting") + 2);
+    sprintf(MAY_BE_INTERESTING, "%s/may_be_interesting%c", OUT_PATH, '\0');
+    char make_dir[strlen(MAY_BE_INTERESTING) + strlen("mkdir ") + 1];
+    sprintf(make_dir, "mkdir %s%c", MAY_BE_INTERESTING, '\0');
+    system(make_dir);
     
     // move and rename initial test-case to temp directory    
     system("mkdir -p temp");
@@ -153,6 +161,7 @@ int is_reproducer() {
  */
 int reduce(int pass) {
 
+    int saved = 0; // variable needed if pass fails
     int achieved_reduction = 0;
     int failed = 0;
     ir_stats_t* stats = get_ir_stats(CURRENT_VARIANT, 0);
@@ -186,6 +195,17 @@ int reduce(int pass) {
             log_text("\n\t :: Pass failed on irg \'");
             log_text(stats->irg_ids[irg_idx]);
             log_text("\'");
+        } else {
+            // the pass failed. Usually this is an indication, that we found an interesting test-case for libFirm. We save the variant
+            // that caused the pass to fail (i.e. the input variant of the pass) for later
+            if(!saved) { // only save once
+                char file_name[256 +  strlen("cp  ") + strlen(CURRENT_VARIANT) + strlen(MAY_BE_INTERESTING) + 1];
+                time_t t = time(NULL);
+                struct tm tm = *localtime(&t);
+                sprintf(file_name, "cp %s %s/%d%d%d-%d%d%d.ir", CURRENT_VARIANT, MAY_BE_INTERESTING, tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+                system(file_name);
+                saved = 1;
+            }
         }
         failed++;
     }
