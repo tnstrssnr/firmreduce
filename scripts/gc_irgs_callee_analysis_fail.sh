@@ -1,10 +1,10 @@
 cp temp/temp.ir temp/testfile.ir # don't mess w/ out variants -- make a backup
-./build/passes/dll/pass_gc_irgs temp/temp.ir 0 0 2&> temp/test.txt
-mv temp/testfile.ir temp/temp.ir # restore variants
-grep -c -w "node->attr.call.callee_arr" temp/test.txt
+result=$(./build/passes/dll/pass_gc_irgs temp/temp.ir 0 0 2>&1 >/dev/null | grep -o "is_Call(node) && node->attr.call.callee_arr" | wc -l)
+mv temp/testfile.ir temp/temp.ir # restore variant
 
-if [ $? -eq 0 ] ; then
-    exit 0
+if [ $result -eq 0 ]; then
+    echo 0
 else
-    exit 1
+    echo 1
 fi
+
