@@ -40,15 +40,15 @@ void log_result(int result) {
 }
 
 void init_logging(char* out_path) {
-    LOG_FILE = malloc(sizeof(out_path) + 15);
-    sprintf(LOG_FILE, "%sReduction.log%c", out_path, '\0');
+    LOG_FILE = malloc(sizeof(out_path) + 28);
+    sprintf(LOG_FILE, "%s/Reduction.log%c", out_path, '\0');
     FILE* f = fopen(LOG_FILE, "w");
     if (!f) {
         perror("fopen");
         exit(1);
     }
 
-    char buff[20];
+    char buff[128];
     struct tm* time_;
     time_t now = time(0);
     time_ = localtime(&now);

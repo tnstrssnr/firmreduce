@@ -84,13 +84,13 @@ int apply_pass(char* path, pass_func* func, int idx, char* ident) {
     ir_graph* irg;
     if(idx == -1) {
         irg = get_irg_by_ident(ident);
+        if(!irg) return 0; // we may have already removed the irg
     } else {
         irg = get_irp_irg(idx);
     }
     int improvement = (func)(irg, NULL);
 
     // apply optimizations
-    /*
     opt_bool(irg);
     optimize_cf(irg);
     do_loop_inversion(irg);
@@ -110,7 +110,6 @@ int apply_pass(char* path, pass_func* func, int idx, char* ident) {
     optimize_graph_df(irg);
     combo(irg);
     place_code(irg);
-    */
     // check if we still have a valid irp
     if(is_valid()) {
         ir_export("temp/temp.ir");

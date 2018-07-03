@@ -53,6 +53,7 @@ int main(int argc, char** argv) {
     stats->irg_n = get_irp_n_irgs();
     stats->type_n = get_irp_n_types();
 
+    // dump vcg files
     if(*argv[3] == '1') {
         ir_set_dump_path(argv[4]);
         for(int i = 0; i < get_irp_n_irgs(); i++) {
@@ -60,6 +61,7 @@ int main(int argc, char** argv) {
         }
     }
     
+    // write stats + irg identifiers to file
     FILE* f = fopen(argv[2], "w+");
     fprintf(f, "%d %d %d %d %d\n", stats->node_n, stats->mem_node_n, stats->cf_manips, stats->type_n, stats->irg_n);
     for(int i = 0; i < get_irp_n_irgs(); i++) {

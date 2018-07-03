@@ -36,7 +36,7 @@ void init_reproducer_test(const char* path, const char* reprod_args) {
     }
 
     // We need 4 more characters
-    IS_REPRODUCER_SCRIPT = malloc(strlen(path) + strlen(reprod_args) + 17);
+    IS_REPRODUCER_SCRIPT = malloc(strlen(path) + strlen(reprod_args) + 4);
 
     if (IS_REPRODUCER_SCRIPT == NULL) {
         //malloc failed, deal with it
@@ -50,9 +50,8 @@ void init_temp_dirs(char* ir_path) {
 
     // path to dump results in
     if(OUT_PATH == NULL) {
-        //use ir path as output directory -- is valid, we already checked
-        OUT_PATH = malloc(sizeof(dirname(ir_path)));
-        OUT_PATH = dirname(ir_path);
+        //use current directory as output directory
+        OUT_PATH = "./";
     } else {
         //check if path is valid
         struct stat st;
@@ -65,8 +64,8 @@ void init_temp_dirs(char* ir_path) {
     // add directory to store variants that may of interest, but don't help the current reduction
     MAY_BE_INTERESTING = malloc(sizeof(OUT_PATH) + sizeof("/may_be_interesting") + 2);
     sprintf(MAY_BE_INTERESTING, "%s/may_be_interesting%c", OUT_PATH, '\0');
-    char make_dir[strlen(MAY_BE_INTERESTING) + strlen("mkdir ") + 1];
-    sprintf(make_dir, "mkdir %s%c", MAY_BE_INTERESTING, '\0');
+    char make_dir[strlen(MAY_BE_INTERESTING) + strlen("mkdir -p ") + 1];
+    sprintf(make_dir, "mkdir -p %s%c", MAY_BE_INTERESTING, '\0');
     system(make_dir);
     
     // move and rename initial test-case to temp directory    
@@ -80,18 +79,14 @@ void init_temp_dirs(char* ir_path) {
     fclose(f);
 }
 
-ir_stats_t* get_ir_stats(char* path_to_file, int dump) {
+ir_stats_t* get_ir_stats(char* path_to_file, int dump, char* suffix) {
 
-    /**
-     * Since libfirm is invoked w/ every call to this function, it can't keep track of how often we've dumped the graphs before.
-     * We use the counter to do that
-     */
-    static int counter = 0;
     ir_stats_t* stats = malloc(sizeof(ir_stats_t));
 
-    char command[strlen(LIBSTATS_PATH) + strlen(path_to_file) + strlen(OUT_PATH) + strlen(STATS) + 5 + (counter/10)];
+    char command[strlen(LIBSTATS_PATH) + strlen(path_to_file) + strlen(OUT_PATH) + strlen(STATS) + 5 + strlen("final")];
 
-    sprintf(command, "%s %s %s %d %s %d%c", LIBSTATS_PATH, path_to_file, STATS, dump, OUT_PATH, counter, '\0');
+    // execute libstats
+    sprintf(command, "%s %s %s %d %s %s%c", LIBSTATS_PATH, path_to_file, STATS, dump, OUT_PATH, suffix, '\0');
     system(command);
 
     // read the stats from the output file
@@ -113,7 +108,6 @@ ir_stats_t* get_ir_stats(char* path_to_file, int dump) {
         stats->irg_ids[i] = strtok(NULL ," ");
     }
 
-    counter++;
     return stats;
 }
 
@@ -121,7 +115,7 @@ void finish() {
     log_text("\n\n______________________________\n\n");
     log_text("No further reduction possible.\n\n");
     log_text("Result:\n");
-    log_stats(get_ir_stats(CURRENT_VARIANT, 1));   
+    log_stats(get_ir_stats(CURRENT_VARIANT, 1, "final"));   
 
     char move_result[strlen(OUT_PATH) + strlen(CURRENT_VARIANT) + 15];
     sprintf(move_result, "cp %s %s/result.ir%c", CURRENT_VARIANT, OUT_PATH, '\0');
@@ -135,10 +129,11 @@ void finish() {
 void init(char* rep_path, char* reprod_args, char* ir_path) {
     init_reproducer_test(rep_path, reprod_args);
     init_temp_dirs(ir_path);
+    printf("temp Dirs finished\n");
     init_logging(OUT_PATH);
-    printf("Finished logging init\n");
+    printf("logging finished\n");
     init_passes_dynamic();
-    log_stats(get_ir_stats(CURRENT_VARIANT, 1));
+    log_stats(get_ir_stats(CURRENT_VARIANT, 1, "initial"));
 }
 
 //execute shell script
@@ -164,26 +159,29 @@ int reduce(int pass) {
     int saved = 0; // variable needed if pass fails
     int achieved_reduction = 0;
     int failed = 0;
-    ir_stats_t* stats = get_ir_stats(CURRENT_VARIANT, 0);
+
+    ir_stats_t* stats = get_ir_stats(CURRENT_VARIANT, 0, "null");
     int irg_n = stats->irg_n;
     int irg_idx = 0;
+
     srand(time(NULL));
     while(failed < irg_n) {
         irg_idx = rand() % irg_n;
 
         int res = apply_pass(CURRENT_VARIANT, pass, irg_idx, AGGRESSIVE, "");
 
-        if(res == 1) {
+        if(res == 1) { // pass was successful
             if(is_reproducer()) {
                 achieved_reduction = 1;
                 failed = 0; // reset counter
+
                 // we found a new smaller variant -- set as current
                 char replace[strlen(CURRENT_VARIANT) + strlen(TEMP_VARIANT) + 5];
                 sprintf(replace, "cp %s %s%c", TEMP_VARIANT, CURRENT_VARIANT, '\0');
                 system(replace);
                 continue;
             }
-                // write pass and irg to file, so we can try to reduce more conservatively later on
+                // variant is no reproducer - write pass and irg to file, so we can try to reduce more conservatively later on
                 failed++;
                 FILE* f = fopen("temp/fails", "a");
                 fprintf(f, "%d %s\n", pass, stats->irg_ids[irg_idx]);
@@ -191,13 +189,14 @@ int reduce(int pass) {
                 log_text("\n\t :: Reproducer test failed on irg \'");
                 log_text(stats->irg_ids[irg_idx]);
                 log_text("\'");
+
         } else if (res != 0) {
+            // the pass failed. Usually this is an indication, that we found an interesting test-case for libFirm. We save the variant
+            // that caused the pass to fail (i.e. the input variant of the pass) for later
             log_text("\n\t :: Pass failed on irg \'");
             log_text(stats->irg_ids[irg_idx]);
             log_text("\'");
-        } else {
-            // the pass failed. Usually this is an indication, that we found an interesting test-case for libFirm. We save the variant
-            // that caused the pass to fail (i.e. the input variant of the pass) for later
+
             if(!saved) { // only save once
                 char file_name[256 +  strlen("cp  ") + strlen(CURRENT_VARIANT) + strlen(MAY_BE_INTERESTING) + 1];
                 time_t t = time(NULL);
@@ -253,7 +252,9 @@ int main(int argc, char** argv) {
     while((i = getopt(argc, argv, "o:a:")) != -1) {
         switch(i) {
             case 'o':
-                OUT_PATH = optarg;
+                OUT_PATH = malloc(sizeof(optarg) + 2);
+                sprintf(OUT_PATH, "%s/%c", optarg, '\0');
+                printf("%s\n", OUT_PATH);
                 break;
             case 'a':
                 reprod_args = optarg;
@@ -311,6 +312,7 @@ int main(int argc, char** argv) {
             if(res == 1) {
                 if(is_reproducer()) {
                     achieved_improvement = 1;
+                    
                     // we found a new smaller variant -- set as current
                     char replace[strlen(CURRENT_VARIANT) + strlen(TEMP_VARIANT) + 5];
                     sprintf(replace, "cp %s %s%c", TEMP_VARIANT, CURRENT_VARIANT, '\0');
