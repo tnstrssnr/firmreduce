@@ -19,7 +19,7 @@ void log_text(char* text) {
 }
 
 void log_stats(ir_stats_t* stats) {
-    char text[128]; // TODO: make sure buff size is big enough
+    char text[128];
     sprintf(text, "\t# of nodes: \t\t\t%d\n\t# of irgs: \t\t\t\t%d\n\t# of cf manipulations: \t%d\n\t# of memory operations: %d\n\t# of types: \t\t\t%d\n\n%c",
          stats->node_n, stats->irg_n, stats->cf_manips, stats->mem_node_n, stats->type_n, '\0');
     log_text(text);
@@ -40,21 +40,24 @@ void log_result(int result) {
 }
 
 void init_logging(char* out_path) {
-    LOG_FILE = malloc(sizeof(out_path) + 28);
-    sprintf(LOG_FILE, "%s/Reduction.log%c", out_path, '\0');
-    FILE* f = fopen(LOG_FILE, "w");
-    if (!f) {
+    LOG_FILE = malloc(strlen(out_path) + strlen("Reduction.log") + 3);
+    sprintf(LOG_FILE, "%sReduction.log%c", out_path, '\0');
+    printf("%s\n", LOG_FILE);
+    FILE* file = fopen(LOG_FILE, "w");
+    if (!file) {
         perror("fopen");
         exit(1);
     }
 
-    char buff[128];
+    char* buff = malloc(30);
     struct tm* time_;
     time_t now = time(0);
     time_ = localtime(&now);
 
-    strftime (buff, sizeof(buff), "%Y-%m-%d %H:%M:%S", time_);
-    fprintf (f, "%s -- ", buff);
-    fprintf(f, "Firmreduce -- Results\n\nInitial Test-case size:\n");
-    fclose(f);
+    int returnVal = strftime (buff, 30, "%Y-%m-%d %H:%M:%S", time_);
+    printf("strftime: %d\n", returnVal);
+    fprintf (file, "%s -- ", buff);
+    fprintf(file, "Firmreduce -- Results\n\nInitial Test-case size:\n");
+    fclose(file);
+    printf("init_logging finished\n");
 }

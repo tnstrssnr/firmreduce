@@ -17,13 +17,13 @@
 #define AGGRESSIVE 0
 
 char* IS_REPRODUCER_SCRIPT;
-char* OUT_PATH = NULL;
+char* OUT_PATH;
 char* MAY_BE_INTERESTING;
 
 char* CURRENT_VARIANT = "temp/curr.ir";
 char* TEMP_VARIANT = "temp/temp.ir";
 char* STATS = "temp/stats";
-char* LIBSTATS_PATH = "build/debug/libstats";
+char* LIBSTATS_PATH;
 
 void init_reproducer_test(const char* path, const char* reprod_args) {
 
@@ -36,7 +36,7 @@ void init_reproducer_test(const char* path, const char* reprod_args) {
     }
 
     // We need 4 more characters
-    IS_REPRODUCER_SCRIPT = malloc(strlen(path) + strlen(reprod_args) + 4);
+    IS_REPRODUCER_SCRIPT = malloc(strlen(path) + strlen(reprod_args) + 5);
 
     if (IS_REPRODUCER_SCRIPT == NULL) {
         //malloc failed, deal with it
@@ -49,7 +49,7 @@ void init_reproducer_test(const char* path, const char* reprod_args) {
 void init_temp_dirs(char* ir_path) {
 
     // path to dump results in
-    if(OUT_PATH == NULL) {
+    if(!OUT_PATH) {
         //use current directory as output directory
         OUT_PATH = "./";
     } else {
@@ -62,7 +62,7 @@ void init_temp_dirs(char* ir_path) {
     }
 
     // add directory to store variants that may of interest, but don't help the current reduction
-    MAY_BE_INTERESTING = malloc(sizeof(OUT_PATH) + sizeof("/may_be_interesting") + 2);
+    MAY_BE_INTERESTING = malloc(strlen(OUT_PATH) + strlen("/may_be_interesting") + 2);
     sprintf(MAY_BE_INTERESTING, "%s/may_be_interesting%c", OUT_PATH, '\0');
     char make_dir[strlen(MAY_BE_INTERESTING) + strlen("mkdir -p ") + 1];
     sprintf(make_dir, "mkdir -p %s%c", MAY_BE_INTERESTING, '\0');
@@ -70,7 +70,7 @@ void init_temp_dirs(char* ir_path) {
     
     // move and rename initial test-case to temp directory    
     system("mkdir -p temp");
-    char cp_cmd[strlen(ir_path) + 17];
+    char cp_cmd[strlen(ir_path) + 6];
     sprintf(cp_cmd, "cp %s %s%c", ir_path, CURRENT_VARIANT, '\0');
     system(cp_cmd);
 
@@ -83,7 +83,7 @@ ir_stats_t* get_ir_stats(char* path_to_file, int dump, char* suffix) {
 
     ir_stats_t* stats = malloc(sizeof(ir_stats_t));
 
-    char command[strlen(LIBSTATS_PATH) + strlen(path_to_file) + strlen(OUT_PATH) + strlen(STATS) + 5 + strlen("final")];
+    char command[strlen(LIBSTATS_PATH) + strlen(path_to_file) + strlen(OUT_PATH) + strlen(STATS) + 7 + strlen(suffix)];
 
     // execute libstats
     sprintf(command, "%s %s %s %d %s %s%c", LIBSTATS_PATH, path_to_file, STATS, dump, OUT_PATH, suffix, '\0');
@@ -126,13 +126,17 @@ void finish() {
     printf("\n:: Reduction finished -- Results dumped in %s\n", OUT_PATH);
 }
 
-void init(char* rep_path, char* reprod_args, char* ir_path) {
+void init(char* program_path, char* rep_path, char* reprod_args, char* ir_path) {
+
+    char* dir_ = dirname(program_path);
+    LIBSTATS_PATH = malloc(strlen(dir_) + strlen("/libstats") + 1);
+    sprintf(LIBSTATS_PATH, "%s/libstats%c", dir_, '\0');
     init_reproducer_test(rep_path, reprod_args);
     init_temp_dirs(ir_path);
-    printf("temp Dirs finished\n");
+    printf("temp dirs\n");
     init_logging(OUT_PATH);
-    printf("logging finished\n");
-    init_passes_dynamic();
+    printf("Logging\n");
+    init_passes_dynamic(dir_);
     log_stats(get_ir_stats(CURRENT_VARIANT, 1, "initial"));
 }
 
@@ -252,9 +256,8 @@ int main(int argc, char** argv) {
     while((i = getopt(argc, argv, "o:a:")) != -1) {
         switch(i) {
             case 'o':
-                OUT_PATH = malloc(sizeof(optarg) + 2);
+                OUT_PATH = malloc(strlen(optarg)*sizeof(char) + 2);
                 sprintf(OUT_PATH, "%s/%c", optarg, '\0');
-                printf("%s\n", OUT_PATH);
                 break;
             case 'a':
                 reprod_args = optarg;
@@ -270,7 +273,7 @@ int main(int argc, char** argv) {
         fprintf(stderr, "Received unexpected number of arguments\n");
         exit(1);
     } else {
-        init(argv[optind], reprod_args, argv[optind + 1]);
+        init(argv[0], argv[optind], reprod_args, argv[optind + 1]);
     }
 
     // start reduction -- loop through passes in random order and try to reduce the irp as much as possible w/ each pass

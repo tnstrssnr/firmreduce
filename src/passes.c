@@ -4,6 +4,7 @@
 #include <dlfcn.h>
 #include <string.h>
 #include <limits.h>
+#include <libgen.h>
 
 #include "passes/passes.h"
 #include "logging.h"
@@ -17,8 +18,9 @@ pass_t* new_pass(char* ident, char* path) {
 
 }
 
-void init_passes_dynamic() {
-    const char* pass_dir = "build/passes/dll"; //TODO: what happens if we start program from other directory?
+void init_passes_dynamic(char* path) {
+    char pass_dir[strlen(path) + strlen("/passes/exe/") + 1];
+    sprintf(pass_dir, "%s/passes/exe/%c", path, '\0');
 
     DIR* dir;
     struct dirent* dir_ent;

@@ -10,7 +10,7 @@ vpath %.h $(top_src_dir)/include
 
 variant = debug
 build_dir = $(top_build_dir)/$(variant)
-pass_dir = $(top_build_dir)/passes
+pass_dir = $(top_build_dir)/$(variant)/passes
 libstats_dir = $(top_build_dir)/stats
 
 # set compile flags
@@ -42,8 +42,8 @@ libstats_TARGET = $(build_dir)/libstats
 libfirm_HOME = $(top_src_dir)/libfirm
 libfirm_INCLUDE_FLAGS = -I$(libfirm_HOME)/include -I$(libfirm_HOME)/include/libfirm -I$(libfirm_HOME)/build/gen/include/libfirm
 libfirm_STATIC = $(libfirm_HOME)/build/$(variant)/libfirm.a
-libfirm_STATIC_PATH = -L$(libfirm_HOME)/build/$(variant)/
-libfirm_DYNAMIC_PATH = $(libfirm_HOME)/build/$(variant)/
+libfirm_STATIC_PATH = -L$(libfirm_HOME)/build/$(variant)/libfirm
+libfirm_DYNAMIC_PATH = $(libfirm_HOME)/build/$(variant)/libfirm
 libfirm_DYNAMIC = $(libfirm_HOME)/build/$(variant)/libfirm.$(DLL_EXT)
 
 # include headers
@@ -56,17 +56,17 @@ LOCAL_INCLUDE ?= /usr/local/include
 
 .PHONY: all clean clean-all makedir passes libstats
 
-all: makedir libstats $(firmreduce_TARGET) passes # FIXME: needs to be built in this order --> unstable!
+all: makedir libstats $(firmreduce_TARGET) passes
 	@echo Target make all complete
 
 makedir:
 	@mkdir -p $(pass_dir)/obj
-	@mkdir -p $(pass_dir)/dll
+	@mkdir -p $(pass_dir)/exe
 	@mkdir -p $(build_dir)
 	@mkdir -p $(libstats_dir)
 
 libstats: makedir $(libfirm_STATIC)
-	@$(CC) -o $(libstats_TARGET) $(libstats_SRC) $(libstats_INCLUDE_FLAGS) $(libfirm_INCLUDE_FLAGS) $(libfirm_STATIC_PATH) -Wl,-rpath=$(libfirm_DYNAMIC_PATH) -lfirm -ldl
+	@$(CC) -o $(libstats_TARGET) $(libstats_SRC) $(libstats_INCLUDE_FLAGS) $(libfirm_INCLUDE_FLAGS) $(libfirm_STATIC_PATH) $(libfirm_STATIC) -lm -ldl
 
 $(firmreduce_TARGET): $(firmreduce_SOURCES)
 	@echo Build firmreduce
@@ -88,6 +88,6 @@ passes: makedir $(passes_OBJECTS)
 %.o: %.c
 	@$(CC) -c $(CFLAGS) $(pass_util_SRC) $(libfirm_INCLUDE_FLAGS) $(pass_util_INCLUDE_FLAGS)  -o $(pass_util_OBJ)
 	@$(CC) -c $(CFLAGS) $< $(pass_util_INCLUDE_FLAGS) $(libfirm_INCLUDE_FLAGS) -o $(pass_dir)/obj/$(notdir $@)
-	@$(CC) -o $(pass_dir)/dll/$(basename $(notdir $<)) $(pass_dir)/obj/$(basename $(notdir $<)).o $(pass_util_OBJ) $(libfirm_STATIC_PATH) -Wl,-rpath=$(libfirm_DYNAMIC_PATH) -lfirm
+	@$(CC) -o $(pass_dir)/exe/$(basename $(notdir $<)) $(pass_dir)/obj/$(basename $(notdir $<)).o $(pass_util_OBJ) $(libfirm_STATIC_PATH) $(libfirm_STATIC) -lm -ldl
 	@echo Build $(basename $(notdir $<))
 	
