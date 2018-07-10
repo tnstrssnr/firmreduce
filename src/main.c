@@ -73,6 +73,9 @@ void init_temp_dirs(char* ir_path) {
     char cp_cmd[strlen(ir_path) + 6];
     sprintf(cp_cmd, "cp %s %s%c", ir_path, CURRENT_VARIANT, '\0');
     system(cp_cmd);
+    sprintf(cp_cmd, "cp %s %s%c", ir_path, TEMP_VARIANT, '\0');
+    printf("%s\n", cp_cmd);
+    system(cp_cmd);
 
     // create fails file
     FILE* f = fopen("temp/fails", "w");
@@ -126,20 +129,6 @@ void finish() {
     printf("\n:: Reduction finished -- Results dumped in %s\n", OUT_PATH);
 }
 
-void init(char* program_path, char* rep_path, char* reprod_args, char* ir_path) {
-
-    char* dir_ = dirname(program_path);
-    LIBSTATS_PATH = malloc(strlen(dir_) + strlen("/libstats") + 1);
-    sprintf(LIBSTATS_PATH, "%s/libstats%c", dir_, '\0');
-    init_reproducer_test(rep_path, reprod_args);
-    init_temp_dirs(ir_path);
-    printf("temp dirs\n");
-    init_logging(OUT_PATH);
-    printf("Logging\n");
-    init_passes_dynamic(dir_);
-    log_stats(get_ir_stats(CURRENT_VARIANT, 1, "initial"));
-}
-
 //execute shell script
 //TODO: return -1 instead of 0 if test fails --> makes logging easier
 int is_reproducer() {
@@ -153,6 +142,18 @@ int is_reproducer() {
     fclose(f);
 
     return int_result;
+}
+
+void init(char* program_path, char* rep_path, char* reprod_args, char* ir_path) {
+
+    char* dir_ = dirname(program_path);
+    LIBSTATS_PATH = malloc(strlen(dir_) + strlen("/libstats") + 1);
+    sprintf(LIBSTATS_PATH, "%s/libstats%c", dir_, '\0');
+    init_reproducer_test(rep_path, reprod_args);
+    init_temp_dirs(ir_path);
+    init_logging(OUT_PATH);
+    init_passes_dynamic(dir_);
+    log_stats(get_ir_stats(CURRENT_VARIANT, 1, "initial"));
 }
 
 /**
@@ -274,6 +275,12 @@ int main(int argc, char** argv) {
         exit(1);
     } else {
         init(argv[0], argv[optind], reprod_args, argv[optind + 1]);
+    }
+
+    // check if input file is reproducer
+    if(!is_reproducer()) {
+        fprintf(stderr, "Reproducer test fails on input -- aborting reduction\n");
+        exit(1);
     }
 
     // start reduction -- loop through passes in random order and try to reduce the irp as much as possible w/ each pass
