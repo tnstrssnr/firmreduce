@@ -5,3 +5,5 @@
     set_Block_phis_: Assertion `ir_resources_reserved(get_irn_irg(block)) & IR_RESOURCE_PHI_LIST' failed
 - validity check pass succeeds
 
+- 2nd input file: independant from first, but has same bug
+- invoke w/ parameters "0 0"
