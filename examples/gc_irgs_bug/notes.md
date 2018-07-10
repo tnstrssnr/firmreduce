@@ -21,3 +21,6 @@ Assertion fails bc callee_arr is not initialized --> missing calle analysis
 	# of memory operations: 1
 	# of types: 			2055
     is still reproducer !!
+
+
+added 2nd testcase, fails on '0 0'
