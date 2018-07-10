@@ -159,7 +159,7 @@ void init(char* program_path, char* rep_path, char* reprod_args, char* ir_path) 
 /**
  * function tries to reduce the irp as much as possible w/ the given pass.
  */
-int reduce(int pass) {
+int reduce_irg_level(int pass) {
 
     int saved = 0; // variable needed if pass fails
     int achieved_reduction = 0;
@@ -214,6 +214,27 @@ int reduce(int pass) {
         failed++;
     }
     return achieved_reduction;
+}
+
+int reduce_irn_level(char* irg_ident, int pass) {
+     log_text("\nUsing pass: ");
+    log_text(passes[pass]->ident);
+    log_text(" -- Trying irg \'");
+    log_text(irg_ident);
+    log_text("\' -- ");
+    int res = apply_pass(CURRENT_VARIANT, pass, -1, CONSERVATIVE, irg_ident);
+    log_result(res);
+    if(res == 1 && is_reproducer()) {
+       
+        // we found a new smaller variant -- set as current
+        char replace[strlen(CURRENT_VARIANT) + strlen(TEMP_VARIANT) + 5];
+        sprintf(replace, "cp %s %s%c", TEMP_VARIANT, CURRENT_VARIANT, '\0');
+        system(replace);
+        return 1;
+        
+    }
+    return 0;
+            
 }
 
 /**
@@ -292,12 +313,13 @@ int main(int argc, char** argv) {
             int pass = rand_permutation[i];
             log_text("\nUsing pass: ");
             log_text(passes[pass]->ident);
-            int pass_result = reduce(pass);
+            int pass_result = reduce_irg_level(pass);
             log_text(" -- ");
             log_result(pass_result);
             result = (pass_result) ? 1 : result;
         }    
     }
+
 
     log_text("\n\n :: 2nd reduction cycle\n");
     // look at fail file: if it exists we try to reduce the logged irgs again, but this time more conservatively
@@ -311,25 +333,8 @@ int main(int argc, char** argv) {
         while(getline(&line, &size, fails) != -1) {
             int pass = atoi(strtok(line, " "));
             char* irg_ident = strtok(NULL, " ");
-
-            log_text("\nUsing pass: ");
-            log_text(passes[pass]->ident);
-            log_text(" -- Trying irg \'");
-            log_text(irg_ident);
-            log_text("\' -- ");
-            int res = apply_pass(CURRENT_VARIANT, pass, -1, CONSERVATIVE, irg_ident);
-            log_result(res);
-            if(res == 1) {
-                if(is_reproducer()) {
-                    achieved_improvement = 1;
-                    
-                    // we found a new smaller variant -- set as current
-                    char replace[strlen(CURRENT_VARIANT) + strlen(TEMP_VARIANT) + 5];
-                    sprintf(replace, "cp %s %s%c", TEMP_VARIANT, CURRENT_VARIANT, '\0');
-                    system(replace);
-                    continue;
-                }
-            }
+            int result = reduce_irn_level(irg_ident, pass);
+            achieved_improvement = (achieved_improvement) ? 1 : result;
         }
     }
     fclose(fails);

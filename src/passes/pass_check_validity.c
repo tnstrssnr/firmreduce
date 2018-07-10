@@ -1,6 +1,10 @@
 #include <firm.h>
 #include <pass_utils.h>
 
+/**
+ * Checks validity of the input file
+ * Returns 0 if file is ok, else -1
+ */
 int main(int argc, char** argv) {
 
     ir_init();
