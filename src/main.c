@@ -114,6 +114,9 @@ ir_stats_t* get_ir_stats(char* path_to_file, int dump, char* suffix) {
     return stats;
 }
 
+/**
+ * Log results, move output to out_dir, clean up temp files
+ */
 void finish() {
     log_text("\n\n______________________________\n\n");
     log_text("No further reduction possible.\n\n");
@@ -123,14 +126,12 @@ void finish() {
     char move_result[strlen(OUT_PATH) + strlen(CURRENT_VARIANT) + 15];
     sprintf(move_result, "cp %s %s/result.ir%c", CURRENT_VARIANT, OUT_PATH, '\0');
     system(move_result);
-
-    //TODO: delete temp dir
+    system("rm -r temp/");
 
     printf("\n:: Reduction finished -- Results dumped in %s\n", OUT_PATH);
 }
 
 //execute shell script
-//TODO: return -1 instead of 0 if test fails --> makes logging easier
 int is_reproducer() {
     FILE* f = popen(IS_REPRODUCER_SCRIPT, "r");
     if(!f) {
@@ -319,7 +320,6 @@ int main(int argc, char** argv) {
             result = (pass_result) ? 1 : result;
         }    
     }
-
 
     log_text("\n\n :: 2nd reduction cycle\n");
     // look at fail file: if it exists we try to reduce the logged irgs again, but this time more conservatively

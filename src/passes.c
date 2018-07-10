@@ -74,7 +74,7 @@ int apply_pass(char* path, int i, int arg, int reduce_individual, char* ident) {
     int result;
 
     path_ = malloc(512);
-    sprintf(path_, "%s %s %d %d %s%c", passes[i]->path, path, arg, reduce_individual, ident, '\0');
+    sprintf(path_, "%s %s %d %d %s 2>1&> /dev/null%c", passes[i]->path, path, arg, reduce_individual, ident, '\0');
 
     status = system(path_);      
     result = -1;

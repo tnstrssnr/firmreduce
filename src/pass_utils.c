@@ -9,6 +9,10 @@ const char* TEMP_DIR = "temp/";
 const char* TEMP_IR = "temp/temp.ir";
 const char* CURR_IR = "temp/curr.ir";
 
+/**
+ * File contains functions that can be used to implement the passes
+ */
+
 void find_nodes_walk(ir_node* node, void* data) {
 
     ir_node_container* container = (ir_node_container*) data;
@@ -86,6 +90,7 @@ int apply_pass(char* path, pass_func* func, int idx, char* ident) {
         irg = get_irg_by_ident(ident);
         if(!irg) return 0; // we may have already removed the irg
     } else {
+        if (idx > get_irp_n_irgs()) return 0;
         irg = get_irp_irg(idx);
     }
     int improvement = (func)(irg, NULL);
@@ -135,6 +140,8 @@ int apply_optimization(char* file, int irg, opt_func* func) {
         return -1;
     }
 
+    if (irg > get_irp_n_irgs()) return 0; 
+
     // get node count before the optimization
     ir_node_container* container = new_container(select_all);
     collect_nodes(get_irp_irg(irg), container);
@@ -144,8 +151,9 @@ int apply_optimization(char* file, int irg, opt_func* func) {
 
     // check if number of nodes changed
     // If not we assume that the optimization was ineffective and return 0
+    // we keep the new variant, even if it increases the number of nodes, bc we assume that it does usefull stuff
     collect_nodes(get_irp_irg(irg), container);
-    int improvement = (container->nodes_n < nodes_n_old) ? 1 : 0;
+    int improvement = (container->nodes_n != nodes_n_old) ? 1 : 0;
 
     if(is_valid()) {
         ir_export("temp/temp.ir");
