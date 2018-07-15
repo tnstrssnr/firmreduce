@@ -4,11 +4,13 @@
 #include <sys/stat.h>
 
 int main(int argc, char** argv) {
+    char* import_file = argv[1];
+    int reduce_conservatively = atoi(argv[3]);
 
-    if (atoi(argv[3]) == -1) return 0; // we can't so conservative reduction here
+    if (reduce_conservatively == -1) return 0; // we can't so conservative reduction here
 
     ir_init();
-    if(ir_import(argv[1])) {
+    if(ir_import(import_file)) {
         fprintf(stderr, "Error while reading test-case file\n");
         return -1;
     }

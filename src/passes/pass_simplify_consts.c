@@ -48,9 +48,14 @@ int pass_simplify_consts(ir_graph* irg, void* data) {
 }
 
 int main(int argc, char** argv) {
-    if(atoi(argv[3]) == 1) {
-        return apply_pass(argv[1], &pass_simplify_consts_individual, -1, argv[4]);
+    char* import_file = argv[1];
+    int irg_nr = atoi(argv[2]);
+    int reduce_conservatively = atoi(argv[3]);
+    char* irg_ident = argv[4];
+
+    if(reduce_conservatively) {
+        return apply_pass(import_file, &pass_simplify_consts_individual, -1, irg_ident);
     } else {
-        return apply_pass(argv[1], &pass_simplify_consts, atoi(argv[2]), NULL);
+        return apply_pass(import_file, &pass_simplify_consts, irg_nr, NULL);
     }
 }

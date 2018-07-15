@@ -61,5 +61,11 @@ int pass_remove_allocs(ir_graph* irg, void* data) {
 }
 
 int main(int argc, char** argv) {
-    return (atoi(argv[3]) == 1) ? apply_pass(argv[1], &pass_remove_allocs_individual, -1, argv[4]) : apply_pass(argv[1], &pass_remove_allocs, atoi(argv[2]), NULL);
+    char* import_file = argv[1];
+    int irg_nr = atoi(argv[2]);
+    int reduce_conservatively = atoi(argv[3]);
+    char* irg_ident = argv[4];
+
+
+    return (reduce_conservatively) ? apply_pass(import_file, &pass_remove_allocs_individual, -1, irg_ident) : apply_pass(import_file, &pass_remove_allocs, irg_nr, NULL);
 }

@@ -6,22 +6,26 @@
 const char* MAIN = "main";
 
 int main(int argc, char** argv) {
+    char* import_file = argv[1];
+    int irg_nr = atoi(argv[2]);
+    int reduce_conservatively = atoi(argv[3]);
+
     int result = 0;
-    if (atoi(argv[3]) == 1) return 0;
+    if (reduce_conservatively) return 0;
 
     ir_init();
 
-    if(ir_import(argv[1])) {
+    if(ir_import(import_file)) {
         fprintf(stderr, "Error while reading test-case file\n");
         return -1;
     }
 
     int irg_n_old = get_irp_n_irgs();
 
-    if(atoi(argv[2]) >= irg_n_old) return 0;
+    if(irg_nr >= irg_n_old) return 0;
     ir_entity* keep_arr[2];
 
-    keep_arr[1] = get_irg_entity(get_irp_irg(atoi(argv[2])));
+    keep_arr[1] = get_irg_entity(get_irp_irg(irg_nr));
 
     for(int i = 0; i < irg_n_old; i++) {
         const char* pass_name = get_id_str(get_entity_ident(get_irg_entity(get_irp_irg(i))));
