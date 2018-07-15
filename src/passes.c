@@ -20,7 +20,7 @@ pass_t* new_pass(char* ident, char* path) {
 
 void init_passes_dynamic(char* path) {
     char pass_dir[strlen(path) + strlen("/passes/exe/") + 1];
-    sprintf(pass_dir, "%s/passes/exe/%c", path, '\0');
+    sprintf(pass_dir, "%s/passes/exe/", path, '\0');
 
     DIR* dir;
     struct dirent* dir_ent;
@@ -50,7 +50,7 @@ void init_passes_dynamic(char* path) {
         while((dir_ent = readdir(dir)) != NULL) {
             if(dir_ent->d_name[0] != '.') {
                 char* path = malloc(sizeof(dir_ent->d_name) + sizeof(pass_dir) + 4);
-                sprintf(path, "./%s/%s%c", pass_dir, dir_ent->d_name, '\0');
+                sprintf(path, "./%s/%s", pass_dir, dir_ent->d_name);
                 passes[i] = new_pass(dir_ent->d_name, path);
                 i++;
             }
@@ -74,7 +74,7 @@ int apply_pass(char* path, int i, int arg, int reduce_individual, char* ident) {
     int result;
 
     path_ = malloc(512);
-    sprintf(path_, "%s %s %d %d %s 2>1&> /dev/null%c", passes[i]->path, path, arg, reduce_individual, ident, '\0');
+    sprintf(path_, "%s %s %d %d %s 2>1&> /dev/null", passes[i]->path, path, arg, reduce_individual, ident);
 
     status = system(path_);      
     result = -1;

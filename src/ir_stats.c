@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "irgwalk.h"
+#include <stdbool.h>
 
 #include "libfirm/firm.h"
 #include "ir_stats_structs.h"
@@ -32,8 +33,14 @@ int main(int argc, char** argv) {
         exit(1);
     }
 
+    char* import_file = argv[1];
+    char* dump_stats = argv[2];
+    bool dump = atoi(argv[3]);
+    char* dump_graphs = argv[4];
+    char* suffix = argv[5];
+
     ir_init();
-    if(ir_import(argv[1])) {
+    if(ir_import(import_file)) {
         fprintf(stderr, "Error while reading test-case file\n");
         exit(1);
     }
@@ -54,15 +61,15 @@ int main(int argc, char** argv) {
     stats->type_n = get_irp_n_types();
 
     // dump vcg files
-    if(*argv[3] == '1') {
-        ir_set_dump_path(argv[4]);
+    if(dump) {
+        ir_set_dump_path(dump_graphs);
         for(int i = 0; i < get_irp_n_irgs(); i++) {
-            dump_ir_graph(get_irp_irg(i), argv[5]);
+            dump_ir_graph(get_irp_irg(i), suffix);
         }
     }
     
     // write stats + irg identifiers to file
-    FILE* f = fopen(argv[2], "w+");
+    FILE* f = fopen(dump_stats, "w+");
     fprintf(f, "%d %d %d %d %d\n", stats->node_n, stats->mem_node_n, stats->cf_manips, stats->type_n, stats->irg_n);
     for(int i = 0; i < get_irp_n_irgs(); i++) {
         fprintf(f, "%s ", get_id_str(get_entity_ident(get_irg_entity(get_irp_irg(i)))));

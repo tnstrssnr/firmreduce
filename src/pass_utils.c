@@ -2,7 +2,7 @@
 #include <string.h>
 #include <adt/array.h>
 #include <time.h>
-
+#include  <stdbool.h>
 #include <pass_utils.h>
 
 const char* TEMP_DIR = "temp/";
@@ -38,7 +38,7 @@ ir_node_container* new_container(select_func* func) {
     return container;
 }
 
-int  is_valid() {
+bool is_valid() {
     // see if variant is a valid irp
     for(int i = 0; i < get_irp_n_irgs(); i++) {   
         if(!irg_verify(get_irp_irg(i))) {

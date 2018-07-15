@@ -8,6 +8,7 @@
 #include <dlfcn.h>
 #include <assert.h>
 #include <time.h>
+#include <stdbool.h>
 
 #include "ir_stats_structs.h"
 #include "passes/passes.h"
@@ -36,14 +37,14 @@ void init_reproducer_test(const char* path, const char* reprod_args) {
     }
 
     // We need 4 more characters
-    IS_REPRODUCER_SCRIPT = malloc(strlen(path) + strlen(reprod_args) + 5);
+    IS_REPRODUCER_SCRIPT = malloc(strlen(path) + strlen(reprod_args) + 4);
 
-    if (IS_REPRODUCER_SCRIPT == NULL) {
+    if (!IS_REPRODUCER_SCRIPT) {
         //malloc failed, deal with it
         perror("Error");
         exit(1);
     }
-    sprintf(IS_REPRODUCER_SCRIPT, "./%s %s%c", path, reprod_args, '\0');
+    sprintf(IS_REPRODUCER_SCRIPT, "./%s %s", path, reprod_args);
 }
 
 void init_temp_dirs(char* ir_path) {
@@ -63,18 +64,19 @@ void init_temp_dirs(char* ir_path) {
 
     // add directory to store variants that may of interest, but don't help the current reduction
     MAY_BE_INTERESTING = malloc(strlen(OUT_PATH) + strlen("/may_be_interesting") + 2);
-    sprintf(MAY_BE_INTERESTING, "%s/may_be_interesting%c", OUT_PATH, '\0');
+    sprintf(MAY_BE_INTERESTING, "%s/may_be_interesting", OUT_PATH);
     char make_dir[strlen(MAY_BE_INTERESTING) + strlen("mkdir -p ") + 1];
-    sprintf(make_dir, "mkdir -p %s%c", MAY_BE_INTERESTING, '\0');
+    sprintf(make_dir, "mkdir -p %s", MAY_BE_INTERESTING);
     system(make_dir);
     
     // move and rename initial test-case to temp directory    
     system("mkdir -p temp");
-    char cp_cmd[strlen(ir_path) + 6];
-    sprintf(cp_cmd, "cp %s %s%c", ir_path, CURRENT_VARIANT, '\0');
+    char cp_cmd[strlen(ir_path) + 5];
+    sprintf(cp_cmd, "cp %s %s", ir_path, CURRENT_VARIANT);
     system(cp_cmd);
-    sprintf(cp_cmd, "cp %s %s%c", ir_path, TEMP_VARIANT, '\0');
-    printf("%s\n", cp_cmd);
+
+    // re-use variable. Path to current and temp variant have same string length
+    sprintf(cp_cmd, "cp %s %s", ir_path, TEMP_VARIANT);
     system(cp_cmd);
 
     // create fails file
@@ -86,10 +88,10 @@ ir_stats_t* get_ir_stats(char* path_to_file, int dump, char* suffix) {
 
     ir_stats_t* stats = malloc(sizeof(ir_stats_t));
 
-    char command[strlen(LIBSTATS_PATH) + strlen(path_to_file) + strlen(OUT_PATH) + strlen(STATS) + 7 + strlen(suffix)];
+    char command[strlen(LIBSTATS_PATH) + strlen(path_to_file) + strlen(OUT_PATH) + strlen(STATS) + strlen(suffix) + 6];
 
     // execute libstats
-    sprintf(command, "%s %s %s %d %s %s%c", LIBSTATS_PATH, path_to_file, STATS, dump, OUT_PATH, suffix, '\0');
+    sprintf(command, "%s %s %s %d %s %s", LIBSTATS_PATH, path_to_file, STATS, dump, OUT_PATH, suffix);
     system(command);
 
     // read the stats from the output file
@@ -123,8 +125,8 @@ void finish() {
     log_text("Result:\n");
     log_stats(get_ir_stats(CURRENT_VARIANT, 1, "final"));   
 
-    char move_result[strlen(OUT_PATH) + strlen(CURRENT_VARIANT) + 15];
-    sprintf(move_result, "cp %s %s/result.ir%c", CURRENT_VARIANT, OUT_PATH, '\0');
+    char move_result[strlen(OUT_PATH) + strlen(CURRENT_VARIANT) + strlen("/result.ir") + 5];
+    sprintf(move_result, "cp %s %s/result.ir", CURRENT_VARIANT, OUT_PATH);
     system(move_result);
     system("rm -r temp/");
 
@@ -132,24 +134,24 @@ void finish() {
 }
 
 //execute shell script
-int is_reproducer() {
+bool is_reproducer() {
     FILE* f = popen(IS_REPRODUCER_SCRIPT, "r");
     if(!f) {
         printf("Couldn't execute reproducer script.\n");
         exit(1);
     }
     char result = fgetc(f);
-    int int_result = atoi(&result);
+    bool bool_result = atoi(&result);
     fclose(f);
 
-    return int_result;
+    return bool_result;
 }
 
 void init(char* program_path, char* rep_path, char* reprod_args, char* ir_path) {
 
     char* dir_ = dirname(program_path);
     LIBSTATS_PATH = malloc(strlen(dir_) + strlen("/libstats") + 1);
-    sprintf(LIBSTATS_PATH, "%s/libstats%c", dir_, '\0');
+    sprintf(LIBSTATS_PATH, "%s/libstats", dir_);
     init_reproducer_test(rep_path, reprod_args);
     init_temp_dirs(ir_path);
     init_logging(OUT_PATH);
@@ -160,10 +162,10 @@ void init(char* program_path, char* rep_path, char* reprod_args, char* ir_path) 
 /**
  * function tries to reduce the irp as much as possible w/ the given pass.
  */
-int reduce_irg_level(int pass) {
+bool reduce_irg_level(int pass) {
 
-    int saved = 0; // variable needed if pass fails
-    int achieved_reduction = 0;
+    bool saved = 0; // variable needed if pass fails
+    bool achieved_reduction = 0;
     int failed = 0;
 
     ir_stats_t* stats = get_ir_stats(CURRENT_VARIANT, 0, "null");
@@ -217,8 +219,8 @@ int reduce_irg_level(int pass) {
     return achieved_reduction;
 }
 
-int reduce_irn_level(char* irg_ident, int pass) {
-     log_text("\nUsing pass: ");
+bool reduce_irn_level(char* irg_ident, int pass) {
+    log_text("\nUsing pass: ");
     log_text(passes[pass]->ident);
     log_text(" -- Trying irg \'");
     log_text(irg_ident);
@@ -229,13 +231,12 @@ int reduce_irn_level(char* irg_ident, int pass) {
        
         // we found a new smaller variant -- set as current
         char replace[strlen(CURRENT_VARIANT) + strlen(TEMP_VARIANT) + 5];
-        sprintf(replace, "cp %s %s%c", TEMP_VARIANT, CURRENT_VARIANT, '\0');
+        sprintf(replace, "cp %s %s", TEMP_VARIANT, CURRENT_VARIANT);
         system(replace);
         return 1;
         
     }
-    return 0;
-            
+    return 0;           
 }
 
 /**
@@ -306,7 +307,7 @@ int main(int argc, char** argv) {
     }
 
     // start reduction -- loop through passes in random order and try to reduce the irp as much as possible w/ each pass
-    int result = 1;
+    bool result = 1;
     while(result) {
         int* rand_permutation = get_shuffle(PASSES_N);
         result = 0;
@@ -317,7 +318,7 @@ int main(int argc, char** argv) {
             int pass_result = reduce_irg_level(pass);
             log_text(" -- ");
             log_result(pass_result);
-            result = (pass_result) ? 1 : result;
+            result = result || pass_result;
         }    
     }
 
@@ -327,14 +328,14 @@ int main(int argc, char** argv) {
     char* line = NULL;
     size_t size = 0;
 
-    int achieved_improvement = 1;
+    bool achieved_improvement = 1;
     while(achieved_improvement) { 
         achieved_improvement = 0;
         while(getline(&line, &size, fails) != -1) {
             int pass = atoi(strtok(line, " "));
             char* irg_ident = strtok(NULL, " ");
             int result = reduce_irn_level(irg_ident, pass);
-            achieved_improvement = (achieved_improvement) ? 1 : result;
+            achieved_improvement = achieved_improvement || result;
         }
     }
     fclose(fails);

@@ -7,6 +7,7 @@
 #include <libgen.h>
 #include <dlfcn.h>
 #include <time.h>
+#include <stdbool.h>
 
 #include "logging.h"
 
@@ -20,8 +21,8 @@ void log_text(char* text) {
 
 void log_stats(ir_stats_t* stats) {
     char text[128];
-    sprintf(text, "\t# of nodes: \t\t\t%d\n\t# of irgs: \t\t\t\t%d\n\t# of cf manipulations: \t%d\n\t# of memory operations: %d\n\t# of types: \t\t\t%d\n\n%c",
-         stats->node_n, stats->irg_n, stats->cf_manips, stats->mem_node_n, stats->type_n, '\0');
+    sprintf(text, "\t# of nodes: \t\t\t%d\n\t# of irgs: \t\t\t\t%d\n\t# of cf manipulations: \t%d\n\t# of memory operations: %d\n\t# of types: \t\t\t%d\n\n",
+         stats->node_n, stats->irg_n, stats->cf_manips, stats->mem_node_n, stats->type_n);
     log_text(text);
 }
 
@@ -40,9 +41,8 @@ void log_result(int result) {
 }
 
 void init_logging(char* out_path) {
-    LOG_FILE = malloc(strlen(out_path) + strlen("Reduction.log") + 3);
-    sprintf(LOG_FILE, "%sReduction.log%c", out_path, '\0');
-    printf("%s\n", LOG_FILE);
+    LOG_FILE = malloc(strlen(out_path) + strlen("Reduction.log") + 1);
+    sprintf(LOG_FILE, "%sReduction.log", out_path);
     FILE* file = fopen(LOG_FILE, "w");
     if (!file) {
         perror("fopen");
@@ -55,9 +55,7 @@ void init_logging(char* out_path) {
     time_ = localtime(&now);
 
     int returnVal = strftime (buff, 30, "%Y-%m-%d %H:%M:%S", time_);
-    printf("strftime: %d\n", returnVal);
     fprintf (file, "%s -- ", buff);
     fprintf(file, "Firmreduce -- Results\n\nInitial Test-case size:\n");
     fclose(file);
-    printf("init_logging finished\n");
 }

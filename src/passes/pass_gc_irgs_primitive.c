@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
     int irg_n_old = get_irp_n_irgs();
 
     if(irg_nr >= irg_n_old) return 0;
-    ir_graph* irg = get_irp_irg(atoi(irg_nr));
+    ir_graph* irg = get_irp_irg(irg_nr);
     const char* pass_name = get_id_str(get_entity_ident(get_irg_entity(irg)));
     if(strcmp(pass_name, MAIN) == 0) return 0;
 
