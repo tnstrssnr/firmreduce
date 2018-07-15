@@ -24,3 +24,7 @@ Assertion fails bc callee_arr is not initialized --> missing calle analysis
 
 
 added 2nd testcase, fails on '0 0'
+
+
+Reduction leaves program, where function that doesn't exist is called
+--> Try reduction again, this time make sure the program stays compilable (use input.ir)
