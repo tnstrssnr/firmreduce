@@ -58,9 +58,8 @@ int pass_replace_switch_selectors(ir_graph* irg, void* data) {
 
 int main(int argc, char** argv) {
     char* import_file = argv[1];
-    int irg_nr = atoi(argv[2]);
-    int reduce_conservatively = atoi(argv[3]);
-    char* irg_ident = argv[4];
+    int reduce_conservatively = atoi(argv[2]);
+    char* irg_ident = argv[3];
     
-    return (reduce_conservatively) ? apply_pass(import_file, &pass_replace_switch_selectors_individual, -1, irg_ident) : apply_pass(import_file, &pass_replace_switch_selectors, irg_nr, NULL);
+    return (reduce_conservatively) ? apply_pass(import_file, &pass_replace_switch_selectors_individual, irg_ident) : apply_pass(import_file, &pass_replace_switch_selectors, irg_ident);
 }

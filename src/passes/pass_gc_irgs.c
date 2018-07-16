@@ -6,9 +6,15 @@
 const char* MAIN = "main";
 
 int main(int argc, char** argv) {
+    if(argc != 5) {
+        fprintf(stderr, "Unexpected number of arguments on call %s\n", argv[0]);
+        exit(-1);
+    }
+
     char* import_file = argv[1];
-    int irg_nr = atoi(argv[2]);
+    char* dump = argv[2];
     int reduce_conservatively = atoi(argv[3]);
+    char* irg_ident = argv[4];
 
     int result = 0;
     if (reduce_conservatively) return 0;
@@ -22,14 +28,18 @@ int main(int argc, char** argv) {
 
     int irg_n_old = get_irp_n_irgs();
 
-    if(irg_nr >= irg_n_old) return 0;
+    ir_graph* irg = get_irg_by_ident(ident);
+    if(!irg) {
+        ir_finish();
+        return 0;
+    } // we may have already removed the irg
     ir_entity* keep_arr[2];
 
-    keep_arr[1] = get_irg_entity(get_irp_irg(irg_nr));
+    keep_arr[1] = get_irg_entity(irg);
 
     for(int i = 0; i < irg_n_old; i++) {
-        const char* pass_name = get_id_str(get_entity_ident(get_irg_entity(get_irp_irg(i))));
-        if(strcmp(pass_name, MAIN) == 0) {
+        const char* irg_name = get_id_str(get_entity_ident(get_irg_entity(get_irp_irg(i))));
+        if(strcmp(irg_name, MAIN) == 0) {
             keep_arr[0] = get_irg_entity(get_irp_irg(i));
             break;
         }
@@ -39,7 +49,7 @@ int main(int argc, char** argv) {
     result = (irg_n_new < irg_n_old) ? 1 : 0;
     
     if(is_valid()) {
-        ir_export("temp/temp.ir");
+        ir_export(dump);
     } else {
         result = -1;
     }

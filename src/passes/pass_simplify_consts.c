@@ -54,8 +54,8 @@ int main(int argc, char** argv) {
     char* irg_ident = argv[4];
 
     if(reduce_conservatively) {
-        return apply_pass(import_file, &pass_simplify_consts_individual, -1, irg_ident);
+        return apply_pass(import_file, &pass_simplify_consts_individual, irg_ident);
     } else {
-        return apply_pass(import_file, &pass_simplify_consts, irg_nr, NULL);
+        return apply_pass(import_file, &pass_simplify_consts, irg_ident);
     }
 }
