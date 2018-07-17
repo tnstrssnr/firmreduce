@@ -13,13 +13,12 @@ To add a pass put the corresponding executable file in the build/passes/dll dire
 
 Firmreduce calls the passes w/ the following arguments (in this order):
  - Path to .ir-file that should be reduced
- - Index of irg that the pass should be applied to, -1 if indicator variable is set to one
+ - Path to file that the result should be dumped to
  - Indicator variable for reduction granularity:
     - 0 to reduce more aggressively
     - 1 to reduce more conservative
- - String identifier of the requested irg, if indicator variable=1
-
-The variant that the pass produces should be saved to "temp/temp.ir"
+ - String identifier of the requested irg
+ - Seed for random number generation (use this to make reduction reproducible)
 
 Passes can be compiled using make by placing the source files in the src/passes directory and using the target 'make passes' (the target is also included in 'make' command).
 If a pass has dependencies other than standard C libraries or libfirm, it should be compiled separately.
@@ -30,7 +29,8 @@ To reduce a testcase, FirmReduce expects 2 input arguments: A path to a script, 
 Optional parameters:
 -o : Path to directory, where all output files should be stored. If none is specified, the current directory is used ass the output directory
 -a : A String that will be given to the reproducer script as input parameter.
+-s : An integer used as the seed for random number generation in the program
 
 Example:
 
-    firmreduce path/to/reproducer/script path/to/testcase -o path/to/output/dir -a "Parameters enclosed in quotation marks"
+    firmreduce path/to/reproducer/script path/to/testcase -o path/to/output/dir -a "Parameters enclosed in quotation marks" -s seed
