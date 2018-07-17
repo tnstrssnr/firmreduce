@@ -16,6 +16,7 @@ If you want to install firmReduce use the target 'make install'.
 Firmreduce looks for passes in the following directories in this order:
  - /usr/local/bin/passes
  - /path/to/firmreduce/src/dir/build/debug/passes/exe
+
 The passes are loaded from the first directory that is found. To add additional passes, put them in a directory where firmReduce will find them.
 
 **Pass interface:**

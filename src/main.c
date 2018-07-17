@@ -9,6 +9,7 @@
 #include <assert.h>
 #include <time.h>
 #include <stdbool.h>
+#include <argp.h>
 
 #include "ir_stats_structs.h"
 #include "passes/passes.h"
@@ -17,10 +18,13 @@
 #define CONSERVATIVE 1
 #define AGGRESSIVE 0
 
+// paths to other modules
 char* IS_REPRODUCER_SCRIPT;
+char* LIBSTATS_PATH;
+
+// output
 char* OUT_PATH;
 char* MAY_BE_INTERESTING;
-char* LIBSTATS_PATH;
 
 // temporary files
 char TEMP_DIR[] = "firmreduce_temp.XXXXXX";
@@ -28,6 +32,55 @@ char* CURRENT_VARIANT;
 char* TEMP_VARIANT;
 char* STATS;
 char* FAILS;
+
+// options for argument parser
+const char* argp_program_version = "firmreduce 1.0";
+
+static struct argp_option options[] = {
+  {"output",  'o', "PATH",      0,  "Write output to PATH instead of current working directory" },
+  {"seed",    's', "SEED",      0,  "Enter seed for pseudorandom number generation" },
+  { 0 }
+};
+
+static char args_doc[] = "/PATH/TO/SCRIPT PATH/TO/TESTCASE";
+
+static char doc[] =
+  "FirmReduce -  Benutzung auf eigene Gefahr";
+
+// struct to save all command line arguments that we get
+static struct arguments {
+    char* args[2];
+    int s;
+} arguments;
+
+static int parse_opt(int key, char* arg, struct argp_state* state) {
+    struct arguments* arguments = state->input;
+    
+    switch(key) {
+        case 'o':
+            OUT_PATH = arg;
+            break;
+        case 's':
+            arguments->s = atoi(arg);
+            break;
+        case ARGP_KEY_ARG:
+            if(state->arg_num >= 2) {
+                argp_usage(state);
+            }
+            arguments->args[state->arg_num] = arg;
+            break;
+        case ARGP_KEY_END:
+            if(state->arg_num < 1) {
+                argp_usage(state);
+            }
+            break;
+        default:
+            return ARGP_ERR_UNKNOWN;
+    }
+    return 0;
+}
+
+static struct argp argp = {options, parse_opt, args_doc, doc};
 
 
 void init_reproducer_test(const char* path, const char* reprod_args) {
@@ -292,47 +345,29 @@ int* get_shuffle(int size) {
 
 int main(int argc, char** argv) {
 
-/*
- * Program expects 2 arguments:
- *     1. path to .sh file -> reproducer test for bug
- *     2. path to .ir file of input test-case
- * 
- * optional arguments:
- *     -o path/to/dir: Expects path to directory, where temp files and reduced test-cases are dumped
- *      If no path is specified, path of input test-case will be used
- * 
- *      -a "args": Arguments that should be passed to reproducer script. Don't forget to add the ""
- * 
- *      -s seed: seed for generating random number sequence. Of none is specified a timestamp will be used as seed
- */
+    /*
+    * Program expects 2 arguments:
+    *     1. path to .sh file -> reproducer test for bug
+    *     2. path to .ir file of input test-case
+    * 
+    * optional arguments:
+    *     -o path/to/dir: Expects path to directory, where temp files and reduced test-cases are dumped
+    *      If no path is specified, path of input test-case will be used
+    * 
+    *      -a "args": Arguments that should be passed to reproducer script. Don't forget to add the ""
+    * 
+    *      -s seed: seed for generating random number sequence. Of none is specified a timestamp will be used as seed
+    */
 
-    int i;
-    int seed_set = false;
-    while((i = getopt(argc, argv, "o:s:")) != -1) {
-        switch(i) {
-            case 'o':
-                OUT_PATH = malloc(strlen(optarg)*sizeof(char) + 2);
-                sprintf(OUT_PATH, "%s/%c", optarg, '\0');
-                break;
-            case 's':
-                seed_set = true;
-                srand(atoi(optarg));
-            case '?':
-            default:
-                fprintf(stderr, "Error while parsing arguments\n");
-                exit(1);
-        }
-    }
-    if(!seed_set) srand(time(NULL));
+    struct arguments arguments;
 
-    if(argv[optind] == NULL || argv[optind + 1] == NULL || argv[optind + 2] != NULL) {
-        fprintf(stderr, "Received unexpected number of arguments\n");
-        fprintf(stderr, "Firmreduce should be called with the following arguments:\n");
-        fprintf(stderr, "firmreduce path/to/reproducer/script path/to/testcase -o path/to/output/dir -s seed");
-        exit(1);
-    } else {
-        init(argv[0], argv[optind], argv[optind + 1]);
-    }
+    // default values
+    OUT_PATH = "./";
+    arguments.s = time(NULL);
+
+    argp_parse(&argp, argc, argv, 0, 0, &arguments);
+    srand(arguments.s);
+    init(argv[0], arguments.args[0], arguments.args[1]);
 
     // check if input file is reproducer
     if(!is_reproducer()) {
