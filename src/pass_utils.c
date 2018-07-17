@@ -55,7 +55,6 @@ int* get_shuffle(int size) {
         arr[i] = i;
     }
 
-    srand(time(NULL));
     for(int i = size - 1; i > 0; i--) {
         int j = rand() % (i + 1);
         int temp = arr[i];

@@ -21,7 +21,6 @@ int pass_replace_arithmetic_individual(ir_graph* irg, void* data) {
 
     if(container->nodes_n == 0) return 0;
 
-    srand(time(NULL));
     ir_node* node = container->nodes[rand() % container->nodes_n];
 
     ir_mode* mode = get_irn_mode(node);
@@ -66,7 +65,7 @@ int pass_replace_arithmetic(ir_graph* irg, void* data) {
 }
 
 int main(int argc, char** argv) {
-    if(argc != 5) {
+    if(argc != 6) {
         fprintf(stderr, "Unexpected number of arguments on call %s\n", argv[0]);
         exit(-1);
     }
@@ -75,6 +74,8 @@ int main(int argc, char** argv) {
     char* dump = argv[2];
     int reduce_conservatively = atoi(argv[3]);
     char* irg_ident = argv[4];
+    int seed = atoi(argv[5]);
+    srand(seed);
 
     return (reduce_conservatively) ? apply_pass(import_file, dump, &pass_replace_arithmetic_individual, irg_ident) : apply_pass(import_file, dump, &pass_replace_arithmetic, irg_ident);
 }

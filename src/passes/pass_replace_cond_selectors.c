@@ -45,7 +45,6 @@ int pass_replace_cond_selectors(ir_graph* irg, void* data) {
 
     for(int i = 0; i < container->nodes_n; i++) {
         ir_node* node = container->nodes[random_order[i]];
-        srand(time(NULL));
         ir_tarval* val = rand() % 2 ? get_tarval_b_true() : get_tarval_b_false();
         dbg_info * dbgi = get_irn_dbg_info(node);
         ir_node* const_node = new_rd_Const(dbgi, irg, val);
@@ -60,7 +59,7 @@ int pass_replace_cond_selectors(ir_graph* irg, void* data) {
 }
 
 int main(int argc, char** argv) {
-    if(argc != 5) {
+    if(argc != 6) {
         fprintf(stderr, "Unexpected number of arguments on call %s\n", argv[0]);
         exit(-1);
     }
@@ -69,6 +68,8 @@ int main(int argc, char** argv) {
     char* dump = argv[2];
     int reduce_conservatively = atoi(argv[3]);
     char* irg_ident = argv[4];
+    int seed = atoi(argv[5]);
+    srand(seed);
 
     return (reduce_conservatively) ? apply_pass(import_file, dump, &pass_replace_cond_selectors_individual, irg_ident) : apply_pass(import_file, dump, &pass_replace_cond_selectors, irg_ident);
 }

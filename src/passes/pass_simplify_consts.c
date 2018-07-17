@@ -24,7 +24,6 @@ int pass_simplify_consts_individual(ir_graph* irg, void* data) {
 
     if(container->nodes_n == 0) return 0;
 
-    srand(time(NULL));
     ir_node* node = container->nodes[rand() % container->nodes_n];
     simplify_const(node);
     free(container);
@@ -48,7 +47,7 @@ int pass_simplify_consts(ir_graph* irg, void* data) {
 }
 
 int main(int argc, char** argv) {
-    if(argc != 5) {
+    if(argc != 6) {
         fprintf(stderr, "Unexpected number of arguments on call %s\n", argv[0]);
         exit(-1);
     }
@@ -57,6 +56,8 @@ int main(int argc, char** argv) {
     char* dump = argv[2];
     int reduce_conservatively = atoi(argv[3]);
     char* irg_ident = argv[4];
+    int seed = atoi(argv[5]);
+    srand(seed);
 
     if(reduce_conservatively) {
         return apply_pass(import_file, dump, &pass_simplify_consts_individual, irg_ident);

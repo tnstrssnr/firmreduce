@@ -21,7 +21,6 @@ int pass_remove_stores_individual(ir_graph* irg, void* data) {
 
     edges_activate(irg);
 
-    srand(time(NULL));
     ir_node* node = container->nodes[rand() % container->nodes_n];
 
     ir_node* mem_input = get_Store_mem(node);
@@ -68,7 +67,7 @@ int pass_remove_stores(ir_graph* irg, void* data) {
 }
 
 int main(int argc, char** argv) {
-    if(argc != 5) {
+    if(argc != 6) {
         fprintf(stderr, "Unexpected number of arguments on call %s\n", argv[0]);
         exit(-1);
     }
@@ -77,6 +76,8 @@ int main(int argc, char** argv) {
     char* dump = argv[2];
     int reduce_conservatively = atoi(argv[3]);
     char* irg_ident = argv[4];
+    int seed = atoi(argv[5]);
+    srand(seed);
 
     return (reduce_conservatively) ? apply_pass(import_file, dump, &pass_remove_stores_individual, irg_ident) : apply_pass(import_file, dump, &pass_remove_stores, irg_ident);
     
