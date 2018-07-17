@@ -154,7 +154,6 @@ void finish() {
     char move_result[strlen(OUT_PATH) + strlen(CURRENT_VARIANT) + strlen("/result.ir") + 5];
     sprintf(move_result, "cp %s %s/result.ir", CURRENT_VARIANT, OUT_PATH);
     system(move_result);
-    system("rm -r temp/");
 
     printf("\n:: Reduction finished -- Results dumped in %s\n", OUT_PATH);
 }
@@ -169,12 +168,23 @@ int is_reproducer() {
     return result;
 }
 
-void init(char* program_path, char* rep_path, char* reprod_args, char* ir_path) {
+void init(char* program_path, char* rep_path, char* ir_path) {
 
     char* dir_ = dirname(program_path);
-    size_t str_size = strlen(dir_) + strlen("/libstats") + 1;
-    LIBSTATS_PATH = malloc(str_size);
-    snprintf(LIBSTATS_PATH, str_size, "%s/libstats", dir_);
+    // look for libstats file
+    char* libstats = "/usr/local/bin/libstats";
+    if( access( libstats , X_OK ) != -1 ) {
+        LIBSTATS_PATH = libstats;
+    } else {
+        size_t str_size = strlen(dir_) + strlen("/libstats") + 1;
+        LIBSTATS_PATH = malloc(str_size);
+        snprintf(LIBSTATS_PATH, str_size, "%s/libstats", dir_);
+    }
+    
+    if (access(LIBSTATS_PATH, X_OK) == -1) {
+        fprintf(stderr, "Couldn't find stats executable. Aborting\n");
+        exit(1);
+    }
 
     init_temp_dirs(ir_path);
     init_reproducer_test(rep_path, TEMP_VARIANT);
@@ -296,18 +306,13 @@ int main(int argc, char** argv) {
  *      -s seed: seed for generating random number sequence. Of none is specified a timestamp will be used as seed
  */
 
-    char* reprod_args = "";
-
     int i;
     int seed_set = false;
-    while((i = getopt(argc, argv, "o:a:s:")) != -1) {
+    while((i = getopt(argc, argv, "o:s:")) != -1) {
         switch(i) {
             case 'o':
                 OUT_PATH = malloc(strlen(optarg)*sizeof(char) + 2);
                 sprintf(OUT_PATH, "%s/%c", optarg, '\0');
-                break;
-            case 'a':
-                reprod_args = optarg;
                 break;
             case 's':
                 seed_set = true;
@@ -323,10 +328,10 @@ int main(int argc, char** argv) {
     if(argv[optind] == NULL || argv[optind + 1] == NULL || argv[optind + 2] != NULL) {
         fprintf(stderr, "Received unexpected number of arguments\n");
         fprintf(stderr, "Firmreduce should be called with the following arguments:\n");
-        fprintf(stderr, "firmreduce path/to/reproducer/script path/to/testcase -o path/to/output/dir -a \"Parameters enclosed in quotation marks\"");
+        fprintf(stderr, "firmreduce path/to/reproducer/script path/to/testcase -o path/to/output/dir -s seed");
         exit(1);
     } else {
-        init(argv[0], argv[optind], reprod_args, argv[optind + 1]);
+        init(argv[0], argv[optind], argv[optind + 1]);
     }
 
     // check if input file is reproducer

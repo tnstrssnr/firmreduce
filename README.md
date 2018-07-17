@@ -6,11 +6,21 @@
 
 Clone the repository recursively (to include libfirm. Alternatively place libfirm in a directory called libfirm in the source directory yourself) and call 'make' in the source directory. The results are put in a directory called 'build'.
 
+If you want to install firmReduce use the target 'make install'.
+
 
 ## Adding passes
 
-To add a pass put the corresponding executable file in the build/passes/dll directory.
+**Loading passes:**
 
+Firmreduce looks for passes in the following directories in this order:
+ - /usr/local/bin/passes
+ - /path/to/firmreduce/src/dir/build/debug/passes/exe
+The passes are loaded from the first directory that is found. To add additional passes, put them in a directory where firmReduce will find them.
+
+**Pass interface:**
+
+Each pass is its own executable file.
 Firmreduce calls the passes w/ the following arguments (in this order):
  - Path to .ir-file that should be reduced
  - Path to file that the result should be dumped to
@@ -28,7 +38,6 @@ If a pass has dependencies other than standard C libraries or libfirm, it should
 To reduce a testcase, FirmReduce expects 2 input arguments: A path to a script, that returns 1 if the testcase is a bug reproducer and the path to the .ir-file of the testcase in question.
 Optional parameters:
 -o : Path to directory, where all output files should be stored. If none is specified, the current directory is used ass the output directory
--a : A String that will be given to the reproducer script as input parameter.
 -s : An integer used as the seed for random number generation in the program
 
 Example:

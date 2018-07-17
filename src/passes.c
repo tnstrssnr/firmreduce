@@ -5,6 +5,8 @@
 #include <string.h>
 #include <limits.h>
 #include <libgen.h>
+#include <errno.h>
+#include <stdbool.h>
 
 #include "passes/passes.h"
 #include "logging.h"
@@ -19,12 +21,25 @@ pass_t* new_pass(char* ident, char* path) {
 }
 
 void init_passes_dynamic(char* path) {
-    char pass_dir[strlen(path) + strlen("/passes/exe/") + 1];
-    sprintf(pass_dir, "%s/passes/exe/", path);
+    bool absolute_path = 0;
+    char* pass_dir;
+    DIR* dir_ = opendir("/usr/local/bin/passes/");
+    if (!dir_) {
+        printf("Passes not in local\n");
+        // directory does not exist. Try build directory
+        size_t str_size = strlen(path) + strlen("/passes/exe/") + 1;
+        pass_dir = malloc(str_size);
+        snprintf(pass_dir, str_size, "%s/passes/exe/", path);
+    } else {
+        // directory exists. Look here for passes
+        closedir(dir_);
+        absolute_path = 1;
+        pass_dir = "/usr/local/bin/passes/";
+    }
 
     DIR* dir;
     struct dirent* dir_ent;
-
+    printf("Pass directory: %s\n", pass_dir);
     if((dir = opendir(pass_dir)) != NULL) {
 
         // count how many passes we can load 
@@ -49,9 +64,20 @@ void init_passes_dynamic(char* path) {
 
         while((dir_ent = readdir(dir)) != NULL) {
             if(dir_ent->d_name[0] != '.') {
-                char* path = malloc(sizeof(dir_ent->d_name) + sizeof(pass_dir) + 4);
-                sprintf(path, "./%s/%s", pass_dir, dir_ent->d_name);
-                passes[i] = new_pass(dir_ent->d_name, path);
+                char* pass_path;
+                if(absolute_path) {
+                    size_t str_size = strlen(dir_ent->d_name) + strlen(pass_dir) + 1;
+                    pass_path = malloc(str_size);
+                    snprintf(pass_path, str_size, "%s%s", pass_dir, dir_ent->d_name);
+                } else {
+                    size_t str_size = strlen(dir_ent->d_name) + strlen(pass_dir) + 3;
+                    pass_path = malloc(str_size);
+                    printf("Dirent name: %s\n", dir_ent->d_name);
+                    snprintf(pass_path, str_size, "./%s%s", pass_dir, dir_ent->d_name);
+                }
+                
+                passes[i] = new_pass(dir_ent->d_name, pass_path);
+                printf("%s\n", passes[i]->path);
                 i++;
             }
         }

@@ -54,7 +54,7 @@ LOCAL_INCLUDE ?= /usr/local/include
 # clear implicit suffix rules
 .SUFFIXES:
 
-.PHONY: all clean clean-all makedir passes libstats
+.PHONY: all clean clean-all makedir passes libstats install uninstall
 
 all: makedir libstats $(firmreduce_TARGET) passes
 	@echo Target make all complete
@@ -90,4 +90,18 @@ passes: makedir $(passes_OBJECTS)
 	@$(CC) -c $(CFLAGS) $< $(pass_util_INCLUDE_FLAGS) $(libfirm_INCLUDE_FLAGS) -o $(pass_dir)/obj/$(notdir $@)
 	@$(CC) -o $(pass_dir)/exe/$(basename $(notdir $<)) $(pass_dir)/obj/$(basename $(notdir $<)).o $(pass_util_OBJ) $(libfirm_STATIC_PATH) $(libfirm_STATIC) -lm -ldl
 	@echo Build $(basename $(notdir $<))
+
+INSTALL_PREFIX = /usr/local/bin/
+
+install: all
+	@install $(firmreduce_TARGET) "$(INSTALL_PREFIX)firmreduce"
+	@install -d $(pass_dir) "$(INSTALL_PREFIX)passes"
+	@install $(pass_dir)/exe/* "$(INSTALL_PREFIX)passes"
+	@install $(libstats_TARGET) "$(INSTALL_PREFIX)libstats"
+	@echo "Target install complete"
+
+uninstall: clean-all
+	@rm -r $(INSTALL_PREFIX)firmreduce $(INSTALL_PREFIX)libstats $(INSTALL_PREFIX)passes
+	@echo Target uninstall complete
+
 	
