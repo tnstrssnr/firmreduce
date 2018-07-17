@@ -2,6 +2,7 @@
 #define PASS_UTILS_H
 
 #include <firm.h>
+#include <stdbool.h>
 
 extern const char* TEMP_DIR;
 extern const char* TEMP_IR;
@@ -31,15 +32,15 @@ ir_node_container* new_container(select_func* func);
 
 void collect_nodes(ir_graph* irg, ir_node_container* container);
 
-int apply_pass(char* path, pass_func* func, int idx, char* ident);
+int apply_pass(char* path, char* dump, pass_func* func, char* ident);
 
 int* get_shuffle(int size);
 
-int is_valid();
+bool is_valid();
 
 int select_all(const ir_node* node);
 
-int apply_optimization(char* file, int irg, opt_func* func);
+int apply_optimization(char* file, char* dump, char* ident, opt_func* func);
 
 ir_graph* get_irg_by_ident(const char* ident);
 

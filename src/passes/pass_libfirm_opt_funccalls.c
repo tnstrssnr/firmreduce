@@ -2,9 +2,15 @@
 #include <pass_utils.h>
 
 int main(int argc, char* argv[]) {
+    if(argc != 5) {
+        fprintf(stderr, "Unexpected number of arguments on call %s\n", argv[0]);
+        exit(-1);
+    }
+
     char* file = argv[1];
-    int reduce_conservatively = atoi(argv[2]);
-    char* ident = argv[3];
+    char* dump = argv[2];
+    int reduce_conservatively = atoi(argv[3]);
+    char* ident = argv[4];
 
     ir_init();
     if(ir_import(file)) {
@@ -13,7 +19,10 @@ int main(int argc, char* argv[]) {
     }
 
     ir_graph* irg = get_irg_by_ident(ident);
-    if(!irg) return 0; // we may have already removed the irg
+    if(!irg) {
+        ir_finish();
+        return 0;
+    } // we may have already removed the irg
 
     // get node count before the optimization
     ir_node_container* container = new_container(select_all);
@@ -28,7 +37,7 @@ int main(int argc, char* argv[]) {
     int improvement = (container->nodes_n < nodes_n_old) ? 1 : 0;
 
     if(is_valid()) {
-        ir_export("temp/temp.ir");
+        ir_export(dump);
     } else {
         improvement = -1;
     }

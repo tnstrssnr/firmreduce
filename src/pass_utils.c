@@ -5,10 +5,6 @@
 #include  <stdbool.h>
 #include <pass_utils.h>
 
-const char* TEMP_DIR = "temp/";
-const char* TEMP_IR = "temp/temp.ir";
-const char* CURR_IR = "temp/curr.ir";
-
 /**
  * File contains functions that can be used to implement the passes
  */
@@ -76,7 +72,7 @@ int* get_shuffle(int size) {
  * 
  * (assumes that pass_func doesn't need additional data)
  */
-int apply_pass(char* path, pass_func* func, int idx, char* ident) {
+int apply_pass(char* path, char* dump, pass_func* func, char* ident) {
 
     // init library, load current irp
     ir_init();
@@ -85,14 +81,12 @@ int apply_pass(char* path, pass_func* func, int idx, char* ident) {
         return -1;
     }
 
-    ir_graph* irg;
-    if(idx == -1) {
-        irg = get_irg_by_ident(ident);
-        if(!irg) return 0; // we may have already removed the irg
-    } else {
-        if (idx > get_irp_n_irgs()) return 0;
-        irg = get_irp_irg(idx);
-    }
+    ir_graph* irg = get_irg_by_ident(ident);
+
+    if(irg == NULL) {
+        ir_finish();
+        return 0;
+    } // we may have already removed the irg
     int improvement = (func)(irg, NULL);
 
     // apply optimizations
@@ -117,7 +111,7 @@ int apply_pass(char* path, pass_func* func, int idx, char* ident) {
     place_code(irg);
     // check if we still have a valid irp
     if(is_valid()) {
-        ir_export("temp/temp.ir");
+        ir_export(dump);
     } else {
         improvement = -1;
     }
@@ -132,31 +126,31 @@ int select_all(const ir_node* node) {
     return 1;
 }
 
-int apply_optimization(char* file, int irg, opt_func* func) {
-    if (irg == -1) return 0;
+int apply_optimization(char* file, char* dump, char* irg_ident, opt_func* func) {
     ir_init();
     if(ir_import(file)) {
         fprintf(stderr, "Error while reading test-case file\n");
         return -1;
     }
 
-    if (irg > get_irp_n_irgs()) return 0; 
+    ir_graph* irg = get_irg_by_ident(irg_ident);
+    if(!irg) return 0; // we may have already removed the irg
 
     // get node count before the optimization
     ir_node_container* container = new_container(select_all);
-    collect_nodes(get_irp_irg(irg), container);
+    collect_nodes(irg, container);
     int nodes_n_old = container->nodes_n;
 
-    (func)(get_irp_irg(irg));
+    (func)(irg);
 
     // check if number of nodes changed
     // If not we assume that the optimization was ineffective and return 0
     // we keep the new variant, even if it increases the number of nodes, bc we assume that it does usefull stuff
-    collect_nodes(get_irp_irg(irg), container);
+    collect_nodes(irg, container);
     int improvement = (container->nodes_n != nodes_n_old) ? 1 : 0;
 
     if(is_valid()) {
-        ir_export("temp/temp.ir");
+        ir_export(dump);
     } else {
         improvement = -1;
     }

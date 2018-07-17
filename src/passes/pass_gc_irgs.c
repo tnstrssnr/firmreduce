@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
     char* import_file = argv[1];
     char* dump = argv[2];
     int reduce_conservatively = atoi(argv[3]);
-    char* irg_ident = argv[4];
+    char* ident = argv[4];
 
     int result = 0;
     if (reduce_conservatively) return 0;

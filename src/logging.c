@@ -41,8 +41,8 @@ void log_result(int result) {
 }
 
 void init_logging(char* out_path) {
-    LOG_FILE = malloc(strlen(out_path) + strlen("Reduction.log") + 1);
-    sprintf(LOG_FILE, "%sReduction.log", out_path);
+    LOG_FILE = malloc(strlen(out_path) + strlen("/Reduction.log") + 1);
+    sprintf(LOG_FILE, "%s/Reduction.log", out_path);
     FILE* file = fopen(LOG_FILE, "w");
     if (!file) {
         perror("fopen");

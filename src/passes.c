@@ -20,7 +20,7 @@ pass_t* new_pass(char* ident, char* path) {
 
 void init_passes_dynamic(char* path) {
     char pass_dir[strlen(path) + strlen("/passes/exe/") + 1];
-    sprintf(pass_dir, "%s/passes/exe/", path, '\0');
+    sprintf(pass_dir, "%s/passes/exe/", path);
 
     DIR* dir;
     struct dirent* dir_ent;
@@ -62,20 +62,21 @@ void init_passes_dynamic(char* path) {
 /**
  * arguments:
  * path: path to ir-file that the pass should be applied to
+ * dump: path to file the transformed variant shuld be dumped in
  * i: index of pass
  * arg: index of irg to apply the pass to
  * reduce_individual: indicator, if pass should be applioed to whole irg or single node
  * ident: identifier of irg - can be NULL if reduction is aggressive
  */
-int apply_pass(char* path, int i, int arg, int reduce_individual, char* ident) {
+int apply_pass(char* path, char* dump, int i, int reduce_individual, char* ident, int seed) {
 
     char* path_;
     int status;
     int result;
 
-    path_ = malloc(512);
-    sprintf(path_, "%s %s %d %d %s 2>1&> /dev/null", passes[i]->path, path, arg, reduce_individual, ident);
-
+    path_ = malloc(strlen(passes[i]->path) + strlen(path) + strlen(dump) + strlen(ident) + 128); // TODO: how long can seed be ?
+    
+    sprintf(path_, "%s %s %s %d %s %d", passes[i]->path, path, dump, reduce_individual, ident, seed);
     status = system(path_);      
     result = -1;
     

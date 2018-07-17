@@ -2,10 +2,16 @@
 #include <pass_utils.h>
 
 int main(int argc, char* argv[]) {
-    char* file = argv[1];
-    int reduce_conservatively = atoi(argv[2]);
-    char* irg_ident = argv[3];
+    if(argc != 5) {
+        fprintf(stderr, "Unexpected number of arguments on call %s\n", argv[0]);
+        exit(-1);
+    }
 
-    return apply_optimization(file, irg_ident, opt_frame_irg);
+    char* file = argv[1];
+    char* dump = argv[2];
+    int reduce_conservatively = atoi(argv[3]);
+    char* irg_ident = argv[4];
+
+    return apply_optimization(file, dump, irg_ident, opt_frame_irg);
 
 }

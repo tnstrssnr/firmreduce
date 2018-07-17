@@ -48,14 +48,19 @@ int pass_simplify_consts(ir_graph* irg, void* data) {
 }
 
 int main(int argc, char** argv) {
+    if(argc != 5) {
+        fprintf(stderr, "Unexpected number of arguments on call %s\n", argv[0]);
+        exit(-1);
+    }
+
     char* import_file = argv[1];
-    int irg_nr = atoi(argv[2]);
+    char* dump = argv[2];
     int reduce_conservatively = atoi(argv[3]);
     char* irg_ident = argv[4];
 
     if(reduce_conservatively) {
-        return apply_pass(import_file, &pass_simplify_consts_individual, irg_ident);
+        return apply_pass(import_file, dump, &pass_simplify_consts_individual, irg_ident);
     } else {
-        return apply_pass(import_file, &pass_simplify_consts, irg_ident);
+        return apply_pass(import_file, dump, &pass_simplify_consts, irg_ident);
     }
 }

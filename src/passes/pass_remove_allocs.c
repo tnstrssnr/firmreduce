@@ -61,10 +61,16 @@ int pass_remove_allocs(ir_graph* irg, void* data) {
 }
 
 int main(int argc, char** argv) {
+    if(argc != 5) {
+        fprintf(stderr, "Unexpected number of arguments on call %s\n", argv[0]);
+        exit(-1);
+    }
+
     char* import_file = argv[1];
-    int reduce_conservatively = atoi(argv[2]);
-    char* irg_ident = argv[3];
+    char* dump = argv[2];
+    int reduce_conservatively = atoi(argv[3]);
+    char* irg_ident = argv[4];
 
 
-    return (reduce_conservatively) ? apply_pass(import_file, &pass_remove_allocs_individual, irg_ident) : apply_pass(import_file, &pass_remove_allocs, irg_ident);
+    return (reduce_conservatively) ? apply_pass(import_file, dump, &pass_remove_allocs_individual, irg_ident) : apply_pass(import_file, dump, &pass_remove_allocs, irg_ident);
 }
