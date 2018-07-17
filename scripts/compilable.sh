@@ -1,6 +1,6 @@
-cparser temp/temp.ir
+cparser $@
 if [ $? -eq 0 ] ; then
-    echo 1
+    exit 1
 else
-    echo 0
+    exit 0
 fi
