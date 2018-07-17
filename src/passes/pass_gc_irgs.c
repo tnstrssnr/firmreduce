@@ -6,7 +6,7 @@
 const char* MAIN = "main";
 
 int main(int argc, char** argv) {
-    if(argc != 5) {
+    if(argc != 6) {
         fprintf(stderr, "Unexpected number of arguments on call %s\n", argv[0]);
         exit(-1);
     }
