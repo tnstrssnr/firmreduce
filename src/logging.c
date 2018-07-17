@@ -54,7 +54,7 @@ void init_logging(char* out_path) {
     time_t now = time(0);
     time_ = localtime(&now);
 
-    int returnVal = strftime (buff, 30, "%Y-%m-%d %H:%M:%S", time_);
+    strftime (buff, 30, "%Y-%m-%d %H:%M:%S", time_);
     fprintf (file, "%s -- ", buff);
     fprintf(file, "Firmreduce -- Results\n\nInitial Test-case size:\n");
     fclose(file);

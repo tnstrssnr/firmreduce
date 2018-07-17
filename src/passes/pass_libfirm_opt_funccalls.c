@@ -12,6 +12,8 @@ int main(int argc, char* argv[]) {
     int reduce_conservatively = atoi(argv[3]);
     char* ident = argv[4];
 
+    if(reduce_conservatively) return 0; // libfirm optimization are all or nothing
+
     ir_init();
     if(ir_import(file)) {
         fprintf(stderr, "Error while reading test-case file\n");

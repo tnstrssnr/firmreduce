@@ -7,10 +7,14 @@ int main(int argc, char* argv[]) {
         exit(-1);
     }
 
+    
+
     char* file = argv[1];
     char* dump = argv[2];
     int reduce_conservatively = atoi(argv[3]);
     char* irg_ident = argv[4];
+
+    if(reduce_conservatively) return 0; // libfirm optimization are all or nothing
 
     return apply_optimization(file, dump, irg_ident, combo);
 

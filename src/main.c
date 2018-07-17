@@ -27,7 +27,7 @@ char* OUT_PATH;
 char* MAY_BE_INTERESTING;
 
 // temporary files
-char TEMP_DIR[] = "firmreduce_temp.XXXXXX";
+char TEMP_DIR[] = "/tmp/firmreduce_temp.XXXXXX";
 char* CURRENT_VARIANT;
 char* TEMP_VARIANT;
 char* STATS;
@@ -45,10 +45,10 @@ static struct argp_option options[] = {
 static char args_doc[] = "/PATH/TO/SCRIPT PATH/TO/TESTCASE";
 
 static char doc[] =
-  "FirmReduce -  Benutzung auf eigene Gefahr";
+  "FirmReduce -  Benutzung auf eigene Gefahr. Eltern haften für ihre Kinder.";
 
 // struct to save all command line arguments that we get
-static struct arguments {
+typedef struct arguments {
     char* args[2];
     int s;
 } arguments;
@@ -207,6 +207,9 @@ void finish() {
     char move_result[strlen(OUT_PATH) + strlen(CURRENT_VARIANT) + strlen("/result.ir") + 5];
     sprintf(move_result, "cp %s %s/result.ir", CURRENT_VARIANT, OUT_PATH);
     system(move_result);
+
+    unlink(TEMP_DIR);
+    rmdir(TEMP_DIR);
 
     printf("\n:: Reduction finished -- Results dumped in %s\n", OUT_PATH);
 }

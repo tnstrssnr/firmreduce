@@ -12,6 +12,8 @@ int main(int argc, char* argv[]) {
     int reduce_conservatively = atoi(argv[3]);
     char* irg_ident = argv[4];
 
+    if(reduce_conservatively) return 0; // libfirm optimization are all or nothing
+
     return apply_optimization(file, dump, irg_ident, shape_blocks);
 
 }
