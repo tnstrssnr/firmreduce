@@ -25,7 +25,6 @@ void init_passes_dynamic(char* path) {
     char* pass_dir;
     DIR* dir_ = opendir("/usr/local/bin/passes/");
     if (!dir_) {
-        printf("Passes not in local\n");
         // directory does not exist. Try build directory
         size_t str_size = strlen(path) + strlen("/passes/exe/") + 1;
         pass_dir = malloc(str_size);
@@ -39,11 +38,9 @@ void init_passes_dynamic(char* path) {
 
     DIR* dir;
     struct dirent* dir_ent;
-    printf("Pass directory: %s\n", pass_dir);
     if((dir = opendir(pass_dir)) != NULL) {
 
         // count how many passes we can load 
-        // TODO: find other way to count dir entries, instead of looping twice
         while((dir_ent = readdir(dir)) != NULL) {
             if(dir_ent->d_name[0] != '.') { // ignore hidden files
                 PASSES_N++;
@@ -72,12 +69,10 @@ void init_passes_dynamic(char* path) {
                 } else {
                     size_t str_size = strlen(dir_ent->d_name) + strlen(pass_dir) + 3;
                     pass_path = malloc(str_size);
-                    printf("Dirent name: %s\n", dir_ent->d_name);
                     snprintf(pass_path, str_size, "./%s%s", pass_dir, dir_ent->d_name);
                 }
                 
                 passes[i] = new_pass(dir_ent->d_name, pass_path);
-                printf("%s\n", passes[i]->path);
                 i++;
             }
         }
@@ -100,7 +95,7 @@ int apply_pass(char* path, char* dump, int i, int reduce_individual, char* ident
     int status;
     int result;
 
-    path_ = malloc(strlen(passes[i]->path) + strlen(path) + strlen(dump) + strlen(ident) + 128); // TODO: how long can seed be ?
+    path_ = malloc(strlen(passes[i]->path) + strlen(path) + strlen(dump) + strlen(ident) + 128); // Leave some space for unknown seed
     
     sprintf(path_, "%s %s %s %d %s %d", passes[i]->path, path, dump, reduce_individual, ident, seed);
     status = system(path_);      

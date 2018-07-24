@@ -15,8 +15,8 @@
 #include "passes/passes.h"
 #include "logging.h"
 
-#define CONSERVATIVE 1
 #define AGGRESSIVE 0
+#define CONSERVATIVE 1
 
 // paths to other modules
 char* IS_REPRODUCER_SCRIPT;
@@ -369,6 +369,9 @@ int main(int argc, char** argv) {
     arguments.s = time(NULL);
 
     argp_parse(&argp, argc, argv, 0, 0, &arguments);
+
+    // initialize pseudorandom number generation w/ seed
+    printf("Using seed %d for pseudorandom number generation.\n", arguments.s);
     srand(arguments.s);
     init(argv[0], arguments.args[0], arguments.args[1]);
 
@@ -405,7 +408,7 @@ int main(int argc, char** argv) {
         achieved_improvement = 0;
         while(getline(&line, &size, fails) != -1) {
             int pass = atoi(strtok(line, " "));
-            char* irg_ident = strtok(NULL, " ");
+            char* irg_ident = strtok(NULL, "\n");
             int result = reduce_irn_level(irg_ident, pass);
             achieved_improvement = achieved_improvement || result;
         }
