@@ -279,10 +279,8 @@ bool reduce_irg_level(int pass) {
     ir_stats_t* stats = get_ir_stats(CURRENT_VARIANT, 0, "null");
     int irg_n = stats->irg_n;
     int irg_idx = 0;
-    int i = 0; // count how namy times pass gets applied to a random irg -- do max. 2*irg_n
 
-    while(failed < irg_n && i < 2*irg_n ) {
-        i++;
+    while(failed < irg_n) {
         irg_idx = rand() % irg_n; // use irg_idx entry in identifier array -- does not correspond w/ irg_nr when irp is loaded by pass
 
         int res = apply_pass(CURRENT_VARIANT, TEMP_VARIANT, pass, AGGRESSIVE, stats->irg_ids[irg_idx], rand());
