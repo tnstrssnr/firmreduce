@@ -36,7 +36,7 @@ If a pass has dependencies other than standard C libraries or libfirm, it should
 
 ## Starting FirmReduce
 
-To reduce a testcase, FirmReduce expects 2 input arguments: A path to a script, that returns 1 if the testcase is a bug reproducer and the path to the .ir-file of the testcase in question.
+To reduce a testcase, FirmReduce expects 2 input arguments: A path to a script, that returns 1 if the testcase is interesting (interestingness test) and the path to the .ir-file of the testcase in question.
 Optional parameters:
 -o : Path to directory, where all output files should be stored. If none is specified, the current directory is used ass the output directory
 -s : An integer used as the seed for random number generation in the program
@@ -44,3 +44,7 @@ Optional parameters:
 Example:
 
     firmreduce path/to/reproducer/script path/to/testcase -o path/to/output/dir -a "Parameters enclosed in quotation marks" -s seed
+
+## Interestingness Test
+
+This should be a shell script that returns 1 iff the current variant is interesting to the user. A path to the current variant will be passed to the script by firmReduce and can be used in the script via '$1'
