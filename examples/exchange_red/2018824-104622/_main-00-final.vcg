@@ -1,0 +1,332 @@
+graph: { title: "ir graph of _main"
+display_edge_labels: yes
+layoutalgorithm: mindepth //$ "Compilergraph"
+manhattan_edges: yes
+port_sharing: no
+orientation: bottom_to_top
+classname 1:  "intrablock Data"
+classname 2:  "Block"
+classname 3:  "Entity type"
+classname 4:  "Entity owner"
+classname 5:  "Method Param"
+classname 6:  "Method Res"
+classname 7:  "Super"
+classname 8:  "Union"
+classname 9:  "Points-to"
+classname 10: "Array Element Type"
+classname 11: "Overwrites"
+classname 12: "Member"
+classname 13: "Control Flow"
+classname 14: "intrablock Memory"
+classname 15: "Dominators"
+classname 16: "interblock Data"
+classname 17: "interblock Memory"
+classname 18: "Exception Control Flow for Interval Analysis"
+classname 19: "Postdominators"
+classname 20: "Keep Alive"
+classname 21: "Out Edges"
+classname 22: "Macro Block Edges"
+infoname 1: "Attribute"
+infoname 2: "Verification errors"
+infoname 3: "Debug info"
+colorentry 100: 204 204 204
+colorentry 101: 222 239 234
+colorentry 103: 242 242 242
+colorentry 104: 153 255 153
+colorentry 105: 153 153 255
+colorentry 106: 255 153 153
+colorentry 107: 255 255 153
+colorentry 108: 255 153 255
+colorentry 110: 127 127 127
+colorentry 111: 153 255 153
+colorentry 114: 153 153 255
+
+graph: { title: "g378" label: "_main" status:clustered color:100
+info1: "entity _main[313]
+  type:  method:method type[69]
+  owner: segment:segment 'GlobalType'[21]
+  maximum node index:   30
+  additional prop:  inline_recommended
+  calling convention: 
+  vtable number:        4294967295
+  linkage: constant
+  volatility:  volatility_non_volatile
+  aligned:  align_is_aligned
+  alignment:  0
+  ld_name: _main
+  irg = 378
+
+
+constraints:
+properties:"
+graph: { title: "n385" label: "Start Block  385" status:clustered color:101
+ info1: "Start Block 385
+  index: 11
+  mode:    BB
+  visited: 2
+  irg:     _main
+  arity:   0
+  pred nodes:
+  Private Attributes:
+  backedges:  block visited: 0
+  block marked: 0
+"
+node: {title: "n403" label: "Return  403"  info1: "Return 403
+  index: 29
+  mode:    X
+  visited: 2
+  irg:     _main
+  arity:   2
+  pred nodes:
+    -1:    Start Block 385
+     0:    Sync 401
+     1:    Const 0x0 402
+  Private Attributes:
+  return in method of type method:method type[69]
+    result 0 type: primitive:Bs[51]
+"
+color:106}
+node: {title: "n403b402" label: "Const 0x0 Bs 402"  info1: "Const 0x0 402
+  index: 28
+  mode:    Bs
+  visited: 2
+  irg:     _main
+  arity:   0
+  pred nodes:
+    -1:    Start Block 385
+  Private Attributes:
+"
+color:107}
+edge: {sourcename: "n403" targetname: "n401" label: "0" class:14 priority:50 color:blue}
+edge: {sourcename: "n403" targetname: "n403b402" label: "1" class:1  priority:50}
+node: {title: "n401" label: "Sync  401"  info1: "Sync 401
+  index: 27
+  mode:    M
+  visited: 2
+  irg:     _main
+  arity:   2
+  pred nodes:
+    -1:    Start Block 385
+     0:    Proj 395
+     1:    Proj 400
+  Private Attributes:
+"
+color:105}
+edge: {sourcename: "n401" targetname: "n395" label: "0" class:14 priority:50 color:blue}
+edge: {sourcename: "n401" targetname: "n400" label: "1" class:14 priority:50 color:blue}
+node: {title: "n400" label: "Proj M M 400"  info1: "Proj 400
+  index: 26
+  mode:    M
+  visited: 2
+  irg:     _main
+  arity:   1
+  pred nodes:
+    -1:    Start Block 385
+     0:    Load[Bs] 399
+  Private Attributes:
+  proj nr: 0
+"
+color:105}
+nearedge: {sourcename: "n400" targetname: "n399" label: "0" class:14 priority:50 color:blue}
+node: {title: "n399" label: "Load[Bs]  399"  info1: "Load[Bs] 399
+  index: 25
+  mode:    T
+  visited: 2
+  irg:     _main
+  arity:   2
+  pred nodes:
+    -1:    Start Block 385
+     0:    Proj 395
+     1:    Member 398
+  Private Attributes:
+  pinned state: op_pin_state_floats
+  mode of loaded value: Bs
+  type of object loaded from: primitive:Bs[51]
+  volatility: volatility_non_volatile
+  align: align_is_aligned
+"
+color:105}
+edge: {sourcename: "n399" targetname: "n395" label: "0" class:14 priority:50 color:blue}
+edge: {sourcename: "n399" targetname: "n398" label: "1" class:1  priority:50}
+node: {title: "n395" label: "Proj M M 395"  info1: "Proj 395
+  index: 21
+  mode:    M
+  visited: 2
+  irg:     _main
+  arity:   1
+  pred nodes:
+    -1:    Start Block 385
+     0:    Load[Bs] 394
+  Private Attributes:
+  proj nr: 0
+"
+color:105}
+nearedge: {sourcename: "n395" targetname: "n394" label: "0" class:14 priority:50 color:blue}
+node: {title: "n394" label: "Load[Bs]  394"  info1: "Load[Bs] 394
+  index: 20
+  mode:    T
+  visited: 2
+  irg:     _main
+  arity:   2
+  pred nodes:
+    -1:    Start Block 385
+     0:    Proj 389
+     1:    Member 393
+  Private Attributes:
+  pinned state: op_pin_state_floats
+  mode of loaded value: Bs
+  type of object loaded from: primitive:Bs[51]
+  volatility: volatility_non_volatile
+  align: align_is_aligned
+"
+color:105}
+edge: {sourcename: "n394" targetname: "n389" label: "0" class:14 priority:50 color:blue}
+edge: {sourcename: "n394" targetname: "n393" label: "1" class:1  priority:50}
+node: {title: "n389" label: "Proj M M 389"  info1: "Proj 389
+  index: 15
+  mode:    M
+  visited: 2
+  irg:     _main
+  arity:   1
+  pred nodes:
+    -1:    Start Block 385
+     0:    Start 387
+  Private Attributes:
+  proj nr: 0
+"
+color:105}
+nearedge: {sourcename: "n389" targetname: "n387" label: "0" class:14 priority:50 color:blue}
+node: {title: "n387" label: "Start  387"  info1: "Start 387
+  index: 13
+  mode:    T
+  visited: 2
+  irg:     _main
+  arity:   0
+  pred nodes:
+    -1:    Start Block 385
+  Private Attributes:
+  start of method of type method:method type[69]
+    param 0 type: primitive:Bs[51]
+"
+color:108}
+node: {title: "n393" label: "Member P fs_entity.10 393"  info1: "Member 393
+  index: 19
+  mode:    P
+  visited: 2
+  irg:     _main
+  arity:   1
+  pred nodes:
+    -1:    Start Block 385
+     0:    Const NULL 392
+  Private Attributes:
+  Selecting entity fs_entity.10[331]
+    of type    primitive:Bs[51]
+    with owner union:union 'fs_union.5'[60].
+"
+}
+node: {title: "n393b392" label: "Const NULL P 392"  info1: "Const NULL 392
+  index: 18
+  mode:    P
+  visited: 2
+  irg:     _main
+  arity:   0
+  pred nodes:
+    -1:    Start Block 385
+  Private Attributes:
+"
+color:107}
+edge: {sourcename: "n393" targetname: "n393b392" label: "0" class:1  priority:50}
+node: {title: "n398" label: "Member P fs_entity.10 398"  info1: "Member 398
+  index: 24
+  mode:    P
+  visited: 2
+  irg:     _main
+  arity:   1
+  pred nodes:
+    -1:    Start Block 385
+     0:    Member 397
+  Private Attributes:
+  Selecting entity fs_entity.10[331]
+    of type    primitive:Bs[51]
+    with owner union:union 'fs_union.5'[60].
+"
+}
+edge: {sourcename: "n398" targetname: "n397" label: "0" class:1  priority:50}
+node: {title: "n397" label: "Member P fs_entity.22 397"  info1: "Member 397
+  index: 23
+  mode:    P
+  visited: 2
+  irg:     _main
+  arity:   1
+  pred nodes:
+    -1:    Start Block 385
+     0:    Member 396
+  Private Attributes:
+  Selecting entity fs_entity.22[341]
+    of type    union:union 'fs_union.5'[60]
+    with owner struct:struct 'fs_struct.19'[62].
+"
+}
+edge: {sourcename: "n397" targetname: "n396" label: "0" class:1  priority:50}
+node: {title: "n396" label: "Member P fs_entity.35 396"  info1: "Member 396
+  index: 22
+  mode:    P
+  visited: 2
+  irg:     _main
+  arity:   1
+  pred nodes:
+    -1:    Start Block 385
+     0:    Const NULL 392
+  Private Attributes:
+  Selecting entity fs_entity.35[351]
+    of type    struct:struct 'fs_struct.19'[62]
+    with owner struct:struct 'fs_struct.34'[65].
+"
+}
+node: {title: "n396b392" label: "Const NULL P 392"  info1: "Const NULL 392
+  index: 18
+  mode:    P
+  visited: 2
+  irg:     _main
+  arity:   0
+  pred nodes:
+    -1:    Start Block 385
+  Private Attributes:
+"
+color:107}
+edge: {sourcename: "n396" targetname: "n396b392" label: "0" class:1  priority:50}
+}
+
+graph: { title: "n384" label: "End Block  384" status:clustered color:101
+ info1: "End Block 384
+  index: 10
+  mode:    BB
+  visited: 2
+  irg:     _main
+  arity:   1
+  pred nodes:
+     0:    Return 403
+  Private Attributes:
+  backedges:
+  block visited: 0
+  block marked: 0
+"
+node: {title: "n386" label: "End  386"  info1: "End 386
+  index: 12
+  mode:    X
+  visited: 2
+  irg:     _main
+  arity:   1
+  pred nodes:
+    -1:    End Block 384
+     0:    Start Block 385
+  Private Attributes:
+"
+color:108}
+edge: {sourcename: "n386" targetname: "n385" label: "0" class:20 priority:60 color:purple}
+}
+
+edge: {sourcename: "n384" targetname: "n403" label: "0" class:13 priority:60 color:red}
+}
+
+}

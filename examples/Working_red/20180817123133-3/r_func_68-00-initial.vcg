@@ -1,0 +1,640 @@
+graph: { title: "ir graph of r_func_68"
+display_edge_labels: yes
+layoutalgorithm: mindepth //$ "Compilergraph"
+manhattan_edges: yes
+port_sharing: no
+orientation: bottom_to_top
+classname 1:  "intrablock Data"
+classname 2:  "Block"
+classname 3:  "Entity type"
+classname 4:  "Entity owner"
+classname 5:  "Method Param"
+classname 6:  "Method Res"
+classname 7:  "Super"
+classname 8:  "Union"
+classname 9:  "Points-to"
+classname 10: "Array Element Type"
+classname 11: "Overwrites"
+classname 12: "Member"
+classname 13: "Control Flow"
+classname 14: "intrablock Memory"
+classname 15: "Dominators"
+classname 16: "interblock Data"
+classname 17: "interblock Memory"
+classname 18: "Exception Control Flow for Interval Analysis"
+classname 19: "Postdominators"
+classname 20: "Keep Alive"
+classname 21: "Out Edges"
+classname 22: "Macro Block Edges"
+infoname 1: "Attribute"
+infoname 2: "Verification errors"
+infoname 3: "Debug info"
+colorentry 100: 204 204 204
+colorentry 101: 222 239 234
+colorentry 103: 242 242 242
+colorentry 104: 153 255 153
+colorentry 105: 153 153 255
+colorentry 106: 255 153 153
+colorentry 107: 255 255 153
+colorentry 108: 255 153 255
+colorentry 110: 127 127 127
+colorentry 111: 153 255 153
+colorentry 114: 153 153 255
+
+graph: { title: "g13623" label: "r_func_68" status:clustered color:100
+info1: "entity r_func_68[2662]
+  type:  method:method type[359]
+  owner: segment:segment 'GlobalType'[21]
+  maximum node index:   52
+  additional prop: 
+  calling convention: 
+  vtable number:        4294967295
+  linkage: constant
+  volatility:  volatility_non_volatile
+  aligned:  align_is_aligned
+  alignment:  0
+  ld_name: r_func_68
+  irg = 13623
+
+
+constraints:
+properties:"
+graph: { title: "n13630" label: "Start Block  13630" status:clustered color:101
+ info1: "Start Block 13630
+  index: 11
+  mode:    BB
+  visited: 2
+  irg:     r_func_68
+  arity:   0
+  pred nodes:
+  Private Attributes:
+  backedges:  block visited: 0
+  block marked: 0
+"
+node: {title: "n13670" label: "Jmp  13670"  info1: "Jmp 13670
+  index: 51
+  mode:    X
+  visited: 2
+  irg:     r_func_68
+  arity:   0
+  pred nodes:
+    -1:    Start Block 13630
+  Private Attributes:
+"
+color:106}
+node: {title: "n13638" label: "Proj M M 13638"  info1: "Proj 13638
+  index: 19
+  mode:    M
+  visited: 2
+  irg:     r_func_68
+  arity:   1
+  pred nodes:
+    -1:    Start Block 13630
+     0:    Start 13636
+  Private Attributes:
+  proj nr: 0
+"
+color:105}
+nearedge: {sourcename: "n13638" targetname: "n13636" label: "0" class:14 priority:50 color:blue}
+node: {title: "n13636" label: "Start  13636"  info1: "Start 13636
+  index: 17
+  mode:    T
+  visited: 2
+  irg:     r_func_68
+  arity:   0
+  pred nodes:
+    -1:    Start Block 13630
+  Private Attributes:
+  start of method of type method:method type[359]
+    param 0 type: primitive:Bs[51]
+"
+color:108}
+}
+
+graph: { title: "n13661" label: "Block  13661" status:clustered color:101
+ info1: "Block 13661
+  index: 42
+  mode:    BB
+  visited: 2
+  irg:     r_func_68
+  arity:   1
+  pred nodes:
+     0:    Jmp 13670
+  Private Attributes:
+  backedges:
+  block visited: 0
+  block marked: 0
+"
+node: {title: "n13662" label: "Jmp  13662"  info1: "Jmp 13662
+  index: 43
+  mode:    X
+  visited: 2
+  irg:     r_func_68
+  arity:   0
+  pred nodes:
+    -1:    Block 13661
+  Private Attributes:
+"
+color:106}
+}
+
+edge: {sourcename: "n13661" targetname: "n13670" label: "0" class:13 priority:60 color:red}
+graph: { title: "n13631" label: "Block  13631" status:clustered color:101
+ info1: "Block 13631
+  index: 12
+  mode:    BB
+  visited: 2
+  irg:     r_func_68
+  arity:   2
+  pred nodes:
+     0:    Jmp 13662
+     1:    Proj 13666
+  Private Attributes:
+  backedges:
+
+  block visited: 0
+  block marked: 0
+"
+node: {title: "n13667" label: "Jmp  13667"  info1: "Jmp 13667
+  index: 48
+  mode:    X
+  visited: 2
+  irg:     r_func_68
+  arity:   0
+  pred nodes:
+    -1:    Block 13631
+  Private Attributes:
+"
+color:106}
+node: {title: "n13632" label: "Phi[loop]  13632"  info1: "Phi[loop] 13632
+  index: 13
+  mode:    M
+  visited: 2
+  irg:     r_func_68
+  arity:   2
+  pred nodes:
+    -1:    Block 13631
+     0:    Proj 13638
+     1:    Phi[loop] 13632
+  Private Attributes:
+  backedges:
+
+"
+color:105}
+edge: {sourcename: "n13632" targetname: "n13638" label: "0" class:17 priority:10 color:blue}
+edge: {sourcename: "n13632" targetname: "n13632" label: "1" class:14 priority:50 color:blue}
+}
+
+edge: {sourcename: "n13631" targetname: "n13662" label: "0" class:13 priority:60 color:red}
+edge: {sourcename: "n13631" targetname: "n13666" label: "1" class:13 priority:60 color:red}
+graph: { title: "n13633" label: "Block  13633" status:clustered color:101
+ info1: "Block 13633
+  index: 14
+  mode:    BB
+  visited: 2
+  irg:     r_func_68
+  arity:   1
+  pred nodes:
+     0:    Jmp 13667
+  Private Attributes:
+  backedges:
+  block visited: 0
+  block marked: 0
+"
+node: {title: "n13668" label: "Jmp  13668"  info1: "Jmp 13668
+  index: 49
+  mode:    X
+  visited: 2
+  irg:     r_func_68
+  arity:   0
+  pred nodes:
+    -1:    Block 13633
+  Private Attributes:
+"
+color:106}
+}
+
+edge: {sourcename: "n13633" targetname: "n13667" label: "0" class:13 priority:60 color:red}
+graph: { title: "n13634" label: "Block  13634" status:clustered color:101
+ info1: "Block 13634
+  index: 15
+  mode:    BB
+  visited: 2
+  irg:     r_func_68
+  arity:   1
+  pred nodes:
+     0:    Jmp 13668
+  Private Attributes:
+  backedges:
+  block visited: 0
+  block marked: 0
+"
+node: {title: "n13658" label: "Proj M M 13658"  info1: "Proj 13658
+  index: 39
+  mode:    M
+  visited: 2
+  irg:     r_func_68
+  arity:   1
+  pred nodes:
+    -1:    Block 13634
+     0:    Load[Bs] 13657
+  Private Attributes:
+  proj nr: 0
+"
+color:105}
+nearedge: {sourcename: "n13658" targetname: "n13657" label: "0" class:14 priority:50 color:blue}
+node: {title: "n13669" label: "Proj X false 13669"  info1: "Proj 13669
+  index: 50
+  mode:    X
+  visited: 2
+  irg:     r_func_68
+  arity:   1
+  pred nodes:
+    -1:    Block 13634
+     0:    Cond 13665
+  Private Attributes:
+  proj nr: 0
+"
+color:106}
+nearedge: {sourcename: "n13669" targetname: "n13665" label: "0" class:13 priority:60 color:red}
+node: {title: "n13666" label: "Proj X true 13666"  info1: "Proj 13666
+  index: 47
+  mode:    X
+  visited: 2
+  irg:     r_func_68
+  arity:   1
+  pred nodes:
+    -1:    Block 13634
+     0:    Cond 13665
+  Private Attributes:
+  proj nr: 1
+"
+color:106}
+nearedge: {sourcename: "n13666" targetname: "n13665" label: "0" class:13 priority:60 color:red}
+node: {title: "n13665" label: "Cond  13665"  info1: "Cond 13665
+  index: 46
+  mode:    T
+  visited: 2
+  irg:     r_func_68
+  arity:   1
+  pred nodes:
+    -1:    Block 13634
+     0:    Cmp 13664
+  Private Attributes:
+"
+color:106}
+edge: {sourcename: "n13665" targetname: "n13664" label: "0" class:1  priority:50}
+node: {title: "n13664" label: "Cmp b equal 13664"  info1: "Cmp 13664
+  index: 45
+  mode:    b
+  visited: 2
+  irg:     r_func_68
+  arity:   2
+  pred nodes:
+    -1:    Block 13634
+     0:    Proj 13663
+     1:    Conv 13652
+  Private Attributes:
+  relation: equal
+"
+}
+edge: {sourcename: "n13664" targetname: "n13663" label: "0" class:1  priority:50}
+edge: {sourcename: "n13664" targetname: "n13652" label: "1" class:1  priority:50}
+node: {title: "n13663" label: "Proj Bs res 13663"  info1: "Proj 13663
+  index: 44
+  mode:    Bs
+  visited: 2
+  irg:     r_func_68
+  arity:   1
+  pred nodes:
+    -1:    Block 13634
+     0:    Load[Bs] 13657
+  Private Attributes:
+  proj nr: 1
+"
+}
+nearedge: {sourcename: "n13663" targetname: "n13657" label: "0" class:1  priority:50}
+node: {title: "n13657" label: "Load[Bs]  13657"  info1: "Load[Bs] 13657
+  index: 38
+  mode:    T
+  visited: 2
+  irg:     r_func_68
+  arity:   2
+  pred nodes:
+    -1:    Block 13634
+     0:    Proj 13654
+     1:    Member 13656
+  Private Attributes:
+  pinned state: op_pin_state_pinned
+  mode of loaded value: Bs
+  type of object loaded from: primitive:Bs[51]
+  volatility: volatility_non_volatile
+  align: align_is_aligned
+"
+color:105}
+edge: {sourcename: "n13657" targetname: "n13654" label: "0" class:14 priority:50 color:blue}
+edge: {sourcename: "n13657" targetname: "n13656" label: "1" class:1  priority:50}
+node: {title: "n13654" label: "Proj M M 13654"  info1: "Proj 13654
+  index: 35
+  mode:    M
+  visited: 2
+  irg:     r_func_68
+  arity:   1
+  pred nodes:
+    -1:    Block 13634
+     0:    Store 13653
+  Private Attributes:
+  proj nr: 0
+"
+color:105}
+nearedge: {sourcename: "n13654" targetname: "n13653" label: "0" class:14 priority:50 color:blue}
+node: {title: "n13653" label: "Store  13653"  info1: "Store 13653
+  index: 34
+  mode:    T
+  visited: 2
+  irg:     r_func_68
+  arity:   3
+  pred nodes:
+    -1:    Block 13634
+     0:    Proj 13647
+     1:    Member 13650
+     2:    Conv 13652
+  Private Attributes:
+  pinned state: op_pin_state_pinned
+  type of object stored to: primitive:Bs[51]
+  volatility: volatility_non_volatile
+  align: align_is_aligned
+"
+color:105}
+edge: {sourcename: "n13653" targetname: "n13647" label: "0" class:14 priority:50 color:blue}
+edge: {sourcename: "n13653" targetname: "n13650" label: "1" class:1  priority:50}
+edge: {sourcename: "n13653" targetname: "n13652" label: "2" class:1  priority:50}
+node: {title: "n13647" label: "Proj M M 13647"  info1: "Proj 13647
+  index: 28
+  mode:    M
+  visited: 2
+  irg:     r_func_68
+  arity:   1
+  pred nodes:
+    -1:    Block 13634
+     0:    Alloc 13646
+  Private Attributes:
+  proj nr: 0
+"
+color:105}
+nearedge: {sourcename: "n13647" targetname: "n13646" label: "0" class:14 priority:50 color:blue}
+node: {title: "n13650" label: "Member P fs_entity.10 13650"  info1: "Member 13650
+  index: 31
+  mode:    P
+  visited: 2
+  irg:     r_func_68
+  arity:   1
+  pred nodes:
+    -1:    Block 13634
+     0:    Member 13649
+  Private Attributes:
+  Selecting entity fs_entity.10[2707]
+    of type    primitive:Bs[51]
+    with owner union:union 'fs_union.5'[60].
+"
+}
+edge: {sourcename: "n13650" targetname: "n13649" label: "0" class:1  priority:50}
+node: {title: "n13649" label: "Member P fs_entity.22 13649"  info1: "Member 13649
+  index: 30
+  mode:    P
+  visited: 2
+  irg:     r_func_68
+  arity:   1
+  pred nodes:
+    -1:    Block 13634
+     0:    Proj 13648
+  Private Attributes:
+  Selecting entity fs_entity.22[2717]
+    of type    union:union 'fs_union.5'[60]
+    with owner struct:struct 'fs_struct.19'[62].
+"
+}
+edge: {sourcename: "n13649" targetname: "n13648" label: "0" class:1  priority:50}
+node: {title: "n13648" label: "Proj P res 13648"  info1: "Proj 13648
+  index: 29
+  mode:    P
+  visited: 2
+  irg:     r_func_68
+  arity:   1
+  pred nodes:
+    -1:    Block 13634
+     0:    Alloc 13643
+  Private Attributes:
+  proj nr: 1
+"
+}
+nearedge: {sourcename: "n13648" targetname: "n13643" label: "0" class:1  priority:50}
+node: {title: "n13656" label: "Member P fs_entity.10 13656"  info1: "Member 13656
+  index: 37
+  mode:    P
+  visited: 2
+  irg:     r_func_68
+  arity:   1
+  pred nodes:
+    -1:    Block 13634
+     0:    Proj 13655
+  Private Attributes:
+  Selecting entity fs_entity.10[2707]
+    of type    primitive:Bs[51]
+    with owner union:union 'fs_union.5'[60].
+"
+}
+edge: {sourcename: "n13656" targetname: "n13655" label: "0" class:1  priority:50}
+node: {title: "n13655" label: "Proj P res 13655"  info1: "Proj 13655
+  index: 36
+  mode:    P
+  visited: 2
+  irg:     r_func_68
+  arity:   1
+  pred nodes:
+    -1:    Block 13634
+     0:    Alloc 13646
+  Private Attributes:
+  proj nr: 1
+"
+}
+nearedge: {sourcename: "n13655" targetname: "n13646" label: "0" class:1  priority:50}
+node: {title: "n13646" label: "Alloc  13646"  info1: "Alloc 13646
+  index: 27
+  mode:    T
+  visited: 2
+  irg:     r_func_68
+  arity:   2
+  pred nodes:
+    -1:    Block 13634
+     0:    Proj 13644
+     1:    Const 0x12 13645
+  Private Attributes:
+  alignment: 8
+"
+color:105}
+node: {title: "n13646b13645" label: "Const 0x12 Iu 13645"  info1: "Const 0x12 13645
+  index: 26
+  mode:    Iu
+  visited: 2
+  irg:     r_func_68
+  arity:   0
+  pred nodes:
+    -1:    Start Block 13630
+  Private Attributes:
+"
+color:107}
+edge: {sourcename: "n13646" targetname: "n13644" label: "0" class:14 priority:50 color:blue}
+edge: {sourcename: "n13646" targetname: "n13646b13645" label: "1" class:16 priority:10}
+node: {title: "n13644" label: "Proj M M 13644"  info1: "Proj 13644
+  index: 25
+  mode:    M
+  visited: 2
+  irg:     r_func_68
+  arity:   1
+  pred nodes:
+    -1:    Block 13634
+     0:    Alloc 13643
+  Private Attributes:
+  proj nr: 0
+"
+color:105}
+nearedge: {sourcename: "n13644" targetname: "n13643" label: "0" class:14 priority:50 color:blue}
+node: {title: "n13643" label: "Alloc  13643"  info1: "Alloc 13643
+  index: 24
+  mode:    T
+  visited: 2
+  irg:     r_func_68
+  arity:   2
+  pred nodes:
+    -1:    Block 13634
+     0:    Phi[loop] 13632
+     1:    Const 0x24 13642
+  Private Attributes:
+  alignment: 8
+"
+color:105}
+node: {title: "n13643b13642" label: "Const 0x24 Iu 13642"  info1: "Const 0x24 13642
+  index: 23
+  mode:    Iu
+  visited: 2
+  irg:     r_func_68
+  arity:   0
+  pred nodes:
+    -1:    Start Block 13630
+  Private Attributes:
+"
+color:107}
+edge: {sourcename: "n13643" targetname: "n13632" label: "0" class:17 priority:10 color:blue}
+edge: {sourcename: "n13643" targetname: "n13643b13642" label: "1" class:16 priority:10}
+node: {title: "n13652" label: "Conv Bs 13652"  info1: "Conv 13652
+  index: 33
+  mode:    Bs
+  visited: 2
+  irg:     r_func_68
+  arity:   1
+  pred nodes:
+    -1:    Block 13634
+     0:    Const 0x88E 13651
+  Private Attributes:
+"
+}
+node: {title: "n13652b13651" label: "Const 0x88E Hu 13651"  info1: "Const 0x88E 13651
+  index: 32
+  mode:    Hu
+  visited: 2
+  irg:     r_func_68
+  arity:   0
+  pred nodes:
+    -1:    Start Block 13630
+  Private Attributes:
+"
+color:107}
+edge: {sourcename: "n13652" targetname: "n13652b13651" label: "0" class:16 priority:10}
+}
+
+edge: {sourcename: "n13634" targetname: "n13668" label: "0" class:13 priority:60 color:red}
+graph: { title: "n13641" label: "Block  13641" status:clustered color:101
+ info1: "Block 13641
+  index: 22
+  mode:    BB
+  visited: 2
+  irg:     r_func_68
+  arity:   1
+  pred nodes:
+     0:    Proj 13669
+  Private Attributes:
+  backedges:
+  block visited: 0
+  block marked: 0
+"
+node: {title: "n13660" label: "Return  13660"  info1: "Return 13660
+  index: 41
+  mode:    X
+  visited: 2
+  irg:     r_func_68
+  arity:   2
+  pred nodes:
+    -1:    Block 13641
+     0:    Proj 13658
+     1:    Const 0xA9 13659
+  Private Attributes:
+  return in method of type method:method type[359]
+    result 0 type: primitive:Bs[51]
+"
+color:106}
+node: {title: "n13660b13659" label: "Const 0xA9 Bs 13659"  info1: "Const 0xA9 13659
+  index: 40
+  mode:    Bs
+  visited: 2
+  irg:     r_func_68
+  arity:   0
+  pred nodes:
+    -1:    Start Block 13630
+  Private Attributes:
+"
+color:107}
+edge: {sourcename: "n13660" targetname: "n13658" label: "0" class:17 priority:10 color:blue}
+edge: {sourcename: "n13660" targetname: "n13660b13659" label: "1" class:16 priority:10}
+}
+
+edge: {sourcename: "n13641" targetname: "n13669" label: "0" class:13 priority:60 color:red}
+graph: { title: "n13629" label: "End Block  13629" status:clustered color:101
+ info1: "End Block 13629
+  index: 10
+  mode:    BB
+  visited: 2
+  irg:     r_func_68
+  arity:   1
+  pred nodes:
+     0:    Return 13660
+  Private Attributes:
+  backedges:
+  block visited: 0
+  block marked: 0
+"
+node: {title: "n13635" label: "End  13635"  info1: "End 13635
+  index: 16
+  mode:    X
+  visited: 2
+  irg:     r_func_68
+  arity:   4
+  pred nodes:
+    -1:    End Block 13629
+     0:    Phi[loop] 13632
+     1:    Block 13631
+     2:    Block 13633
+     3:    Block 13634
+  Private Attributes:
+"
+color:108}
+edge: {sourcename: "n13635" targetname: "n13632" label: "0" class:20 priority:10 color:purple}
+edge: {sourcename: "n13635" targetname: "n13631" label: "1" class:20 priority:60 color:purple}
+edge: {sourcename: "n13635" targetname: "n13633" label: "2" class:20 priority:60 color:purple}
+edge: {sourcename: "n13635" targetname: "n13634" label: "3" class:20 priority:60 color:purple}
+}
+
+edge: {sourcename: "n13629" targetname: "n13660" label: "0" class:13 priority:60 color:red}
+}
+
+}

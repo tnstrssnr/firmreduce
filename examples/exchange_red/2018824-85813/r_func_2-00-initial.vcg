@@ -1,0 +1,2424 @@
+graph: { title: "ir graph of r_func_2"
+display_edge_labels: yes
+layoutalgorithm: mindepth //$ "Compilergraph"
+manhattan_edges: yes
+port_sharing: no
+orientation: bottom_to_top
+classname 1:  "intrablock Data"
+classname 2:  "Block"
+classname 3:  "Entity type"
+classname 4:  "Entity owner"
+classname 5:  "Method Param"
+classname 6:  "Method Res"
+classname 7:  "Super"
+classname 8:  "Union"
+classname 9:  "Points-to"
+classname 10: "Array Element Type"
+classname 11: "Overwrites"
+classname 12: "Member"
+classname 13: "Control Flow"
+classname 14: "intrablock Memory"
+classname 15: "Dominators"
+classname 16: "interblock Data"
+classname 17: "interblock Memory"
+classname 18: "Exception Control Flow for Interval Analysis"
+classname 19: "Postdominators"
+classname 20: "Keep Alive"
+classname 21: "Out Edges"
+classname 22: "Macro Block Edges"
+infoname 1: "Attribute"
+infoname 2: "Verification errors"
+infoname 3: "Debug info"
+colorentry 100: 204 204 204
+colorentry 101: 222 239 234
+colorentry 103: 242 242 242
+colorentry 104: 153 255 153
+colorentry 105: 153 153 255
+colorentry 106: 255 153 153
+colorentry 107: 255 255 153
+colorentry 108: 255 153 255
+colorentry 110: 127 127 127
+colorentry 111: 153 255 153
+colorentry 114: 153 153 255
+
+graph: { title: "g690" label: "r_func_2" status:clustered color:100
+info1: "entity r_func_2[232]
+  type:  method:method type[80]
+  owner: segment:segment 'GlobalType'[21]
+  maximum node index:   173
+  additional prop:  inline_recommended
+  calling convention: 
+  vtable number:        4294967295
+  linkage: constant
+  volatility:  volatility_non_volatile
+  aligned:  align_is_aligned
+  alignment:  0
+  ld_name: r_func_2
+  irg = 690
+
+
+constraints:
+properties:"
+graph: { title: "n697" label: "Start Block  697" status:clustered color:101
+ info1: "Start Block 697
+  index: 11
+  mode:    BB
+  visited: 2
+  irg:     r_func_2
+  arity:   0
+  pred nodes:
+  Private Attributes:
+  backedges:  block visited: 0
+  block marked: 0
+"
+node: {title: "n701" label: "Proj M M 701"  info1: "Proj 701
+  index: 15
+  mode:    M
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Start Block 697
+     0:    Start 699
+  Private Attributes:
+  proj nr: 0
+"
+color:105}
+nearedge: {sourcename: "n701" targetname: "n699" label: "0" class:14 priority:50 color:blue}
+node: {title: "n699" label: "Start  699"  info1: "Start 699
+  index: 13
+  mode:    T
+  visited: 2
+  irg:     r_func_2
+  arity:   0
+  pred nodes:
+    -1:    Start Block 697
+  Private Attributes:
+  start of method of type method:method type[80]
+    param 0 type: primitive:Bs[51]
+"
+color:108}
+node: {title: "n818" label: "Jmp  818"  info1: "Jmp 818
+  index: 132
+  mode:    X
+  visited: 2
+  irg:     r_func_2
+  arity:   0
+  pred nodes:
+    -1:    Start Block 697
+  Private Attributes:
+"
+color:106}
+}
+
+graph: { title: "n709" label: "Block  709" status:clustered color:101
+ info1: "Block 709
+  index: 23
+  mode:    BB
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+     0:    Jmp 818
+  Private Attributes:
+  backedges:
+  block visited: 0
+  block marked: 0
+"
+node: {title: "n712" label: "Proj M M 712"  info1: "Proj 712
+  index: 26
+  mode:    M
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 709
+     0:    Alloc 711
+  Private Attributes:
+  proj nr: 0
+"
+color:105}
+nearedge: {sourcename: "n712" targetname: "n711" label: "0" class:14 priority:50 color:blue}
+node: {title: "n820" label: "Member P fs_entity.22 820"  info1: "Member 820
+  index: 134
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 709
+     0:    Proj 819
+  Private Attributes:
+  Selecting entity fs_entity.22[258]
+    of type    union:union 'fs_union.5'[60]
+    with owner struct:struct 'fs_struct.19'[62].
+"
+}
+edge: {sourcename: "n820" targetname: "n819" label: "0" class:1  priority:50}
+node: {title: "n819" label: "Proj P res 819"  info1: "Proj 819
+  index: 133
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 709
+     0:    Alloc 711
+  Private Attributes:
+  proj nr: 1
+"
+}
+nearedge: {sourcename: "n819" targetname: "n711" label: "0" class:1  priority:50}
+node: {title: "n711" label: "Alloc  711"  info1: "Alloc 711
+  index: 25
+  mode:    T
+  visited: 2
+  irg:     r_func_2
+  arity:   2
+  pred nodes:
+    -1:    Block 709
+     0:    Proj 701
+     1:    Const 0x24 710
+  Private Attributes:
+  alignment: 8
+"
+color:105}
+node: {title: "n711b710" label: "Const 0x24 Iu 710"  info1: "Const 0x24 710
+  index: 24
+  mode:    Iu
+  visited: 2
+  irg:     r_func_2
+  arity:   0
+  pred nodes:
+    -1:    Start Block 697
+  Private Attributes:
+"
+color:107}
+edge: {sourcename: "n711" targetname: "n701" label: "0" class:17 priority:10 color:blue}
+edge: {sourcename: "n711" targetname: "n711b710" label: "1" class:16 priority:10}
+node: {title: "n817" label: "Jmp  817"  info1: "Jmp 817
+  index: 131
+  mode:    X
+  visited: 2
+  irg:     r_func_2
+  arity:   0
+  pred nodes:
+    -1:    Block 709
+  Private Attributes:
+"
+color:106}
+}
+
+edge: {sourcename: "n709" targetname: "n818" label: "0" class:13 priority:60 color:red}
+graph: { title: "n708" label: "Block  708" status:clustered color:101
+ info1: "Block 708
+  index: 22
+  mode:    BB
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+     0:    Jmp 817
+  Private Attributes:
+  backedges:
+  block visited: 0
+  block marked: 0
+"
+node: {title: "n816" label: "Proj X false 816"  info1: "Proj 816
+  index: 130
+  mode:    X
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 708
+     0:    Cond 815
+  Private Attributes:
+  proj nr: 0
+"
+color:106}
+nearedge: {sourcename: "n816" targetname: "n815" label: "0" class:13 priority:60 color:red}
+node: {title: "n725" label: "Proj M M 725"  info1: "Proj 725
+  index: 39
+  mode:    M
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 708
+     0:    Load[Bs] 724
+  Private Attributes:
+  proj nr: 0
+"
+color:105}
+nearedge: {sourcename: "n725" targetname: "n724" label: "0" class:14 priority:50 color:blue}
+node: {title: "n839" label: "Proj P res 839"  info1: "Proj 839
+  index: 153
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 708
+     0:    Alloc 714
+  Private Attributes:
+  proj nr: 1
+"
+}
+nearedge: {sourcename: "n839" targetname: "n714" label: "0" class:1  priority:50}
+node: {title: "n838" label: "Proj X true 838"  info1: "Proj 838
+  index: 152
+  mode:    X
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 708
+     0:    Cond 815
+  Private Attributes:
+  proj nr: 1
+"
+color:106}
+nearedge: {sourcename: "n838" targetname: "n815" label: "0" class:13 priority:60 color:red}
+node: {title: "n815" label: "Cond  815"  info1: "Cond 815
+  index: 129
+  mode:    T
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 708
+     0:    Cmp 814
+  Private Attributes:
+"
+color:106}
+edge: {sourcename: "n815" targetname: "n814" label: "0" class:1  priority:50}
+node: {title: "n814" label: "Cmp b less 814"  info1: "Cmp 814
+  index: 128
+  mode:    b
+  visited: 2
+  irg:     r_func_2
+  arity:   2
+  pred nodes:
+    -1:    Block 708
+     0:    Proj 812
+     1:    Proj 813
+  Private Attributes:
+  relation: less
+"
+}
+edge: {sourcename: "n814" targetname: "n812" label: "0" class:1  priority:50}
+edge: {sourcename: "n814" targetname: "n813" label: "1" class:1  priority:50}
+node: {title: "n812" label: "Proj Bs res 812"  info1: "Proj 812
+  index: 126
+  mode:    Bs
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 708
+     0:    Load[Bs] 724
+  Private Attributes:
+  proj nr: 1
+"
+}
+nearedge: {sourcename: "n812" targetname: "n724" label: "0" class:1  priority:50}
+node: {title: "n724" label: "Load[Bs]  724"  info1: "Load[Bs] 724
+  index: 38
+  mode:    T
+  visited: 2
+  irg:     r_func_2
+  arity:   2
+  pred nodes:
+    -1:    Block 708
+     0:    Proj 722
+     1:    Proj 723
+  Private Attributes:
+  pinned state: op_pin_state_pinned
+  mode of loaded value: Bs
+  type of object loaded from: primitive:Bs[51]
+  volatility: volatility_non_volatile
+  align: align_is_aligned
+"
+color:105}
+edge: {sourcename: "n724" targetname: "n722" label: "0" class:14 priority:50 color:blue}
+edge: {sourcename: "n724" targetname: "n723" label: "1" class:1  priority:50}
+node: {title: "n722" label: "Proj M M 722"  info1: "Proj 722
+  index: 36
+  mode:    M
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 708
+     0:    Load[Bs] 721
+  Private Attributes:
+  proj nr: 0
+"
+color:105}
+nearedge: {sourcename: "n722" targetname: "n721" label: "0" class:14 priority:50 color:blue}
+node: {title: "n723" label: "Proj P res 723"  info1: "Proj 723
+  index: 37
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 708
+     0:    Alloc 717
+  Private Attributes:
+  proj nr: 1
+"
+}
+nearedge: {sourcename: "n723" targetname: "n717" label: "0" class:1  priority:50}
+node: {title: "n813" label: "Proj Bs res 813"  info1: "Proj 813
+  index: 127
+  mode:    Bs
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 708
+     0:    Load[Bs] 721
+  Private Attributes:
+  proj nr: 1
+"
+}
+nearedge: {sourcename: "n813" targetname: "n721" label: "0" class:1  priority:50}
+node: {title: "n721" label: "Load[Bs]  721"  info1: "Load[Bs] 721
+  index: 35
+  mode:    T
+  visited: 2
+  irg:     r_func_2
+  arity:   2
+  pred nodes:
+    -1:    Block 708
+     0:    Proj 718
+     1:    Member 720
+  Private Attributes:
+  pinned state: op_pin_state_pinned
+  mode of loaded value: Bs
+  type of object loaded from: primitive:Bs[51]
+  volatility: volatility_non_volatile
+  align: align_is_aligned
+"
+color:105}
+edge: {sourcename: "n721" targetname: "n718" label: "0" class:14 priority:50 color:blue}
+edge: {sourcename: "n721" targetname: "n720" label: "1" class:1  priority:50}
+node: {title: "n718" label: "Proj M M 718"  info1: "Proj 718
+  index: 32
+  mode:    M
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 708
+     0:    Alloc 717
+  Private Attributes:
+  proj nr: 0
+"
+color:105}
+nearedge: {sourcename: "n718" targetname: "n717" label: "0" class:14 priority:50 color:blue}
+node: {title: "n717" label: "Alloc  717"  info1: "Alloc 717
+  index: 31
+  mode:    T
+  visited: 2
+  irg:     r_func_2
+  arity:   2
+  pred nodes:
+    -1:    Block 708
+     0:    Proj 715
+     1:    Const 0x1 716
+  Private Attributes:
+  alignment: 8
+"
+color:105}
+node: {title: "n717b716" label: "Const 0x1 Iu 716"  info1: "Const 0x1 716
+  index: 30
+  mode:    Iu
+  visited: 2
+  irg:     r_func_2
+  arity:   0
+  pred nodes:
+    -1:    Start Block 697
+  Private Attributes:
+"
+color:107}
+edge: {sourcename: "n717" targetname: "n715" label: "0" class:14 priority:50 color:blue}
+edge: {sourcename: "n717" targetname: "n717b716" label: "1" class:16 priority:10}
+node: {title: "n715" label: "Proj M M 715"  info1: "Proj 715
+  index: 29
+  mode:    M
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 708
+     0:    Alloc 714
+  Private Attributes:
+  proj nr: 0
+"
+color:105}
+nearedge: {sourcename: "n715" targetname: "n714" label: "0" class:14 priority:50 color:blue}
+node: {title: "n714" label: "Alloc  714"  info1: "Alloc 714
+  index: 28
+  mode:    T
+  visited: 2
+  irg:     r_func_2
+  arity:   2
+  pred nodes:
+    -1:    Block 708
+     0:    Proj 712
+     1:    Const 0x24 713
+  Private Attributes:
+  alignment: 8
+"
+color:105}
+node: {title: "n714b713" label: "Const 0x24 Iu 713"  info1: "Const 0x24 713
+  index: 27
+  mode:    Iu
+  visited: 2
+  irg:     r_func_2
+  arity:   0
+  pred nodes:
+    -1:    Start Block 697
+  Private Attributes:
+"
+color:107}
+edge: {sourcename: "n714" targetname: "n712" label: "0" class:17 priority:10 color:blue}
+edge: {sourcename: "n714" targetname: "n714b713" label: "1" class:16 priority:10}
+node: {title: "n720" label: "Member P fs_entity.10 720"  info1: "Member 720
+  index: 34
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 708
+     0:    Phi 719
+  Private Attributes:
+  Selecting entity fs_entity.10[248]
+    of type    primitive:Bs[51]
+    with owner union:union 'fs_union.5'[60].
+"
+}
+edge: {sourcename: "n720" targetname: "n719" label: "0" class:1  priority:50}
+node: {title: "n719" label: "Phi P 719"  info1: "Phi 719
+  index: 33
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 708
+     0:    Member 820
+  Private Attributes:
+  backedges:
+"
+color:104}
+edge: {sourcename: "n719" targetname: "n820" label: "0" class:16 priority:10}
+}
+
+edge: {sourcename: "n708" targetname: "n817" label: "0" class:13 priority:60 color:red}
+graph: { title: "n791" label: "Block  791" status:clustered color:101
+ info1: "Block 791
+  index: 105
+  mode:    BB
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+     0:    Proj 838
+  Private Attributes:
+  backedges:
+  block visited: 0
+  block marked: 0
+"
+node: {title: "n799" label: "Proj M M 799"  info1: "Proj 799
+  index: 113
+  mode:    M
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 791
+     0:    Store 798
+  Private Attributes:
+  proj nr: 0
+"
+color:105}
+nearedge: {sourcename: "n799" targetname: "n798" label: "0" class:14 priority:50 color:blue}
+node: {title: "n798" label: "Store  798"  info1: "Store 798
+  index: 112
+  mode:    T
+  visited: 2
+  irg:     r_func_2
+  arity:   3
+  pred nodes:
+    -1:    Block 791
+     0:    Proj 794
+     1:    Proj 795
+     2:    Member 797
+  Private Attributes:
+  pinned state: op_pin_state_pinned
+  type of object stored to: pointer:pointer to union 'fs_union.5'[159]
+  volatility: volatility_non_volatile
+  align: align_is_aligned
+"
+color:105}
+edge: {sourcename: "n798" targetname: "n794" label: "0" class:14 priority:50 color:blue}
+edge: {sourcename: "n798" targetname: "n795" label: "1" class:1  priority:50}
+edge: {sourcename: "n798" targetname: "n797" label: "2" class:1  priority:50}
+node: {title: "n794" label: "Proj M M 794"  info1: "Proj 794
+  index: 108
+  mode:    M
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 791
+     0:    Alloc 793
+  Private Attributes:
+  proj nr: 0
+"
+color:105}
+nearedge: {sourcename: "n794" targetname: "n793" label: "0" class:14 priority:50 color:blue}
+node: {title: "n795" label: "Proj P res 795"  info1: "Proj 795
+  index: 109
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 791
+     0:    Alloc 793
+  Private Attributes:
+  proj nr: 1
+"
+}
+nearedge: {sourcename: "n795" targetname: "n793" label: "0" class:1  priority:50}
+node: {title: "n793" label: "Alloc  793"  info1: "Alloc 793
+  index: 107
+  mode:    T
+  visited: 2
+  irg:     r_func_2
+  arity:   2
+  pred nodes:
+    -1:    Block 791
+     0:    Proj 725
+     1:    Const 0x8 792
+  Private Attributes:
+  alignment: 8
+"
+color:105}
+node: {title: "n793b792" label: "Const 0x8 Iu 792"  info1: "Const 0x8 792
+  index: 106
+  mode:    Iu
+  visited: 2
+  irg:     r_func_2
+  arity:   0
+  pred nodes:
+    -1:    Start Block 697
+  Private Attributes:
+"
+color:107}
+edge: {sourcename: "n793" targetname: "n725" label: "0" class:17 priority:10 color:blue}
+edge: {sourcename: "n793" targetname: "n793b792" label: "1" class:16 priority:10}
+node: {title: "n840" label: "Member P fs_entity.10 840"  info1: "Member 840
+  index: 154
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 791
+     0:    Member 797
+  Private Attributes:
+  Selecting entity fs_entity.10[248]
+    of type    primitive:Bs[51]
+    with owner union:union 'fs_union.5'[60].
+"
+}
+edge: {sourcename: "n840" targetname: "n797" label: "0" class:1  priority:50}
+node: {title: "n797" label: "Member P fs_entity.22 797"  info1: "Member 797
+  index: 111
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 791
+     0:    Phi 796
+  Private Attributes:
+  Selecting entity fs_entity.22[258]
+    of type    union:union 'fs_union.5'[60]
+    with owner struct:struct 'fs_struct.19'[62].
+"
+}
+edge: {sourcename: "n797" targetname: "n796" label: "0" class:1  priority:50}
+node: {title: "n796" label: "Phi P 796"  info1: "Phi 796
+  index: 110
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 791
+     0:    Proj 839
+  Private Attributes:
+  backedges:
+"
+color:104}
+edge: {sourcename: "n796" targetname: "n839" label: "0" class:16 priority:10}
+node: {title: "n837" label: "Jmp  837"  info1: "Jmp 837
+  index: 151
+  mode:    X
+  visited: 2
+  irg:     r_func_2
+  arity:   0
+  pred nodes:
+    -1:    Block 791
+  Private Attributes:
+"
+color:106}
+}
+
+edge: {sourcename: "n791" targetname: "n838" label: "0" class:13 priority:60 color:red}
+graph: { title: "n790" label: "Block  790" status:clustered color:101
+ info1: "Block 790
+  index: 104
+  mode:    BB
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+     0:    Jmp 837
+  Private Attributes:
+  backedges:
+  block visited: 0
+  block marked: 0
+"
+node: {title: "n804" label: "Return  804"  info1: "Return 804
+  index: 118
+  mode:    X
+  visited: 2
+  irg:     r_func_2
+  arity:   2
+  pred nodes:
+    -1:    Block 790
+     0:    Proj 802
+     1:    Proj 803
+  Private Attributes:
+  return in method of type method:method type[80]
+    result 0 type: primitive:Bs[51]
+"
+color:106}
+edge: {sourcename: "n804" targetname: "n802" label: "0" class:14 priority:50 color:blue}
+edge: {sourcename: "n804" targetname: "n803" label: "1" class:1  priority:50}
+node: {title: "n802" label: "Proj M M 802"  info1: "Proj 802
+  index: 116
+  mode:    M
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 790
+     0:    Load[Bs] 801
+  Private Attributes:
+  proj nr: 0
+"
+color:105}
+nearedge: {sourcename: "n802" targetname: "n801" label: "0" class:14 priority:50 color:blue}
+node: {title: "n803" label: "Proj Bs res 803"  info1: "Proj 803
+  index: 117
+  mode:    Bs
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 790
+     0:    Load[Bs] 801
+  Private Attributes:
+  proj nr: 1
+"
+}
+nearedge: {sourcename: "n803" targetname: "n801" label: "0" class:1  priority:50}
+node: {title: "n801" label: "Load[Bs]  801"  info1: "Load[Bs] 801
+  index: 115
+  mode:    T
+  visited: 2
+  irg:     r_func_2
+  arity:   2
+  pred nodes:
+    -1:    Block 790
+     0:    Proj 799
+     1:    Phi 800
+  Private Attributes:
+  pinned state: op_pin_state_pinned
+  mode of loaded value: Bs
+  type of object loaded from: primitive:Bs[51]
+  volatility: volatility_non_volatile
+  align: align_is_aligned
+"
+color:105}
+edge: {sourcename: "n801" targetname: "n799" label: "0" class:17 priority:10 color:blue}
+edge: {sourcename: "n801" targetname: "n800" label: "1" class:1  priority:50}
+node: {title: "n800" label: "Phi P 800"  info1: "Phi 800
+  index: 114
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 790
+     0:    Member 840
+  Private Attributes:
+  backedges:
+"
+color:104}
+edge: {sourcename: "n800" targetname: "n840" label: "0" class:16 priority:10}
+}
+
+edge: {sourcename: "n790" targetname: "n837" label: "0" class:13 priority:60 color:red}
+graph: { title: "n707" label: "Block  707" status:clustered color:101
+ info1: "Block 707
+  index: 21
+  mode:    BB
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+     0:    Proj 816
+  Private Attributes:
+  backedges:
+  block visited: 0
+  block marked: 0
+"
+node: {title: "n732" label: "Proj M M 732"  info1: "Proj 732
+  index: 46
+  mode:    M
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 707
+     0:    Call 731
+  Private Attributes:
+  proj nr: 0
+"
+color:105}
+nearedge: {sourcename: "n732" targetname: "n731" label: "0" class:14 priority:50 color:blue}
+node: {title: "n857" label: "Proj P res 857"  info1: "Proj 857
+  index: 171
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 707
+     0:    Alloc 727
+  Private Attributes:
+  proj nr: 1
+"
+}
+nearedge: {sourcename: "n857" targetname: "n727" label: "0" class:1  priority:50}
+node: {title: "n854" label: "Mul Bs 854"  info1: "Mul 854
+  index: 168
+  mode:    Bs
+  visited: 2
+  irg:     r_func_2
+  arity:   2
+  pred nodes:
+    -1:    Block 707
+     0:    Proj 851
+     1:    Conv 853
+  Private Attributes:
+"
+}
+edge: {sourcename: "n854" targetname: "n851" label: "0" class:1  priority:50}
+edge: {sourcename: "n854" targetname: "n853" label: "1" class:1  priority:50}
+node: {title: "n851" label: "Proj Bs 0 851"  info1: "Proj 851
+  index: 165
+  mode:    Bs
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 707
+     0:    Proj 850
+  Private Attributes:
+  proj nr: 0
+"
+}
+nearedge: {sourcename: "n851" targetname: "n850" label: "0" class:1  priority:50}
+node: {title: "n850" label: "Proj T T_result 850"  info1: "Proj 850
+  index: 164
+  mode:    T
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 707
+     0:    Call 731
+  Private Attributes:
+  proj nr: 1
+"
+}
+nearedge: {sourcename: "n850" targetname: "n731" label: "0" class:1  priority:50}
+node: {title: "n731" label: "Call  731"  info1: "Call 731
+  index: 45
+  mode:    T
+  visited: 2
+  irg:     r_func_2
+  arity:   3
+  pred nodes:
+    -1:    Block 707
+     0:    Proj 728
+     1:    Address &r_func_4 729
+     2:    Const 0xEF 730
+  Private Attributes:
+  pinned state: op_pin_state_pinned
+  calling method of type method:method type[92]
+    param 0 type: primitive:Bs[51]
+    result 0 type: primitive:Bs[51]
+"
+color:105}
+node: {title: "n731b729" label: "Address &r_func_4 P 729"  info1: "Address &r_func_4 729
+  index: 43
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   0
+  pred nodes:
+    -1:    Start Block 697
+  Private Attributes:
+  entity: entity r_func_4[234]
+  type:  method:method type[92]
+  owner: segment:segment 'GlobalType'[21]
+  maximum node index:   289
+  additional prop:  inline_recommended
+  calling convention: 
+  vtable number:        4294967295
+  linkage: constant
+  volatility:  volatility_non_volatile
+  aligned:  align_is_aligned
+  alignment:  0
+  ld_name: r_func_4
+  irg = 1028
+
+"
+color:107}
+node: {title: "n731b730" label: "Const 0xEF Bs 730"  info1: "Const 0xEF 730
+  index: 44
+  mode:    Bs
+  visited: 2
+  irg:     r_func_2
+  arity:   0
+  pred nodes:
+    -1:    Start Block 697
+  Private Attributes:
+"
+color:107}
+edge: {sourcename: "n731" targetname: "n728" label: "0" class:14 priority:50 color:blue}
+edge: {sourcename: "n731" targetname: "n731b729" label: "1" class:16 priority:10}
+edge: {sourcename: "n731" targetname: "n731b730" label: "2" class:16 priority:10}
+node: {title: "n728" label: "Proj M M 728"  info1: "Proj 728
+  index: 42
+  mode:    M
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 707
+     0:    Alloc 727
+  Private Attributes:
+  proj nr: 0
+"
+color:105}
+nearedge: {sourcename: "n728" targetname: "n727" label: "0" class:14 priority:50 color:blue}
+node: {title: "n727" label: "Alloc  727"  info1: "Alloc 727
+  index: 41
+  mode:    T
+  visited: 2
+  irg:     r_func_2
+  arity:   2
+  pred nodes:
+    -1:    Block 707
+     0:    Proj 725
+     1:    Const 0x39 726
+  Private Attributes:
+  alignment: 8
+"
+color:105}
+node: {title: "n727b726" label: "Const 0x39 Iu 726"  info1: "Const 0x39 726
+  index: 40
+  mode:    Iu
+  visited: 2
+  irg:     r_func_2
+  arity:   0
+  pred nodes:
+    -1:    Start Block 697
+  Private Attributes:
+"
+color:107}
+edge: {sourcename: "n727" targetname: "n725" label: "0" class:17 priority:10 color:blue}
+edge: {sourcename: "n727" targetname: "n727b726" label: "1" class:16 priority:10}
+node: {title: "n853" label: "Conv Bs 853"  info1: "Conv 853
+  index: 167
+  mode:    Bs
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 707
+     0:    Const 0x5395E68C 852
+  Private Attributes:
+"
+}
+node: {title: "n853b852" label: "Const 0x5395E68C Is 852"  info1: "Const 0x5395E68C 852
+  index: 166
+  mode:    Is
+  visited: 2
+  irg:     r_func_2
+  arity:   0
+  pred nodes:
+    -1:    Start Block 697
+  Private Attributes:
+"
+color:107}
+edge: {sourcename: "n853" targetname: "n853b852" label: "0" class:16 priority:10}
+node: {title: "n856" label: "Conv Bs 856"  info1: "Conv 856
+  index: 170
+  mode:    Bs
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 707
+     0:    Phi 855
+  Private Attributes:
+"
+}
+edge: {sourcename: "n856" targetname: "n855" label: "0" class:1  priority:50}
+node: {title: "n855" label: "Phi Hu 855"  info1: "Phi 855
+  index: 169
+  mode:    Hu
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 707
+     0:    Const 0xF6EF 858
+  Private Attributes:
+  backedges:
+"
+color:104}
+node: {title: "n855b858" label: "Const 0xF6EF Hu 858"  info1: "Const 0xF6EF 858
+  index: 172
+  mode:    Hu
+  visited: 2
+  irg:     r_func_2
+  arity:   0
+  pred nodes:
+    -1:    Start Block 697
+  Private Attributes:
+"
+color:107}
+edge: {sourcename: "n855" targetname: "n855b858" label: "0" class:16 priority:10}
+node: {title: "n811" label: "Jmp  811"  info1: "Jmp 811
+  index: 125
+  mode:    X
+  visited: 2
+  irg:     r_func_2
+  arity:   0
+  pred nodes:
+    -1:    Block 707
+  Private Attributes:
+"
+color:106}
+}
+
+edge: {sourcename: "n707" targetname: "n816" label: "0" class:13 priority:60 color:red}
+graph: { title: "n706" label: "Block  706" status:clustered color:101
+ info1: "Block 706
+  index: 20
+  mode:    BB
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+     0:    Jmp 811
+  Private Attributes:
+  backedges:
+  block visited: 0
+  block marked: 0
+"
+node: {title: "n847" label: "Proj X false 847"  info1: "Proj 847
+  index: 161
+  mode:    X
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 706
+     0:    Cond 827
+  Private Attributes:
+  proj nr: 0
+"
+color:106}
+nearedge: {sourcename: "n847" targetname: "n827" label: "0" class:13 priority:60 color:red}
+node: {title: "n744" label: "Proj M M 744"  info1: "Proj 744
+  index: 58
+  mode:    M
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 706
+     0:    Alloc 743
+  Private Attributes:
+  proj nr: 0
+"
+color:105}
+nearedge: {sourcename: "n744" targetname: "n743" label: "0" class:14 priority:50 color:blue}
+node: {title: "n829" label: "Proj P res 829"  info1: "Proj 829
+  index: 143
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 706
+     0:    Alloc 734
+  Private Attributes:
+  proj nr: 1
+"
+}
+nearedge: {sourcename: "n829" targetname: "n734" label: "0" class:1  priority:50}
+node: {title: "n831" label: "Proj P res 831"  info1: "Proj 831
+  index: 145
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 706
+     0:    Alloc 737
+  Private Attributes:
+  proj nr: 1
+"
+}
+nearedge: {sourcename: "n831" targetname: "n737" label: "0" class:1  priority:50}
+node: {title: "n832" label: "Proj P res 832"  info1: "Proj 832
+  index: 146
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 706
+     0:    Alloc 743
+  Private Attributes:
+  proj nr: 1
+"
+}
+nearedge: {sourcename: "n832" targetname: "n743" label: "0" class:1  priority:50}
+node: {title: "n743" label: "Alloc  743"  info1: "Alloc 743
+  index: 57
+  mode:    T
+  visited: 2
+  irg:     r_func_2
+  arity:   2
+  pred nodes:
+    -1:    Block 706
+     0:    Proj 741
+     1:    Const 0x8 742
+  Private Attributes:
+  alignment: 8
+"
+color:105}
+node: {title: "n743b742" label: "Const 0x8 Iu 742"  info1: "Const 0x8 742
+  index: 56
+  mode:    Iu
+  visited: 2
+  irg:     r_func_2
+  arity:   0
+  pred nodes:
+    -1:    Start Block 697
+  Private Attributes:
+"
+color:107}
+edge: {sourcename: "n743" targetname: "n741" label: "0" class:14 priority:50 color:blue}
+edge: {sourcename: "n743" targetname: "n743b742" label: "1" class:16 priority:10}
+node: {title: "n741" label: "Proj M M 741"  info1: "Proj 741
+  index: 55
+  mode:    M
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 706
+     0:    Alloc 740
+  Private Attributes:
+  proj nr: 0
+"
+color:105}
+nearedge: {sourcename: "n741" targetname: "n740" label: "0" class:14 priority:50 color:blue}
+node: {title: "n830" label: "Proj P res 830"  info1: "Proj 830
+  index: 144
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 706
+     0:    Alloc 740
+  Private Attributes:
+  proj nr: 1
+"
+}
+nearedge: {sourcename: "n830" targetname: "n740" label: "0" class:1  priority:50}
+node: {title: "n740" label: "Alloc  740"  info1: "Alloc 740
+  index: 54
+  mode:    T
+  visited: 2
+  irg:     r_func_2
+  arity:   2
+  pred nodes:
+    -1:    Block 706
+     0:    Proj 738
+     1:    Const 0x39 739
+  Private Attributes:
+  alignment: 8
+"
+color:105}
+node: {title: "n740b739" label: "Const 0x39 Iu 739"  info1: "Const 0x39 739
+  index: 53
+  mode:    Iu
+  visited: 2
+  irg:     r_func_2
+  arity:   0
+  pred nodes:
+    -1:    Start Block 697
+  Private Attributes:
+"
+color:107}
+edge: {sourcename: "n740" targetname: "n738" label: "0" class:14 priority:50 color:blue}
+edge: {sourcename: "n740" targetname: "n740b739" label: "1" class:16 priority:10}
+node: {title: "n738" label: "Proj M M 738"  info1: "Proj 738
+  index: 52
+  mode:    M
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 706
+     0:    Alloc 737
+  Private Attributes:
+  proj nr: 0
+"
+color:105}
+nearedge: {sourcename: "n738" targetname: "n737" label: "0" class:14 priority:50 color:blue}
+node: {title: "n737" label: "Alloc  737"  info1: "Alloc 737
+  index: 51
+  mode:    T
+  visited: 2
+  irg:     r_func_2
+  arity:   2
+  pred nodes:
+    -1:    Block 706
+     0:    Proj 735
+     1:    Const 0x8 736
+  Private Attributes:
+  alignment: 8
+"
+color:105}
+node: {title: "n737b736" label: "Const 0x8 Iu 736"  info1: "Const 0x8 736
+  index: 50
+  mode:    Iu
+  visited: 2
+  irg:     r_func_2
+  arity:   0
+  pred nodes:
+    -1:    Start Block 697
+  Private Attributes:
+"
+color:107}
+edge: {sourcename: "n737" targetname: "n735" label: "0" class:14 priority:50 color:blue}
+edge: {sourcename: "n737" targetname: "n737b736" label: "1" class:16 priority:10}
+node: {title: "n735" label: "Proj M M 735"  info1: "Proj 735
+  index: 49
+  mode:    M
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 706
+     0:    Alloc 734
+  Private Attributes:
+  proj nr: 0
+"
+color:105}
+nearedge: {sourcename: "n735" targetname: "n734" label: "0" class:14 priority:50 color:blue}
+node: {title: "n734" label: "Alloc  734"  info1: "Alloc 734
+  index: 48
+  mode:    T
+  visited: 2
+  irg:     r_func_2
+  arity:   2
+  pred nodes:
+    -1:    Block 706
+     0:    Proj 732
+     1:    Const 0x8 733
+  Private Attributes:
+  alignment: 8
+"
+color:105}
+node: {title: "n734b733" label: "Const 0x8 Iu 733"  info1: "Const 0x8 733
+  index: 47
+  mode:    Iu
+  visited: 2
+  irg:     r_func_2
+  arity:   0
+  pred nodes:
+    -1:    Start Block 697
+  Private Attributes:
+"
+color:107}
+edge: {sourcename: "n734" targetname: "n732" label: "0" class:17 priority:10 color:blue}
+edge: {sourcename: "n734" targetname: "n734b733" label: "1" class:16 priority:10}
+node: {title: "n836" label: "Member P fs_entity.8 836"  info1: "Member 836
+  index: 150
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 706
+     0:    Member 835
+  Private Attributes:
+  Selecting entity fs_entity.8[246]
+    of type    struct:struct 'fs_struct.0'[59]
+    with owner union:union 'fs_union.5'[60].
+"
+}
+edge: {sourcename: "n836" targetname: "n835" label: "0" class:1  priority:50}
+node: {title: "n835" label: "Member P fs_entity.22 835"  info1: "Member 835
+  index: 149
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 706
+     0:    Member 834
+  Private Attributes:
+  Selecting entity fs_entity.22[258]
+    of type    union:union 'fs_union.5'[60]
+    with owner struct:struct 'fs_struct.19'[62].
+"
+}
+edge: {sourcename: "n835" targetname: "n834" label: "0" class:1  priority:50}
+node: {title: "n834" label: "Member P fs_entity.35 834"  info1: "Member 834
+  index: 148
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 706
+     0:    Phi 833
+  Private Attributes:
+  Selecting entity fs_entity.35[268]
+    of type    struct:struct 'fs_struct.19'[62]
+    with owner struct:struct 'fs_struct.34'[65].
+"
+}
+edge: {sourcename: "n834" targetname: "n833" label: "0" class:1  priority:50}
+node: {title: "n833" label: "Phi P 833"  info1: "Phi 833
+  index: 147
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 706
+     0:    Proj 857
+  Private Attributes:
+  backedges:
+"
+color:104}
+edge: {sourcename: "n833" targetname: "n857" label: "0" class:16 priority:10}
+node: {title: "n828" label: "Proj X true 828"  info1: "Proj 828
+  index: 142
+  mode:    X
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 706
+     0:    Cond 827
+  Private Attributes:
+  proj nr: 1
+"
+color:106}
+nearedge: {sourcename: "n828" targetname: "n827" label: "0" class:13 priority:60 color:red}
+node: {title: "n827" label: "Cond  827"  info1: "Cond 827
+  index: 141
+  mode:    T
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 706
+     0:    Cmp 826
+  Private Attributes:
+"
+color:106}
+edge: {sourcename: "n827" targetname: "n826" label: "0" class:1  priority:50}
+node: {title: "n826" label: "Cmp b less_equal 826"  info1: "Cmp 826
+  index: 140
+  mode:    b
+  visited: 2
+  irg:     r_func_2
+  arity:   2
+  pred nodes:
+    -1:    Block 706
+     0:    Phi 824
+     1:    Phi 825
+  Private Attributes:
+  relation: less_equal
+"
+}
+edge: {sourcename: "n826" targetname: "n824" label: "0" class:1  priority:50}
+edge: {sourcename: "n826" targetname: "n825" label: "1" class:1  priority:50}
+node: {title: "n824" label: "Phi Bs 824"  info1: "Phi 824
+  index: 138
+  mode:    Bs
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 706
+     0:    Mul 854
+  Private Attributes:
+  backedges:
+"
+color:104}
+edge: {sourcename: "n824" targetname: "n854" label: "0" class:16 priority:10}
+node: {title: "n825" label: "Phi Bs 825"  info1: "Phi 825
+  index: 139
+  mode:    Bs
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 706
+     0:    Conv 856
+  Private Attributes:
+  backedges:
+"
+color:104}
+edge: {sourcename: "n825" targetname: "n856" label: "0" class:16 priority:10}
+}
+
+edge: {sourcename: "n706" targetname: "n811" label: "0" class:13 priority:60 color:red}
+graph: { title: "n758" label: "Block  758" status:clustered color:101
+ info1: "Block 758
+  index: 72
+  mode:    BB
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+     0:    Proj 828
+  Private Attributes:
+  backedges:
+  block visited: 0
+  block marked: 0
+"
+node: {title: "n789" label: "Return  789"  info1: "Return 789
+  index: 103
+  mode:    X
+  visited: 2
+  irg:     r_func_2
+  arity:   2
+  pred nodes:
+    -1:    Block 758
+     0:    Proj 778
+     1:    Conv 788
+  Private Attributes:
+  return in method of type method:method type[80]
+    result 0 type: primitive:Bs[51]
+"
+color:106}
+edge: {sourcename: "n789" targetname: "n778" label: "0" class:14 priority:50 color:blue}
+edge: {sourcename: "n789" targetname: "n788" label: "1" class:1  priority:50}
+node: {title: "n778" label: "Proj M M 778"  info1: "Proj 778
+  index: 92
+  mode:    M
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 758
+     0:    Load[Is] 777
+  Private Attributes:
+  proj nr: 0
+"
+color:105}
+nearedge: {sourcename: "n778" targetname: "n777" label: "0" class:14 priority:50 color:blue}
+node: {title: "n788" label: "Conv Bs 788"  info1: "Conv 788
+  index: 102
+  mode:    Bs
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 758
+     0:    Mul 787
+  Private Attributes:
+"
+}
+edge: {sourcename: "n788" targetname: "n787" label: "0" class:1  priority:50}
+node: {title: "n787" label: "Mul Hu 787"  info1: "Mul 787
+  index: 101
+  mode:    Hu
+  visited: 2
+  irg:     r_func_2
+  arity:   2
+  pred nodes:
+    -1:    Block 758
+     0:    Const 0x6293 779
+     1:    Conv 786
+  Private Attributes:
+"
+}
+node: {title: "n787b779" label: "Const 0x6293 Hu 779"  info1: "Const 0x6293 779
+  index: 93
+  mode:    Hu
+  visited: 2
+  irg:     r_func_2
+  arity:   0
+  pred nodes:
+    -1:    Start Block 697
+  Private Attributes:
+"
+color:107}
+edge: {sourcename: "n787" targetname: "n787b779" label: "0" class:16 priority:10}
+edge: {sourcename: "n787" targetname: "n786" label: "1" class:1  priority:50}
+node: {title: "n786" label: "Conv Hu 786"  info1: "Conv 786
+  index: 100
+  mode:    Hu
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 758
+     0:    Conv 785
+  Private Attributes:
+"
+}
+edge: {sourcename: "n786" targetname: "n785" label: "0" class:1  priority:50}
+node: {title: "n785" label: "Conv Bs 785"  info1: "Conv 785
+  index: 99
+  mode:    Bs
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 758
+     0:    Mul 784
+  Private Attributes:
+"
+}
+edge: {sourcename: "n785" targetname: "n784" label: "0" class:1  priority:50}
+node: {title: "n784" label: "Mul Is 784"  info1: "Mul 784
+  index: 98
+  mode:    Is
+  visited: 2
+  irg:     r_func_2
+  arity:   2
+  pred nodes:
+    -1:    Block 758
+     0:    Add 783
+     1:    Add 782
+  Private Attributes:
+"
+}
+edge: {sourcename: "n784" targetname: "n783" label: "0" class:1  priority:50}
+edge: {sourcename: "n784" targetname: "n782" label: "1" class:1  priority:50}
+node: {title: "n783" label: "Add Is 783"  info1: "Add 783
+  index: 97
+  mode:    Is
+  visited: 2
+  irg:     r_func_2
+  arity:   2
+  pred nodes:
+    -1:    Block 758
+     0:    Add 782
+     1:    Proj 780
+  Private Attributes:
+"
+}
+edge: {sourcename: "n783" targetname: "n782" label: "0" class:1  priority:50}
+edge: {sourcename: "n783" targetname: "n780" label: "1" class:1  priority:50}
+node: {title: "n782" label: "Add Is 782"  info1: "Add 782
+  index: 96
+  mode:    Is
+  visited: 2
+  irg:     r_func_2
+  arity:   2
+  pred nodes:
+    -1:    Block 758
+     0:    Proj 780
+     1:    Proj 781
+  Private Attributes:
+"
+}
+edge: {sourcename: "n782" targetname: "n780" label: "0" class:1  priority:50}
+edge: {sourcename: "n782" targetname: "n781" label: "1" class:1  priority:50}
+node: {title: "n780" label: "Proj Is res 780"  info1: "Proj 780
+  index: 94
+  mode:    Is
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 758
+     0:    Load[Is] 777
+  Private Attributes:
+  proj nr: 1
+"
+}
+nearedge: {sourcename: "n780" targetname: "n777" label: "0" class:1  priority:50}
+node: {title: "n777" label: "Load[Is]  777"  info1: "Load[Is] 777
+  index: 91
+  mode:    T
+  visited: 2
+  irg:     r_func_2
+  arity:   2
+  pred nodes:
+    -1:    Block 758
+     0:    Proj 774
+     1:    Member 776
+  Private Attributes:
+  pinned state: op_pin_state_pinned
+  mode of loaded value: Is
+  type of object loaded from: primitive:Is[55]
+  volatility: volatility_non_volatile
+  align: align_is_aligned
+"
+color:105}
+edge: {sourcename: "n777" targetname: "n774" label: "0" class:14 priority:50 color:blue}
+edge: {sourcename: "n777" targetname: "n776" label: "1" class:1  priority:50}
+node: {title: "n774" label: "Proj M M 774"  info1: "Proj 774
+  index: 88
+  mode:    M
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 758
+     0:    Load[Is] 773
+  Private Attributes:
+  proj nr: 0
+"
+color:105}
+nearedge: {sourcename: "n774" targetname: "n773" label: "0" class:14 priority:50 color:blue}
+node: {title: "n776" label: "Member P fs_entity.3 776"  info1: "Member 776
+  index: 90
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 758
+     0:    Member 775
+  Private Attributes:
+  Selecting entity fs_entity.3[242]
+    of type    primitive:Is[55]
+    with owner struct:struct 'fs_struct.0'[59].
+"
+}
+edge: {sourcename: "n776" targetname: "n775" label: "0" class:1  priority:50}
+node: {title: "n775" label: "Member P fs_entity.8 775"  info1: "Member 775
+  index: 89
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 758
+     0:    Member 768
+  Private Attributes:
+  Selecting entity fs_entity.8[246]
+    of type    struct:struct 'fs_struct.0'[59]
+    with owner union:union 'fs_union.5'[60].
+"
+}
+edge: {sourcename: "n775" targetname: "n768" label: "0" class:1  priority:50}
+node: {title: "n781" label: "Proj Is res 781"  info1: "Proj 781
+  index: 95
+  mode:    Is
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 758
+     0:    Load[Is] 773
+  Private Attributes:
+  proj nr: 1
+"
+}
+nearedge: {sourcename: "n781" targetname: "n773" label: "0" class:1  priority:50}
+node: {title: "n773" label: "Load[Is]  773"  info1: "Load[Is] 773
+  index: 87
+  mode:    T
+  visited: 2
+  irg:     r_func_2
+  arity:   2
+  pred nodes:
+    -1:    Block 758
+     0:    Proj 770
+     1:    Member 772
+  Private Attributes:
+  pinned state: op_pin_state_pinned
+  mode of loaded value: Is
+  type of object loaded from: primitive:Is[55]
+  volatility: volatility_non_volatile
+  align: align_is_aligned
+"
+color:105}
+edge: {sourcename: "n773" targetname: "n770" label: "0" class:14 priority:50 color:blue}
+edge: {sourcename: "n773" targetname: "n772" label: "1" class:1  priority:50}
+node: {title: "n770" label: "Proj M M 770"  info1: "Proj 770
+  index: 84
+  mode:    M
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 758
+     0:    Store 769
+  Private Attributes:
+  proj nr: 0
+"
+color:105}
+nearedge: {sourcename: "n770" targetname: "n769" label: "0" class:14 priority:50 color:blue}
+node: {title: "n769" label: "Store  769"  info1: "Store 769
+  index: 83
+  mode:    T
+  visited: 2
+  irg:     r_func_2
+  arity:   3
+  pred nodes:
+    -1:    Block 758
+     0:    Proj 766
+     1:    Phi 764
+     2:    Member 768
+  Private Attributes:
+  pinned state: op_pin_state_pinned
+  type of object stored to: pointer:pointer to union 'fs_union.5'[166]
+  volatility: volatility_non_volatile
+  align: align_is_aligned
+"
+color:105}
+edge: {sourcename: "n769" targetname: "n766" label: "0" class:14 priority:50 color:blue}
+edge: {sourcename: "n769" targetname: "n764" label: "1" class:1  priority:50}
+edge: {sourcename: "n769" targetname: "n768" label: "2" class:1  priority:50}
+node: {title: "n766" label: "Proj M M 766"  info1: "Proj 766
+  index: 80
+  mode:    M
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 758
+     0:    Store 765
+  Private Attributes:
+  proj nr: 0
+"
+color:105}
+nearedge: {sourcename: "n766" targetname: "n765" label: "0" class:14 priority:50 color:blue}
+node: {title: "n765" label: "Store  765"  info1: "Store 765
+  index: 79
+  mode:    T
+  visited: 2
+  irg:     r_func_2
+  arity:   3
+  pred nodes:
+    -1:    Block 758
+     0:    Proj 762
+     1:    Phi 763
+     2:    Phi 764
+  Private Attributes:
+  pinned state: op_pin_state_pinned
+  type of object stored to: pointer:pointer to pointer to union 'fs_union.5'[168]
+  volatility: volatility_non_volatile
+  align: align_is_aligned
+"
+color:105}
+edge: {sourcename: "n765" targetname: "n762" label: "0" class:14 priority:50 color:blue}
+edge: {sourcename: "n765" targetname: "n763" label: "1" class:1  priority:50}
+edge: {sourcename: "n765" targetname: "n764" label: "2" class:1  priority:50}
+node: {title: "n762" label: "Proj M M 762"  info1: "Proj 762
+  index: 76
+  mode:    M
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 758
+     0:    Store 761
+  Private Attributes:
+  proj nr: 0
+"
+color:105}
+nearedge: {sourcename: "n762" targetname: "n761" label: "0" class:14 priority:50 color:blue}
+node: {title: "n761" label: "Store  761"  info1: "Store 761
+  index: 75
+  mode:    T
+  visited: 2
+  irg:     r_func_2
+  arity:   3
+  pred nodes:
+    -1:    Block 758
+     0:    Proj 744
+     1:    Phi 759
+     2:    Phi 760
+  Private Attributes:
+  pinned state: op_pin_state_pinned
+  type of object stored to: pointer:pointer to struct 'fs_struct.34'[169]
+  volatility: volatility_non_volatile
+  align: align_is_aligned
+"
+color:105}
+edge: {sourcename: "n761" targetname: "n744" label: "0" class:17 priority:10 color:blue}
+edge: {sourcename: "n761" targetname: "n759" label: "1" class:1  priority:50}
+edge: {sourcename: "n761" targetname: "n760" label: "2" class:1  priority:50}
+node: {title: "n759" label: "Phi P 759"  info1: "Phi 759
+  index: 73
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 758
+     0:    Proj 829
+  Private Attributes:
+  backedges:
+"
+color:104}
+edge: {sourcename: "n759" targetname: "n829" label: "0" class:16 priority:10}
+node: {title: "n763" label: "Phi P 763"  info1: "Phi 763
+  index: 77
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 758
+     0:    Proj 831
+  Private Attributes:
+  backedges:
+"
+color:104}
+edge: {sourcename: "n763" targetname: "n831" label: "0" class:16 priority:10}
+node: {title: "n764" label: "Phi P 764"  info1: "Phi 764
+  index: 78
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 758
+     0:    Proj 832
+  Private Attributes:
+  backedges:
+"
+color:104}
+edge: {sourcename: "n764" targetname: "n832" label: "0" class:16 priority:10}
+node: {title: "n768" label: "Member P fs_entity.22 768"  info1: "Member 768
+  index: 82
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 758
+     0:    Member 767
+  Private Attributes:
+  Selecting entity fs_entity.22[258]
+    of type    union:union 'fs_union.5'[60]
+    with owner struct:struct 'fs_struct.19'[62].
+"
+}
+edge: {sourcename: "n768" targetname: "n767" label: "0" class:1  priority:50}
+node: {title: "n767" label: "Member P fs_entity.35 767"  info1: "Member 767
+  index: 81
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 758
+     0:    Phi 760
+  Private Attributes:
+  Selecting entity fs_entity.35[268]
+    of type    struct:struct 'fs_struct.19'[62]
+    with owner struct:struct 'fs_struct.34'[65].
+"
+}
+edge: {sourcename: "n767" targetname: "n760" label: "0" class:1  priority:50}
+node: {title: "n760" label: "Phi P 760"  info1: "Phi 760
+  index: 74
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 758
+     0:    Proj 830
+  Private Attributes:
+  backedges:
+"
+color:104}
+edge: {sourcename: "n760" targetname: "n830" label: "0" class:16 priority:10}
+node: {title: "n772" label: "Member P fs_entity.3 772"  info1: "Member 772
+  index: 86
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 758
+     0:    Phi 771
+  Private Attributes:
+  Selecting entity fs_entity.3[242]
+    of type    primitive:Is[55]
+    with owner struct:struct 'fs_struct.0'[59].
+"
+}
+edge: {sourcename: "n772" targetname: "n771" label: "0" class:1  priority:50}
+node: {title: "n771" label: "Phi P 771"  info1: "Phi 771
+  index: 85
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 758
+     0:    Member 836
+  Private Attributes:
+  backedges:
+"
+color:104}
+edge: {sourcename: "n771" targetname: "n836" label: "0" class:16 priority:10}
+}
+
+edge: {sourcename: "n758" targetname: "n828" label: "0" class:13 priority:60 color:red}
+graph: { title: "n809" label: "Block  809" status:clustered color:101
+ info1: "Block 809
+  index: 123
+  mode:    BB
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+     0:    Proj 847
+  Private Attributes:
+  backedges:
+  block visited: 0
+  block marked: 0
+"
+node: {title: "n810" label: "Jmp  810"  info1: "Jmp 810
+  index: 124
+  mode:    X
+  visited: 2
+  irg:     r_func_2
+  arity:   0
+  pred nodes:
+    -1:    Block 809
+  Private Attributes:
+"
+color:106}
+}
+
+edge: {sourcename: "n809" targetname: "n847" label: "0" class:13 priority:60 color:red}
+graph: { title: "n705" label: "Block  705" status:clustered color:101
+ info1: "Block 705
+  index: 19
+  mode:    BB
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+     0:    Jmp 810
+  Private Attributes:
+  backedges:
+  block visited: 0
+  block marked: 0
+"
+node: {title: "n750" label: "Proj M M 750"  info1: "Proj 750
+  index: 64
+  mode:    M
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 705
+     0:    Alloc 749
+  Private Attributes:
+  proj nr: 0
+"
+color:105}
+nearedge: {sourcename: "n750" targetname: "n749" label: "0" class:14 priority:50 color:blue}
+node: {title: "n822" label: "Member P fs_entity.31 822"  info1: "Member 822
+  index: 136
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 705
+     0:    Proj 821
+  Private Attributes:
+  Selecting entity fs_entity.31[265]
+    of type    struct:struct 'fs_struct.11'[61]
+    with owner struct:struct 'fs_struct.30'[64].
+"
+}
+edge: {sourcename: "n822" targetname: "n821" label: "0" class:1  priority:50}
+node: {title: "n821" label: "Proj P res 821"  info1: "Proj 821
+  index: 135
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 705
+     0:    Alloc 749
+  Private Attributes:
+  proj nr: 1
+"
+}
+nearedge: {sourcename: "n821" targetname: "n749" label: "0" class:1  priority:50}
+node: {title: "n749" label: "Alloc  749"  info1: "Alloc 749
+  index: 63
+  mode:    T
+  visited: 2
+  irg:     r_func_2
+  arity:   2
+  pred nodes:
+    -1:    Block 705
+     0:    Proj 747
+     1:    Const 0x2C 748
+  Private Attributes:
+  alignment: 8
+"
+color:105}
+node: {title: "n749b748" label: "Const 0x2C Iu 748"  info1: "Const 0x2C 748
+  index: 62
+  mode:    Iu
+  visited: 2
+  irg:     r_func_2
+  arity:   0
+  pred nodes:
+    -1:    Start Block 697
+  Private Attributes:
+"
+color:107}
+edge: {sourcename: "n749" targetname: "n747" label: "0" class:14 priority:50 color:blue}
+edge: {sourcename: "n749" targetname: "n749b748" label: "1" class:16 priority:10}
+node: {title: "n747" label: "Proj M M 747"  info1: "Proj 747
+  index: 61
+  mode:    M
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 705
+     0:    Alloc 746
+  Private Attributes:
+  proj nr: 0
+"
+color:105}
+nearedge: {sourcename: "n747" targetname: "n746" label: "0" class:14 priority:50 color:blue}
+node: {title: "n849" label: "Member P fs_entity.31 849"  info1: "Member 849
+  index: 163
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 705
+     0:    Proj 848
+  Private Attributes:
+  Selecting entity fs_entity.31[265]
+    of type    struct:struct 'fs_struct.11'[61]
+    with owner struct:struct 'fs_struct.30'[64].
+"
+}
+edge: {sourcename: "n849" targetname: "n848" label: "0" class:1  priority:50}
+node: {title: "n848" label: "Proj P res 848"  info1: "Proj 848
+  index: 162
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 705
+     0:    Alloc 746
+  Private Attributes:
+  proj nr: 1
+"
+}
+nearedge: {sourcename: "n848" targetname: "n746" label: "0" class:1  priority:50}
+node: {title: "n746" label: "Alloc  746"  info1: "Alloc 746
+  index: 60
+  mode:    T
+  visited: 2
+  irg:     r_func_2
+  arity:   2
+  pred nodes:
+    -1:    Block 705
+     0:    Proj 744
+     1:    Const 0x2C 745
+  Private Attributes:
+  alignment: 8
+"
+color:105}
+node: {title: "n746b745" label: "Const 0x2C Iu 745"  info1: "Const 0x2C 745
+  index: 59
+  mode:    Iu
+  visited: 2
+  irg:     r_func_2
+  arity:   0
+  pred nodes:
+    -1:    Start Block 697
+  Private Attributes:
+"
+color:107}
+edge: {sourcename: "n746" targetname: "n744" label: "0" class:17 priority:10 color:blue}
+edge: {sourcename: "n746" targetname: "n746b745" label: "1" class:16 priority:10}
+node: {title: "n845" label: "Proj X false 845"  info1: "Proj 845
+  index: 159
+  mode:    X
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 705
+     0:    Cond 844
+  Private Attributes:
+  proj nr: 0
+"
+color:106}
+nearedge: {sourcename: "n845" targetname: "n844" label: "0" class:13 priority:60 color:red}
+node: {title: "n846" label: "Proj X true 846"  info1: "Proj 846
+  index: 160
+  mode:    X
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 705
+     0:    Cond 844
+  Private Attributes:
+  proj nr: 1
+"
+color:106}
+nearedge: {sourcename: "n846" targetname: "n844" label: "0" class:13 priority:60 color:red}
+node: {title: "n844" label: "Cond  844"  info1: "Cond 844
+  index: 158
+  mode:    T
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 705
+     0:    Cmp 843
+  Private Attributes:
+"
+color:106}
+edge: {sourcename: "n844" targetname: "n843" label: "0" class:1  priority:50}
+node: {title: "n843" label: "Cmp b equal 843"  info1: "Cmp 843
+  index: 157
+  mode:    b
+  visited: 2
+  irg:     r_func_2
+  arity:   2
+  pred nodes:
+    -1:    Block 705
+     0:    Const 0xB1 841
+     1:    Const 0x9D 842
+  Private Attributes:
+  relation: equal
+"
+}
+node: {title: "n843b841" label: "Const 0xB1 Bs 841"  info1: "Const 0xB1 841
+  index: 155
+  mode:    Bs
+  visited: 2
+  irg:     r_func_2
+  arity:   0
+  pred nodes:
+    -1:    Start Block 697
+  Private Attributes:
+"
+color:107}
+node: {title: "n843b842" label: "Const 0x9D Bs 842"  info1: "Const 0x9D 842
+  index: 156
+  mode:    Bs
+  visited: 2
+  irg:     r_func_2
+  arity:   0
+  pred nodes:
+    -1:    Start Block 697
+  Private Attributes:
+"
+color:107}
+edge: {sourcename: "n843" targetname: "n843b841" label: "0" class:16 priority:10}
+edge: {sourcename: "n843" targetname: "n843b842" label: "1" class:16 priority:10}
+}
+
+edge: {sourcename: "n705" targetname: "n810" label: "0" class:13 priority:60 color:red}
+graph: { title: "n807" label: "Block  807" status:clustered color:101
+ info1: "Block 807
+  index: 121
+  mode:    BB
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+     0:    Proj 846
+  Private Attributes:
+  backedges:
+  block visited: 0
+  block marked: 0
+"
+node: {title: "n823" label: "Phi P 823"  info1: "Phi 823
+  index: 137
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 807
+     0:    Member 849
+  Private Attributes:
+  backedges:
+"
+color:104}
+edge: {sourcename: "n823" targetname: "n849" label: "0" class:16 priority:10}
+node: {title: "n808" label: "Jmp  808"  info1: "Jmp 808
+  index: 122
+  mode:    X
+  visited: 2
+  irg:     r_func_2
+  arity:   0
+  pred nodes:
+    -1:    Block 807
+  Private Attributes:
+"
+color:106}
+}
+
+edge: {sourcename: "n807" targetname: "n846" label: "0" class:13 priority:60 color:red}
+graph: { title: "n805" label: "Block  805" status:clustered color:101
+ info1: "Block 805
+  index: 119
+  mode:    BB
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+     0:    Proj 845
+  Private Attributes:
+  backedges:
+  block visited: 0
+  block marked: 0
+"
+node: {title: "n806" label: "Jmp  806"  info1: "Jmp 806
+  index: 120
+  mode:    X
+  visited: 2
+  irg:     r_func_2
+  arity:   0
+  pred nodes:
+    -1:    Block 805
+  Private Attributes:
+"
+color:106}
+}
+
+edge: {sourcename: "n805" targetname: "n845" label: "0" class:13 priority:60 color:red}
+graph: { title: "n704" label: "Block  704" status:clustered color:101
+ info1: "Block 704
+  index: 18
+  mode:    BB
+  visited: 2
+  irg:     r_func_2
+  arity:   2
+  pred nodes:
+     0:    Jmp 806
+     1:    Jmp 808
+  Private Attributes:
+  backedges:
+
+  block visited: 0
+  block marked: 0
+"
+node: {title: "n757" label: "Return  757"  info1: "Return 757
+  index: 71
+  mode:    X
+  visited: 2
+  irg:     r_func_2
+  arity:   2
+  pred nodes:
+    -1:    Block 704
+     0:    Proj 754
+     1:    Conv 756
+  Private Attributes:
+  return in method of type method:method type[80]
+    result 0 type: primitive:Bs[51]
+"
+color:106}
+edge: {sourcename: "n757" targetname: "n754" label: "0" class:14 priority:50 color:blue}
+edge: {sourcename: "n757" targetname: "n756" label: "1" class:1  priority:50}
+node: {title: "n754" label: "Proj M M 754"  info1: "Proj 754
+  index: 68
+  mode:    M
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 704
+     0:    Load[Hs] 753
+  Private Attributes:
+  proj nr: 0
+"
+color:105}
+nearedge: {sourcename: "n754" targetname: "n753" label: "0" class:14 priority:50 color:blue}
+node: {title: "n756" label: "Conv Bs 756"  info1: "Conv 756
+  index: 70
+  mode:    Bs
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 704
+     0:    Proj 755
+  Private Attributes:
+"
+}
+edge: {sourcename: "n756" targetname: "n755" label: "0" class:1  priority:50}
+node: {title: "n755" label: "Proj Hs res 755"  info1: "Proj 755
+  index: 69
+  mode:    Hs
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 704
+     0:    Load[Hs] 753
+  Private Attributes:
+  proj nr: 1
+"
+}
+nearedge: {sourcename: "n755" targetname: "n753" label: "0" class:1  priority:50}
+node: {title: "n753" label: "Load[Hs]  753"  info1: "Load[Hs] 753
+  index: 67
+  mode:    T
+  visited: 2
+  irg:     r_func_2
+  arity:   2
+  pred nodes:
+    -1:    Block 704
+     0:    Proj 750
+     1:    Member 752
+  Private Attributes:
+  pinned state: op_pin_state_pinned
+  mode of loaded value: Hs
+  type of object loaded from: primitive:Hs[53]
+  volatility: volatility_non_volatile
+  align: align_is_aligned
+"
+color:105}
+edge: {sourcename: "n753" targetname: "n750" label: "0" class:17 priority:10 color:blue}
+edge: {sourcename: "n753" targetname: "n752" label: "1" class:1  priority:50}
+node: {title: "n752" label: "Member P fs_entity.12 752"  info1: "Member 752
+  index: 66
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   1
+  pred nodes:
+    -1:    Block 704
+     0:    Phi 751
+  Private Attributes:
+  Selecting entity fs_entity.12[249]
+    of type    primitive:Hs[53]
+    with owner struct:struct 'fs_struct.11'[61].
+"
+}
+edge: {sourcename: "n752" targetname: "n751" label: "0" class:1  priority:50}
+node: {title: "n751" label: "Phi P 751"  info1: "Phi 751
+  index: 65
+  mode:    P
+  visited: 2
+  irg:     r_func_2
+  arity:   2
+  pred nodes:
+    -1:    Block 704
+     0:    Member 822
+     1:    Phi 823
+  Private Attributes:
+  backedges:
+
+"
+color:104}
+edge: {sourcename: "n751" targetname: "n822" label: "0" class:16 priority:10}
+edge: {sourcename: "n751" targetname: "n823" label: "1" class:16 priority:10}
+}
+
+edge: {sourcename: "n704" targetname: "n806" label: "0" class:13 priority:60 color:red}
+edge: {sourcename: "n704" targetname: "n808" label: "1" class:13 priority:60 color:red}
+graph: { title: "n696" label: "End Block  696" status:clustered color:101
+ info1: "End Block 696
+  index: 10
+  mode:    BB
+  visited: 2
+  irg:     r_func_2
+  arity:   3
+  pred nodes:
+     0:    Return 757
+     1:    Return 789
+     2:    Return 804
+  Private Attributes:
+  backedges:
+
+
+  block visited: 0
+  block marked: 0
+"
+node: {title: "n698" label: "End  698"  info1: "End 698
+  index: 12
+  mode:    X
+  visited: 2
+  irg:     r_func_2
+  arity:   0
+  pred nodes:
+    -1:    End Block 696
+  Private Attributes:
+"
+color:108}
+}
+
+edge: {sourcename: "n696" targetname: "n757" label: "0" class:13 priority:60 color:red}
+edge: {sourcename: "n696" targetname: "n789" label: "1" class:13 priority:60 color:red}
+edge: {sourcename: "n696" targetname: "n804" label: "2" class:13 priority:60 color:red}
+}
+
+}
