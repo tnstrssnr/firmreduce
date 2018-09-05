@@ -20,6 +20,9 @@ pass_t* new_pass(char* ident, char* path) {
 
 }
 
+/**
+ * loads all passes it can find in either /usr/local/bin or in firmreduce build directory
+ */
 void init_passes_dynamic(char* path) {
     bool absolute_path = 0;
     char* pass_dir;
@@ -97,13 +100,14 @@ int apply_pass(char* path, char* dump, int i, int reduce_individual, char* ident
 
     path_ = malloc(strlen(passes[i]->path) + strlen(path) + strlen(dump) + strlen(ident) + 128); // Leave some space for unknown seed
     
-    sprintf(path_, "%s %s %s %d %s %d", passes[i]->path, path, dump, reduce_individual, ident, seed);
+    // pass  times out after 10s -- might be too short for bigger input files    
+    sprintf(path_, "timeout 10s bash -c '%s %s %s %d %s %d' --preserve-status", passes[i]->path, path, dump, reduce_individual, ident, seed);
     status = system(path_);      
     result = -1;
     
     if(WIFEXITED(status)) {
         result = WEXITSTATUS(status);
-    } 
+    }
     PASSES_APPLIED++;
     free(path_);
     return result;

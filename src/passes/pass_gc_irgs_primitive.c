@@ -33,6 +33,8 @@ int main(int argc, char** argv) {
     if(!irg) return 0; // we may have already removed the irg;
 
     const char* irg_name = get_id_str(get_entity_ident(get_irg_entity(irg)));
+    
+    // don't remove main function
     if(strcmp(irg_name, MAIN) == 0) return 0;
 
     free_ir_graph(irg);

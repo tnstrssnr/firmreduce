@@ -7,8 +7,6 @@ int main(int argc, char* argv[]) {
         exit(-1);
     }
 
-    
-
     char* file = argv[1];
     char* dump = argv[2];
     int reduce_conservatively = atoi(argv[3]);

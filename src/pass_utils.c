@@ -6,7 +6,7 @@
 #include <pass_utils.h>
 
 /**
- * File contains functions that can be used to implement the passes
+ * File contains utility functions that can be used to implement the passes
  */
 
 void find_nodes_walk(ir_node* node, void* data) {
@@ -65,7 +65,7 @@ int* get_shuffle(int size) {
 }
 
 /**
- * Convenience function for creating new passes
+ * Convenience function for applying a passes
  * Pass needs a pass_func, that does something to the irg, the rest
  * is handled in this function
  * 
@@ -82,10 +82,10 @@ int apply_pass(char* path, char* dump, pass_func* func, char* ident) {
 
     ir_graph* irg = get_irg_by_ident(ident);
 
-    if(irg == NULL) {
+    if(irg == NULL) { // we may have already removed the irg
         ir_finish();
         return 0;
-    } // we may have already removed the irg
+    } 
     int improvement = (func)(irg, NULL);
 
     // apply optimizations
@@ -108,6 +108,7 @@ int apply_pass(char* path, char* dump, pass_func* func, char* ident) {
     optimize_graph_df(irg);
     combo(irg);
     place_code(irg);
+    
     // check if we still have a valid irp
     if(is_valid()) {
         ir_export(dump);
@@ -125,6 +126,9 @@ int select_all(const ir_node* node) {
     return 1;
 }
 
+/**
+ * Convenience function for applying Firm optimizations
+ */
 int apply_optimization(char* file, char* dump, char* irg_ident, opt_func* func) {
     ir_init();
     if(ir_import(file)) {
@@ -162,11 +166,10 @@ int apply_optimization(char* file, char* dump, char* irg_ident, opt_func* func) 
  * allows pass to identify irg on which the aggressive reduction failed (ident is passed as argument)
  */
 ir_graph* get_irg_by_ident(const char* ident) {
-    ir_graph* irg;
     for(int i = 0; i < get_irp_n_irgs(); i++) {
         if(strcmp(ident, get_id_str(get_entity_ident(get_irg_entity(get_irp_irg(i))))) == 0) {
-            irg =  get_irp_irg(i);
+            return get_irp_irg(i);
         } 
     }
-    return irg;
+    return NULL;
 }

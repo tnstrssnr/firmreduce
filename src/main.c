@@ -53,6 +53,17 @@ typedef struct arguments {
     int s;
 } arguments;
 
+/*
+* Program expects 2 arguments:
+*     1. path to .sh file -> interestingness test for bug
+*     2. path to .ir file of input test-case
+* 
+* optional arguments:
+*     -o path/to/dir: Expects path to directory, where temp files and reduced test-cases are dumped
+*      If no path is specified, path of input test-case will be used
+* 
+*      -s seed: seed for generating random number sequence. Of none is specified a timestamp will be used as seed
+*/
 static int parse_opt(int key, char* arg, struct argp_state* state) {
     struct arguments* arguments = state->input;
     
@@ -165,7 +176,6 @@ void init_temp_dirs(char* ir_path) {
 ir_stats_t* get_ir_stats(char* path_to_file, int dump, char* suffix) {
 
     ir_stats_t* stats = malloc(sizeof(ir_stats_t));
-
     size_t str_size = strlen(LIBSTATS_PATH) + strlen(path_to_file) + strlen(STATS) + strlen(OUT_PATH) + strlen(suffix) + 7; // 5 spaces + 1 char for 'dump' variable + 1 nul terminator
     char* command = malloc(str_size);
 
@@ -224,7 +234,7 @@ int is_reproducer() {
     return result;
 }
 
-void init(char* program_path, char* rep_path, char* ir_path) {
+void init(char* program_path, char* rep_path, char* ir_path, int seed) {
 
     char* dir_ = dirname(program_path);
     // look for libstats file
@@ -244,9 +254,9 @@ void init(char* program_path, char* rep_path, char* ir_path) {
 
     init_temp_dirs(ir_path);
     init_reproducer_test(rep_path, TEMP_VARIANT);
-    init_logging(OUT_PATH);
+    init_logging(OUT_PATH, seed);
     init_passes_dynamic(dir_);
-    log_stats(get_ir_stats(CURRENT_VARIANT, 0, "initial"));
+    log_stats(get_ir_stats(CURRENT_VARIANT, 1, "initial"));
 }
 
  // we found a new smaller variant -- set as current
@@ -262,15 +272,17 @@ void replace_variant() {
  */
 bool reduce_irg_level(int pass) {
 
-    bool saved = 0; // variable needed if pass fails
+    bool saved = 0; // variable needed if pass fails --> we want to save it to 'may_be_interesting' folder only once
     bool achieved_reduction = 0;
     int failed = 0;
 
     ir_stats_t* stats = get_ir_stats(CURRENT_VARIANT, 0, "null");
     int irg_n = stats->irg_n;
     int irg_idx = 0;
+    int i = 0; // count how namy times pass gets applied to a random irg -- do max. 2*irg_n
 
-    while(failed < irg_n) {
+    while(failed < irg_n && i < 2*irg_n ) {
+        i++;
         irg_idx = rand() % irg_n; // use irg_idx entry in identifier array -- does not correspond w/ irg_nr when irp is loaded by pass
 
         int res = apply_pass(CURRENT_VARIANT, TEMP_VARIANT, pass, AGGRESSIVE, stats->irg_ids[irg_idx], rand());
@@ -282,12 +294,21 @@ bool reduce_irg_level(int pass) {
                 replace_variant();
                 continue;
             }
+            
+            if(!saved) { // only save once
+                char file_name[256 +  strlen("cp  ") + strlen(CURRENT_VARIANT) + strlen(MAY_BE_INTERESTING) + 1];
+                time_t t = time(NULL);
+                struct tm tm = *localtime(&t);
+                sprintf(file_name, "cp %s %s/%d%d%d-%d%d%d.ir", CURRENT_VARIANT, MAY_BE_INTERESTING, tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+                system(file_name);
+                saved = 1;
+            }
                 // variant is no reproducer - write pass and irg to file, so we can try to reduce more conservatively later on
                 failed++;
                 FILE* f = fopen(FAILS, "a");
                 fprintf(f, "%d %s\n", pass, stats->irg_ids[irg_idx]);
                 fclose(f);
-                log_text("\n\t :: Reproducer test failed on irg \'");
+                log_text("\n\t :: interestingness test failed on irg \'");
                 log_text(stats->irg_ids[irg_idx]);
                 log_text("\'");
 
@@ -319,8 +340,8 @@ bool reduce_irn_level(char* irg_ident, int pass) {
     log_text(irg_ident);
     log_text("\' -- ");
     int res = apply_pass(CURRENT_VARIANT, TEMP_VARIANT, pass, CONSERVATIVE, irg_ident, rand());
-    log_result(res);
     if(res == 1 && is_reproducer()) {
+        log_result(res);
         replace_variant();
     }
     return 0;           
@@ -348,20 +369,6 @@ int* get_shuffle(int size) {
 
 int main(int argc, char** argv) {
 
-    /*
-    * Program expects 2 arguments:
-    *     1. path to .sh file -> reproducer test for bug
-    *     2. path to .ir file of input test-case
-    * 
-    * optional arguments:
-    *     -o path/to/dir: Expects path to directory, where temp files and reduced test-cases are dumped
-    *      If no path is specified, path of input test-case will be used
-    * 
-    *      -a "args": Arguments that should be passed to reproducer script. Don't forget to add the ""
-    * 
-    *      -s seed: seed for generating random number sequence. Of none is specified a timestamp will be used as seed
-    */
-
     struct arguments arguments;
 
     // default values
@@ -373,11 +380,11 @@ int main(int argc, char** argv) {
     // initialize pseudorandom number generation w/ seed
     printf("Using seed %d for pseudorandom number generation.\n", arguments.s);
     srand(arguments.s);
-    init(argv[0], arguments.args[0], arguments.args[1]);
+    init(argv[0], arguments.args[0], arguments.args[1], arguments.s);
 
     // check if input file is reproducer
     if(!is_reproducer()) {
-        fprintf(stderr, "Reproducer test fails on input -- aborting reduction\n");
+        fprintf(stderr, "interestingness test fails on input -- aborting reduction\n");
         exit(1);
     }
 
@@ -388,12 +395,13 @@ int main(int argc, char** argv) {
         result = 0;
         for(int i = 0; i < PASSES_N; i++) {
             int pass = rand_permutation[i];
+            int pass_result = reduce_irg_level(pass);
+            result = result || pass_result;
             log_text("\nUsing pass: ");
             log_text(passes[pass]->ident);
-            int pass_result = reduce_irg_level(pass);
             log_text(" -- ");
             log_result(pass_result);
-            result = result || pass_result;
+            log_text("\n");
         }    
     }
 
@@ -414,5 +422,5 @@ int main(int argc, char** argv) {
         }
     }
     fclose(fails);
-    finish();   
+    finish(); 
 }

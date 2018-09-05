@@ -21,7 +21,7 @@ void log_text(char* text) {
 
 void log_stats(ir_stats_t* stats) {
     char text[128];
-    sprintf(text, "\t# of nodes: \t\t\t%d\n\t# of irgs: \t\t\t\t%d\n\t# of cf manipulations: \t%d\n\t# of memory operations: %d\n\t# of types: \t\t\t%d\n\n",
+    sprintf(text, "\t# of nodes: %d\n\t# of irgs: %d\n\t# of cf manipulations: %d\n\t# of memory operations: %d\n\t# of types: %d\n\n",
          stats->node_n, stats->irg_n, stats->cf_manips, stats->mem_node_n, stats->type_n);
     log_text(text);
 }
@@ -40,7 +40,7 @@ void log_result(int result) {
     }
 }
 
-void init_logging(char* out_path) {
+void init_logging(char* out_path, int seed) {
     LOG_FILE = malloc(strlen(out_path) + strlen("/Reduction.log") + 1);
     sprintf(LOG_FILE, "%s/Reduction.log", out_path);
     FILE* file = fopen(LOG_FILE, "w");
@@ -55,7 +55,7 @@ void init_logging(char* out_path) {
     time_ = localtime(&now);
 
     strftime (buff, 30, "%Y-%m-%d %H:%M:%S", time_);
-    fprintf (file, "%s -- ", buff);
+    fprintf (file, "%s -- Seed: %d -- ", buff, seed);
     fprintf(file, "Firmreduce -- Results\n\nInitial Test-case size:\n");
     fclose(file);
 }
