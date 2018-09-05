@@ -28,7 +28,7 @@ void ir_stats_walker(ir_node* node, void* data) {
  */
 int main(int argc, char** argv) {
 
-    if(argc != 5 || argc != 6) { // suffix may be empty string, thus we expect 5 or six arguments
+    if(argc != 5 && argc != 6) { // suffix may be empty string, thus we expect 5 or six arguments
         fprintf(stderr, "Unexpected number of arguments\n");
         exit(1);
     }
@@ -77,7 +77,6 @@ int main(int argc, char** argv) {
     fprintf(f, "\n");
     fclose(f);
     ir_finish();
-    free(stats);
 
     return 0;
 }
